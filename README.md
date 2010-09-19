@@ -1,3 +1,3 @@
 Drag-and-drop animations without Flash
 
-Han and David
+David Allen (voronoff) and Han Wei (laughinghan)
