@@ -16,6 +16,12 @@ h1, #nav {
   margin: 0;
   text-align: center;
 }
+#toolbar{
+  float: left;
+}
+#square_button{
+  
+}
 #newsave {
   border-right: solid 1px black;
   border-bottom: solid 1px black;
@@ -40,7 +46,11 @@ input {
   <a href="about">About</a> |
   <a href="news">News</a>
 </p>
-
+<div id="toolbar">
+  <p>
+    <button id="square_button"><span></span></button>
+  </p>
+</div>
 <p><form onsubmit="return false">
   <span id="newsave">
     <button>New</button>
@@ -70,8 +80,6 @@ timeslider.path('M 0 15 L 480 15');
 
 var user_canvas = Raphael('user_canvas', 640, 480);
 user_canvas.text(200,150,'hello world').attr('font-size',40);
-
-
 
 
 </script>
