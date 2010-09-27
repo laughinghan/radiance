@@ -9,7 +9,7 @@
 
 <style type="text/css">
 body {
-  max-width: 6.5in;
+  max-width: 800px;
   margin: 0 auto;
 }
 h1, #nav {
@@ -18,6 +18,8 @@ h1, #nav {
 }
 #toolbar{
   float: left;
+  border: solid 1px black;
+  height: 600px;
 }
 #square_button{
   
@@ -28,6 +30,11 @@ h1, #nav {
   padding: .5em;
 }
 #user_canvas {
+  float: left;
+  border: solid 1px black;
+}
+#user_canvas_controls {
+  float: left;
   border: solid 1px black;
 }
 input {
@@ -66,10 +73,11 @@ input {
 </form></p>
 
 <div id="user_canvas"></div>
-
-<button>&#9654;Play</button>
-<span id="timeslider"></span>
-<input type="text" value="0.2s">/<input type="text" value="5s">
+<div id="user_canvas_controls">
+  <button>&#9654;Play</button>
+  <span id="timeslider"></span>
+  <input type="text" value="0.2s">/<input type="text" value="5s">
+</div>
 
 <script type="text/javascript">
 var zoomslider = Raphael('zoomslider', 200, 20);
