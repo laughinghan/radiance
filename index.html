@@ -21,7 +21,7 @@ h1, #nav {
   border-bottom: solid 1px black;
   padding: .5em;
 }
-#paper {
+#user_canvas {
   border: solid 1px black;
 }
 input {
@@ -55,7 +55,7 @@ input {
   <span id="zoomslider"></span>
 </form></p>
 
-<div id="paper"></div>
+<div id="user_canvas"></div>
 
 <button>&#9654;Play</button>
 <span id="timeslider"></span>
@@ -68,8 +68,12 @@ zoomslider.path('M 0 15 L 200 15');
 var timeslider = Raphael('timeslider', 480, 20);
 timeslider.path('M 0 15 L 480 15');
 
-var paper = Raphael('paper', 640, 480);
-paper.text(200,150,'hello world').attr('font-size',40);
+var user_canvas = Raphael('user_canvas', 640, 480);
+user_canvas.text(200,150,'hello world').attr('font-size',40);
+
+
+
+
 </script>
 
 </body>
