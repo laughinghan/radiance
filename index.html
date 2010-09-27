@@ -93,7 +93,33 @@ var timeslider = Raphael('timeslider', 480, 20);
 timeslider.path('M 0 15 L 480 15');
 
 var user_canvas = Raphael('user_canvas', 640, 480);
-user_canvas.text(200,150,'hello world').attr('font-size',40);
+
+var currently_open = $();
+$('#toolbar p button').click(function(){
+  currently_open.addClass('hidden');
+  currently_open = $(this).next().removeClass('hidden');
+});
+
+$('#square_button').click(function(){
+  $('#user_canvas').mousedown(function(e){
+    var startX = e.offsetX, startY = e.offsetY, rect = user_canvas.rect(startX, startY, 0, 0);
+    $(this).mousemove(function(e){
+      var x = e.offsetX, y = e.offsetY;
+      rect.attr({
+        x: x > startX ? startX : x,
+        y: y > startY ? startY : y,
+        width: x > startX ? x - startX : startX - x,
+        height: y > startY ? y - startY : startY - y
+      });
+    }).bind('mouseup mouseleave', function(){
+      $(this).unbind('mousemove mouseup mouseleave');
+    }).mouseleave(function(){
+      rect.remove();
+    });
+  });
+});
+
+
 
 
 </script>
