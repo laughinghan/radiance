@@ -12,6 +12,9 @@ body {
   max-width: 800px;
   margin: 0 auto;
 }
+.hidden{
+  display: none;
+}
 h1, #nav {
   margin: 0;
   text-align: center;
@@ -21,8 +24,11 @@ h1, #nav {
   border: solid 1px black;
   height: 600px;
 }
-#square_button{
-  
+#square_button span{
+  display: inline-block;
+  border: solid 1px black;
+  width: 10px;
+  height: 10px;
 }
 #newsave {
   border-right: solid 1px black;
@@ -54,9 +60,9 @@ input {
   <a href="news">News</a>
 </p>
 <div id="toolbar">
-  <p>
-    <button id="square_button"><span></span></button>
-  </p>
+  <p> <button id="square_button"><span></span></button> <span class="hidden"><br>Fill<br>Thickness</span>
+  <p> <button id="text_button">text</button> <span class="hidden"><br>Size<br>Font</span>
+
 </div>
 <p><form onsubmit="return false">
   <span id="newsave">
