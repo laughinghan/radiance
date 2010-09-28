@@ -39,6 +39,15 @@ h1, #nav {
 #user_canvas {
   float: left;
   border: solid 1px black;
+  position: relative;
+}
+#user_canvas_overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 #user_canvas_controls {
   float: left;
@@ -81,7 +90,7 @@ input {
   <span id="zoomslider"></span>
 </form></p>
 
-<div id="user_canvas"></div>
+<div id="user_canvas"><div id="user_canvas_overlay"></div></div>
 <div id="user_canvas_controls">
   <button>&#9654;Play</button>
   <span id="timeslider"></span>
@@ -96,16 +105,18 @@ var timeslider = Raphael('timeslider', 480, 20);
 timeslider.path('M 0 15 L 480 15');
 
 var user_canvas = Raphael('user_canvas', 640, 480);
+var hw = user_canvas.text(50, 50, "Hello Wolrd!");
 
 var currently_open = $();
 $('#toolbar p button').click(function(){
   currently_open.addClass('hidden');
   currently_open = $(this).next().removeClass('hidden');
+  $('#user_canvas_overlay').unbind('mousedown')
 });
 
 $('#square_button').click(function(){
-  $('#user_canvas').mousedown(function(e){
-    var startX = e.offsetX, startY = e.offsetY, rect = user_canvas.rect(startX, startY, 0, 0);
+  $('#user_canvas_overlay').mousedown(function(e){
+    var startX = e.offsetX, startY = e.offsetY, ('rect'+rect_counter) = user_canvas.rect(startX, startY, 0, 0);
     $(this).mousemove(function(e){
       var x = e.offsetX, y = e.offsetY;
       rect.attr({
