@@ -56,6 +56,24 @@ input {
   left: 0;
   z-index: 1;
 }
+#shapes_list {
+  float: left;
+  border: solid 1px black;
+  height: 480px;
+  width: 200px;
+  overflow-y: scroll;
+}
+#shapes_list p {
+  margin: 0;
+  cursor: pointer;
+}
+#shapes_list .current {
+  background-color: mediumblue;
+  color: white;
+}
+#shapes_list input {
+  width: 100px;
+}
 #user_canvas_controls {
   float: left;
   border: solid 1px black;
@@ -102,6 +120,8 @@ input {
   <div id="user_canvas_overlay"></div>
 </div>
 
+<div id="shapes_list"></div>
+
 <div id="user_canvas_controls">
   <button>&#9654;Play</button>
   <span id="timeslider"></span>
@@ -116,7 +136,36 @@ var timeslider = Raphael('timeslider', 480, 20);
 timeslider.path('M 0 15 L 480 15');
 
 var user_canvas = Raphael('user_canvas', 640, 480);
-var hw = user_canvas.text(50, 50, "Hello Wolrd!");
+user_canvas.text(200,150,'hello world').attr('font-size',40);
+
+//list of raphael shapes and sets
+var shapes_list = $('#shapes_list').click(function(){
+  current_shape.removeClass('current');
+  shape_options.detach();
+});
+
+//shape in list
+var current_shape = $(), shape_options = $('<p></p>').click(function(){
+  return false;
+});
+$('<button>Remove</button>').click(function(){
+  var shape = shape_options.prev();
+  console.log(shape);
+  shape.data('raphael').remove();
+  shape.remove();
+  shape_options.detach();
+}).appendTo(shape_options);
+var rename = $('<form>Rename: <input type="text" name="rename"></form></p>').submit(function(){
+  shape_options.prev().html(this.rename.value);
+  return false;
+}).appendTo(shape_options).find('input');
+function shape_click(){
+  current_shape.removeClass('current');
+  current_shape = $(this).addClass('current');
+  rename.val(this.innerHTML);
+  shape_options.insertAfter(this);
+  return false;
+}
 
 //catches all the mouse events over the user_canvas
 var overlay = $('#user_canvas_overlay');
@@ -129,17 +178,20 @@ $('#toolbar button').click(function(){
   overlay.unbind();
 });
 
-var rect_counter = 0;
-var rectangle = [];
-  $('#user_canvas_overlay').mousedown(function(e){
-    var startX = e.offsetX, startY = e.offsetY;
-    var current = rectangle[rect_counter];
-    current = user_canvas.rect(startX, startY, 0, 0);
-    rect_counter = rect_counter + 1;
+//rectangle tool
+var rect_count = 0;
 $('#rect_button').click(function(){
+  overlay.mousedown(function(e){
+    var startX = e.offsetX, startY = e.offsetY, rect_jQ,
+      rect = user_canvas.rect(startX, startY, 0, 0);
+
+    rect_count += 1;
+    rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
+      .click(shape_click).appendTo(shapes_list);
+
     $(this).mousemove(function(e){
       var x = e.offsetX, y = e.offsetY;
-      current.attr({
+      rect.attr({
         x: x > startX ? startX : x,
         y: y > startY ? startY : y,
         width: x > startX ? x - startX : startX - x,
@@ -148,7 +200,9 @@ $('#rect_button').click(function(){
     }).bind('mouseup mouseleave', function(){
       $(this).unbind('mousemove mouseup mouseleave');
     }).mouseleave(function(){
-      current.remove();
+      rect_jQ.remove();
+      rect.remove();
+      rect_count -= 1;
     });
   });
 });
