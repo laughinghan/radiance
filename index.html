@@ -114,12 +114,17 @@ $('#toolbar p button').click(function(){
   $('#user_canvas_overlay').unbind('mousedown')
 });
 
+var rect_counter = 0;
+var rectangle = [];
 $('#square_button').click(function(){
   $('#user_canvas_overlay').mousedown(function(e){
-    var startX = e.offsetX, startY = e.offsetY, ('rect'+rect_counter) = user_canvas.rect(startX, startY, 0, 0);
+    var startX = e.offsetX, startY = e.offsetY;
+    var current = rectangle[rect_counter];
+    current = user_canvas.rect(startX, startY, 0, 0);
+    rect_counter = rect_counter + 1;
     $(this).mousemove(function(e){
       var x = e.offsetX, y = e.offsetY;
-      rect.attr({
+      current.attr({
         x: x > startX ? startX : x,
         y: y > startY ? startY : y,
         width: x > startX ? x - startX : startX - x,
@@ -128,7 +133,7 @@ $('#square_button').click(function(){
     }).bind('mouseup mouseleave', function(){
       $(this).unbind('mousemove mouseup mouseleave');
     }).mouseleave(function(){
-      rect.remove();
+      current.remove();
     });
   });
 });
