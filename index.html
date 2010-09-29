@@ -148,6 +148,10 @@ var shapes_list = $('#shapes_list').click(function(){
 var current_shape = $(), shape_options = $('<p></p>').click(function(){
   return false;
 });
+var rename = $('<form>Rename: <input type="text" name="rename"></form></p>').submit(function(){
+  shape_options.prev().html(this.rename.value);
+  return false;
+}).appendTo(shape_options).find('input');
 $('<button>Remove</button>').click(function(){
   var shape = shape_options.prev();
   console.log(shape);
@@ -155,10 +159,6 @@ $('<button>Remove</button>').click(function(){
   shape.remove();
   shape_options.detach();
 }).appendTo(shape_options);
-var rename = $('<form>Rename: <input type="text" name="rename"></form></p>').submit(function(){
-  shape_options.prev().html(this.rename.value);
-  return false;
-}).appendTo(shape_options).find('input');
 function shape_click(){
   current_shape.removeClass('current');
   current_shape = $(this).addClass('current');
