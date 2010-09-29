@@ -28,6 +28,10 @@ input {
   height: 560px;
   width: 100px;
 }
+#toolbar p {
+  margin: 0;
+  font-size: .8em;
+}
 #rect_button span {
   display: inline-block;
   border: solid 1px black;
@@ -69,12 +73,15 @@ input {
   <a href="about">About</a> |
   <a href="news">News</a>
 </p>
-<div id="toolbar">
-      <span class="hidden"><br>Thickness<br>Corner Radius<br>Fill</span>
-  <p> <button id="text_button">Text</button>
-      <span class="hidden"><br>Size<br>Font</span>
 
+<div id="toolbar">
   <p><button id="rect_button"><span></span> Rect</button>
+  <p class="hidden">Thickness
+    <br>Corner Radius
+    <br>Fill
+  <p><button id="text_button">Text</button>
+  <p class="hidden">Size
+    <br>Font
 </div>
 <p><form onsubmit="return false">
   <span id="newsave">
@@ -107,11 +114,15 @@ timeslider.path('M 0 15 L 480 15');
 var user_canvas = Raphael('user_canvas', 640, 480);
 var hw = user_canvas.text(50, 50, "Hello Wolrd!");
 
-var currently_open = $();
-$('#toolbar p button').click(function(){
-  currently_open.addClass('hidden');
-  currently_open = $(this).next().removeClass('hidden');
-  $('#user_canvas_overlay').unbind('mousedown')
+//catches all the mouse events over the user_canvas
+var overlay = $('#user_canvas_overlay');
+
+//show/hide toolbar button options
+var current_button_description = $();
+$('#toolbar button').click(function(){
+  current_button_description.hide();
+  current_button_description = $(this).parent().next().show();
+  overlay.unbind();
 });
 
 var rect_counter = 0;
