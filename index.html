@@ -131,9 +131,13 @@ input {
 <script type="text/javascript">
 var zoomslider = Raphael('zoomslider', 200, 20);
 zoomslider.path('M 0 15 L 200 15');
+zoomslider_slider = zoomslider.path('M50,25h4V5h-4V25z').attr({fill: "#000", stroke: "none"});
+
 
 var timeslider = Raphael('timeslider', 480, 20);
 timeslider.path('M 0 15 L 480 15');
+timeslider_slider = timeslider.path('M0,25h4V5h-4V25z').attr({fill: "#000", stroke: "none"});
+
 
 var user_canvas = Raphael('user_canvas', 640, 480);
 user_canvas.text(200,150,'hello world').attr('font-size',40);
