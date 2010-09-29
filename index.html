@@ -28,7 +28,7 @@ input {
   height: 560px;
   width: 100px;
 }
-#square_button span{
+#rect_button span {
   display: inline-block;
   border: solid 1px black;
   height: 6px;
@@ -70,11 +70,11 @@ input {
   <a href="news">News</a>
 </p>
 <div id="toolbar">
-  <p> <button id="square_button"><span></span> Rect</button>
       <span class="hidden"><br>Thickness<br>Corner Radius<br>Fill</span>
   <p> <button id="text_button">Text</button>
       <span class="hidden"><br>Size<br>Font</span>
 
+  <p><button id="rect_button"><span></span> Rect</button>
 </div>
 <p><form onsubmit="return false">
   <span id="newsave">
@@ -116,12 +116,12 @@ $('#toolbar p button').click(function(){
 
 var rect_counter = 0;
 var rectangle = [];
-$('#square_button').click(function(){
   $('#user_canvas_overlay').mousedown(function(e){
     var startX = e.offsetX, startY = e.offsetY;
     var current = rectangle[rect_counter];
     current = user_canvas.rect(startX, startY, 0, 0);
     rect_counter = rect_counter + 1;
+$('#rect_button').click(function(){
     $(this).mousemove(function(e){
       var x = e.offsetX, y = e.offsetY;
       current.attr({
