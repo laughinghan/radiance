@@ -209,7 +209,6 @@ var rename = $('<form>Rename: <input type="text" name="rename"></form></p>').sub
 }).appendTo(shape_options).find('input');
 $('<button>Remove</button>').click(function(){
   var shape = shape_options.prev();
-  console.log(shape);
   shape.data('raphael').remove();
   shape.remove();
   shape_options.detach();
