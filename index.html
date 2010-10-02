@@ -147,16 +147,16 @@ function zoom_move(dx, dy){
   zoom = zoom_startX + dx + 50;
   zoom = zoom < 50 ? 50 : (zoom > 250 ? 250 : zoom);
   $('#zoom').val(zoom+'%');
-  zoomknob.attr('x', zoom - 53);
+  zoomknob.attr('x', zoom - 50);
 }
 zoomknob.drag(zoom_move, function(){ //start
-  startX = zoomknob.attr('x');
+  zoom_startX = zoomknob.attr('x');
 });
 zoom_overlay.drag(zoom_move, function(x, y, e){ //start
-  zoom_startX = e.offsetX;
+  zoom_startX = e.offsetX - 3;
   zoom = zoom_startX + 50;
   $('#zoom').val(zoom+'%');
-  zoomknob.attr('x', zoom_startX - 3);
+  zoomknob.attr('x', zoom_startX);
 });
 
 
