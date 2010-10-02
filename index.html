@@ -131,12 +131,12 @@ input {
 <script type="text/javascript">
 var zoomslider = Raphael('zoomslider', 200, 20);
 zoomslider.path('M 0 15 L 200 15');
-zoomslider_slider = zoomslider.path('M50,25h4V5h-4V25z').attr({fill: "#000", stroke: "none"});
+zoomslider_slider = zoomslider.path('M 50 30, h 4, V 5, h -4, V 30, z').attr({fill: "#000", stroke: "none"});
 
 
 var timeslider = Raphael('timeslider', 480, 20);
-timeslider.path('M 0 15 L 480 15');
-timeslider_slider = timeslider.path('M0,25h4V5h-4V25z').attr({fill: "#000", stroke: "none"});
+timeslider.path('M 0 15, L 480 15');
+timeslider_slider = timeslider.path('M 0 25, h 4, V 5, h -4, V 25, z').attr({fill: "#000", stroke: "none"});
 
 
 var user_canvas = Raphael('user_canvas', 640, 480);
