@@ -243,7 +243,7 @@ $('#rect_button').click(function(){
     rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
       .click(shape_click).appendTo(shapes_list);
 
-    $(this).mousemove(function(e){
+    overlay.mousemove(function(e){
       var x = e.offsetX, y = e.offsetY;
       rect.attr({
         x: x > startX ? startX : x,
@@ -252,7 +252,7 @@ $('#rect_button').click(function(){
         height: y > startY ? y - startY : startY - y
       });
     }).bind('mouseup mouseleave', function(){
-      $(this).unbind('mousemove mouseup mouseleave');
+      overlay.unbind('mousemove mouseup mouseleave');
     }).mouseleave(function(){
       rect_jQ.remove();
       rect.remove();
