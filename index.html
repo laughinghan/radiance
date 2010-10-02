@@ -43,6 +43,11 @@ input {
   border-bottom: solid 1px black;
   padding: .5em;
 }
+#zoomslider {
+  display: inline-block;
+  position: relative;
+  top: 10px;
+}
 #user_canvas {
   float: left;
   border: solid 1px black;
@@ -129,9 +134,32 @@ input {
 </div>
 
 <script type="text/javascript">
-var zoomslider = Raphael('zoomslider', 200, 20);
-zoomslider.path('M 0 15 L 200 15');
-zoomslider_slider = zoomslider.path('M 50 30, h 4, V 5, h -4, V 30, z').attr({fill: "#000", stroke: "none"});
+var zoomslider = Raphael('zoomslider', 200, 30),
+  zoombar = zoomslider.path('M 0 15 L 200 15'),
+  zoom_overlay = zoomslider.rect(0, 0, 200, 30).attr({fill:'#000', opacity: 0}),
+  zoomknob = zoomslider.rect(50, 5, 5, 20).attr({fill: '#000', stroke: 'none'});
+
+var zoom = 50, startX;
+zoomknob.drag(function(dx, dy){ //move
+  zoomknob.attr({
+    x: startX + dx
+  });
+},function(){ //start
+  startX = zoomknob.attr('x');
+},function(){ //end
+});
+
+zoom_overlay.drag(function(dx, dy){ //move
+  zoomknob.attr({
+    x: startX + dx
+  });
+},function(x, y, e){ //start
+  zoomknob.attr({
+    x: e.offsetX
+  })
+  startX = zoomknob.attr('x');
+},function(){ //end
+});
 
 
 var timeslider = Raphael('timeslider', 480, 20);
