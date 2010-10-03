@@ -285,8 +285,6 @@ $('#rect_button').click(function(){
 $('#move_button').click(function(){
   shapes_list_click = shapes_list_click_when_moving;
   raphael_shape_click = raphael_shape_click_when_moving;
-  if(!current_list_shape.length)
-    overlay.hide();
   overlay.mousedown(function(e){
     var current_raphael_shape = current_list_shape.data('raphael'),
       startMouseX = e.offsetX, startMouseY = e.offsetY,
@@ -301,6 +299,9 @@ $('#move_button').click(function(){
       overlay.unbind('mousemove mouseup');
     });
   });
+
+  if(!current_list_shape.length)
+    overlay.hide();
 });
 function shapes_list_click_when_moving(e){
   if(e.target === this)
