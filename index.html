@@ -198,7 +198,8 @@ user_canvas.text(200,150,'hello world').attr('font-size',40);
 
 
 //list of raphael shapes and sets
-var shapes_list_click = $.noop, //current tool button custom click handler
+var shapes_list_click = $.noop, //canonical 'current' click handler on shapes_list
+    //(set by e.g. Move button, then reset by click handler for all toolbars)
   shapes_list = $('#shapes_list').click(
     function(e){
   if(e.target !== this)
@@ -232,8 +233,11 @@ function list_shape_click(){
 
 
 
-//current click handler on all shapes in the user canvas
+//canonical 'current' click handler on all shapes in the user canvas
+//(set by e.g. Move button, then reset by click handler for all toolbars)
 var raphael_shape_click = $.noop;
+//calls the canonical 'current' click handler,
+//attached to all shapes on creation (e.g. rect)
 function call_raphael_shape_click(){
   console.log('raphael shape clicked:', arguments);
   raphael_shape_click.apply(this, arguments);
@@ -247,6 +251,8 @@ var current_button_description = $();
 $('#toolbar button').click(function(){
   current_button_description.hide();
   current_button_description = $(this).parent().next().show();
+
+  //make sure overlay not hidden, reset event handlers
   overlay.unbind().show();
   shapes_list_click = $.noop;
   raphael_shape_click = $.noop;
@@ -309,7 +315,7 @@ function shapes_list_click_when_moving(e){
   else
     overlay.show();
 }
-function raphael_shape_click_when_moving(){
+function raphael_shape_click_when_moving(){ //WHY ISN'T THIS FUCKING BEING CALLED?
   console.log('raphael shape click when moving:',this);
   $(this.node).data('shapes list').click();
 }
