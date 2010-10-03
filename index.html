@@ -133,7 +133,7 @@ input {
 <div id="user_canvas_controls">
   <button>&#9654;Play</button>
   <span id="timeslider"></span>
-  <input type="text" id = "current_time" value="0.0s">/<input type="text" id = "time_length" value="5.0s">
+  <input type="text" id = "current_time" value="0.0s">/<input type="text" id = "duration" value="5.0s">
 </div>
 
 <script type="text/javascript">
@@ -166,19 +166,19 @@ var timeslider = Raphael('timeslider', 480, 30),
   time_overlay = timeslider.rect(0, 0, 480, 30).attr({fill:'#000', opacity: 0}),
   timeknob = timeslider.rect(-3, 5, 6, 20).attr({fill: '#000', stroke: 'none'});
 
-var time = 0, start_time, time_length = 5000;
+var time = 0, start_time, duration = 5000;
 function time_move(dx, dy){
-  time = Math.round((start_time+dx)*time_length/480);
-  time = time < 0 ? 0 : (time > time_length ? time_length : time);
+  time = Math.round((start_time+dx)*duration/480);
+  time = time < 0 ? 0 : (time > duration ? duration : time);
   $('#current_time').val((time/1000).toFixed(1)+'s');
-  timeknob.attr('x', Math.round(time*480/time_length) - 3);
+  timeknob.attr('x', Math.round(time*480/duration) - 3);
 }
 timeknob.drag(time_move, function(){ //start
   start_time = timeknob.attr('x') + 3;
 });
 time_overlay.drag(time_move, function(x, y, e){ //start
   start_time = e.offsetX;
-  time = Math.round(start_time*time_length/480);
+  time = Math.round(start_time*duration/480);
   $('#current_time').val((time/1000).toFixed(1)+'s');
   timeknob.attr('x', start_time - 3);
 });
