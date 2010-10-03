@@ -254,12 +254,12 @@ $('#toolbar button').click(function(){
 var rect_count = 0;
 $('#rect_button').click(function(){
   overlay.mousedown(function(e){
-    var startX = e.offsetX, startY = e.offsetY, rect_jQ,
-      rect = user_canvas.rect(startX, startY, 0, 0);
-
     rect_count += 1;
-    rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
-      .click(shape_click).appendTo(shapes_list);
+    var startX = e.offsetX, startY = e.offsetY,
+      rect = user_canvas.rect(startX, startY, 0, 0).click(call_raphael_shape_click),
+      list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
+        .click(list_shape_click).appendTo(shapes_list);
+      $(rect.node).data('shapes list', list_rect_jQ);
 
     overlay.mousemove(function(e){
       var x = e.offsetX, y = e.offsetY;
@@ -272,7 +272,7 @@ $('#rect_button').click(function(){
     }).bind('mouseup mouseleave', function(){
       overlay.unbind('mousemove mouseup mouseleave');
     }).mouseleave(function(){
-      rect_jQ.remove();
+      list_rect_jQ.remove();
       rect.remove();
       rect_count -= 1;
     });
