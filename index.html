@@ -261,7 +261,7 @@ $('#rect_button').click(function(){
       rect = user_canvas.rect(startX, startY, 0, 0).click(call_raphael_shape_click),
       list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
         .click(list_shape_click).appendTo(shapes_list);
-      $(rect.node).data('shapes list', list_rect_jQ);
+    $(rect.node).data('shapes list', list_rect_jQ);
 
     overlay.mousemove(function(e){
       var x = e.offsetX, y = e.offsetY;
