@@ -264,7 +264,7 @@ $('#rect_button').click(function(){
   overlay.mousedown(function(e){
     rect_count += 1;
     var startX = e.offsetX, startY = e.offsetY,
-      rect = user_canvas.rect(startX, startY, 0, 0).click(call_raphael_shape_click),
+      rect = user_canvas.rect(startX, startY, 0, 0).attr('fill', 'transparent').mousedown(call_raphael_shape_click),
       list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
         .click(list_shape_click).appendTo(shapes_list);
     $(rect.node).data('shapes list', list_rect_jQ);
@@ -315,7 +315,7 @@ function shapes_list_click_when_moving(e){
   else
     overlay.show();
 }
-function raphael_shape_click_when_moving(){ //WHY ISN'T THIS FUCKING BEING CALLED?
+function raphael_shape_click_when_moving(){
   console.log('raphael shape click when moving:',this);
   $(this.node).data('shapes list').click();
 }
