@@ -292,18 +292,7 @@ $('#move_button').click(function(){
   shapes_list_click = shapes_list_click_when_moving;
   raphael_shape_click = raphael_shape_click_when_moving;
   overlay.mousedown(function(e){
-    var current_raphael_shape = current_list_shape.data('raphael'),
-      startMouseX = e.offsetX, startMouseY = e.offsetY,
-      startRaphaelX = current_raphael_shape.attr('x'),
-      startRaphaelY = current_raphael_shape.attr('y');
-    overlay.mousemove(function(e){
-      current_raphael_shape.attr({
-        x: startRaphaelX + e.offsetX - startMouseX,
-        y: startRaphaelY + e.offsetY - startMouseY
-      });
-    }).bind('mouseup mouseleave', function(){
-      overlay.unbind('mousemove mouseup');
-    });
+    rect_drag(e);
   });
 
   if(!current_list_shape.length)
@@ -315,11 +304,26 @@ function shapes_list_click_when_moving(e){
   else
     overlay.show();
 }
-function raphael_shape_click_when_moving(){
-  console.log('raphael shape click when moving:',this);
+function raphael_shape_click_when_moving(e){
+  console.log('click handler for moving called')
   $(this.node).data('shapes list').click();
+  rect_drag(e);
 }
 
+function rect_drag(e){
+  var current_raphael_shape = current_list_shape.data('raphael'),
+    startMouseX = e.offsetX, startMouseY = e.offsetY,
+    startRaphaelX = current_raphael_shape.attr('x'),
+    startRaphaelY = current_raphael_shape.attr('y');
+  overlay.mousemove(function(e){
+    current_raphael_shape.attr({
+      x: startRaphaelX + e.offsetX - startMouseX,
+      y: startRaphaelY + e.offsetY - startMouseY
+    });
+  }).bind('mouseup mouseleave', function(){
+    overlay.unbind('mousemove mouseup');
+  });
+}
 
 
 </script>
