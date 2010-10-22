@@ -60,6 +60,9 @@ input {
   left: 0;
   z-index: 1;
 }
+.reverse_spotlight svg * {
+  opacity: .4;
+}
 #shapes_list {
   float: left;
   border: solid 1px black;
@@ -315,12 +318,16 @@ function rect_drag(e){
     startMouseX = e.offsetX, startMouseY = e.offsetY,
     startRaphaelX = current_raphael_shape.attr('x'),
     startRaphaelY = current_raphael_shape.attr('y');
+  $('#user_canvas').addClass('reverse_spotlight');
+  current_raphael_shape.attr('opacity', 1);
   overlay.mousemove(function(e){
     current_raphael_shape.attr({
       x: startRaphaelX + e.offsetX - startMouseX,
       y: startRaphaelY + e.offsetY - startMouseY
     });
   }).bind('mouseup mouseleave', function(){
+    $('#user_canvas').removeClass('reverse_spotlight');
+    current_raphael_shape.attr('opacity', '');
     overlay.unbind('mousemove mouseup');
   });
 }
