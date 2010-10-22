@@ -317,6 +317,54 @@ $('#rect_button').click(function(){
   });
 });
 
+var text_count = 0;
+$('#text_button').click(function(){
+  overlay.click(function(e){
+    text_count += 1;
+    var text = paper.text(e.offsetX, e.offsetY, '');
+    // (function(){
+    //   var empty = true;
+    //   function onfocus()
+    //   {
+    //     if(empty)
+    //     {
+    //       this.value = '';
+    //       this.style.color = 'black';
+    //       this.onkeydown();
+    //     }
+    //   }
+    //   function onblur()
+    //   {
+    //     empty = this.value === '';
+    //     if(empty)
+    //     {
+    //       this.value = 'math';
+    //       this.style.color = 'gray';
+    //       this.onkeydown();
+    //     }
+    //   }
+    //   var updateLink = (function(){
+    //     var link = document.getElementById('link'), text = document.getElementsByTagName('input')[0];
+    //     return function()
+    //     {
+    //       link.href = '/chat/' + text.value;
+    //       link.innerHTML = 'http://lolgebra.com/chat/' + text.value;
+    //     };
+    //   }());
+    //   function onkeydown()
+    //   {
+    //     setTimeout(updateLink,0);
+    //   }
+    //   (function(){
+    //     var textbox = document.getElementsByTagName('input')[0];
+    //     textbox.onfocus = onfocus;
+    //     textbox.onblur = onblur;
+    //     textbox.onkeypress = textbox.onkeydown = onkeydown;
+    //   }());
+    // }());
+  })
+})
+
 //move tool
 $('#move_button').click(function(){
   shapes_list_click = shapes_list_click_when_moving;
