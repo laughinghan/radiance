@@ -78,6 +78,9 @@ input {
   background-color: mediumblue;
   color: white;
 }
+#shapes_list .list_shape_options {
+  font-size: .7em;
+}
 #shapes_list input {
   width: 100px;
 }
@@ -214,12 +217,20 @@ var shapes_list_click = $.noop, //canonical 'current' click handler on shapes_li
 });
 
 //shape in list
-var current_list_shape = $(), list_shape_options = $('<p></p>'),
-  rename = $('<form>Rename: <input type="text" name="rename"></form></p>').submit(
+var current_list_shape = $(), list_shape_options = $('<p class="list_shape_options"></p>'),
+  //rename
+  rename = $('<form>Rename: <input type="text" name="rename" id="rename_option"></form>').submit(
     function(){
   list_shape_options.prev().html(this.rename.value);
   return false;
-}).appendTo(list_shape_options).find('input');
+}).appendTo(list_shape_options).find('#rename_option'),
+  //fill
+  fill = $('<input type="checkbox" value="fill" name="fill">').change(
+    function(){
+      var current_raphael_shape = current_list_shape.data('raphael');
+      current_raphael_shape.attr('fill-opacity', +this.checked);
+    return false;
+    }).appendTo(list_shape_options),
 $('<button>Remove</button>').click(function(){
   var shape = list_shape_options.prev();
   shape.data('raphael').remove();
@@ -230,6 +241,7 @@ $('<button>Remove</button>').click(function(){
 function list_shape_click(){
   current_list_shape.removeClass('current');
   current_list_shape = $(this).addClass('current');
+  fill[0].checked = $(this).data('raphael').attr('fill-opacity') === 1;
   rename.val(this.innerHTML);
   list_shape_options.insertAfter(this);
 }
