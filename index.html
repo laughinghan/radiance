@@ -231,6 +231,21 @@ var current_list_shape = $(), list_shape_options = $('<p class="list_shape_optio
       current_raphael_shape.attr('fill-opacity', +this.checked);
     return false;
     }).appendTo(list_shape_options),
+  //x
+  x_value = $('<form>X: <input type="text" name ="x_value" id ="x_value_option">').submit(
+    function(){
+    var current_raphael_shape = current_list_shape.data('raphael');
+    current_raphael_shape.attr('x', this.x_value.value);
+    return false;
+    }).appendTo(list_shape_options).find('#x_value_option'),
+  //y
+  y_value = $('<form>Y: <input type="text" name ="y_value" id ="y_value_option">').submit(
+      function(){
+      var current_raphael_shape = current_list_shape.data('raphael');
+      current_raphael_shape.attr('y', this.y_value.value);
+      return false;
+      }).appendTo(list_shape_options).find('#y_value_option');
+//remove
 $('<button>Remove</button>').click(function(){
   var shape = list_shape_options.prev();
   shape.data('raphael').remove();
