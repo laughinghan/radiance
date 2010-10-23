@@ -252,8 +252,14 @@ $('<button>Remove</button>').click(function(){
 function list_shape_click(){
   current_list_shape.removeClass('current');
   current_list_shape = $(this).addClass('current');
-  fill[0].checked = $(this).data('raphael').attr('fill-opacity') === 1;
+
+  var current_raphael_shape = current_list_shape.data('raphael');
+
   rename.val(this.innerHTML);
+  fill[0].checked = current_raphael_shape.attr('fill-opacity') === 1;
+  x_pos.val(current_raphael_shape.attr('x'));
+  y_pos.val(current_raphael_shape.attr('y'));
+
   list_shape_options.insertAfter(this);
 }
 
@@ -393,6 +399,8 @@ function rect_drag(e){
       x: startRaphaelX + e.offsetX - startMouseX,
       y: startRaphaelY + e.offsetY - startMouseY
     });
+    x_pos.val(current_raphael_shape.attr('x'));
+    y_pos.val(current_raphael_shape.attr('y'));
   }).bind('mouseup mouseleave', function(){
     $('#user_canvas').removeClass('spotlight');
     current_raphael_shape.attr('opacity', '');
