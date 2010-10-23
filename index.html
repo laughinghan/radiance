@@ -52,6 +52,9 @@ input {
   border: solid 1px black;
   position: relative;
 }
+#user_canvas.spotlight svg * {
+  opacity: .4;
+}
 #user_canvas_overlay {
   position: absolute;
   width: 100%;
@@ -59,9 +62,6 @@ input {
   top: 0;
   left: 0;
   z-index: 1;
-}
-.reverse_spotlight svg * {
-  opacity: .4;
 }
 #shapes_list {
   float: left;
@@ -388,7 +388,7 @@ function rect_drag(e){
     startMouseX = e.offsetX, startMouseY = e.offsetY,
     startRaphaelX = current_raphael_shape.attr('x'),
     startRaphaelY = current_raphael_shape.attr('y');
-  $('#user_canvas').addClass('reverse_spotlight');
+  $('#user_canvas').addClass('spotlight');
   current_raphael_shape.attr('opacity', 1);
   overlay.mousemove(function(e){
     current_raphael_shape.attr({
@@ -396,7 +396,7 @@ function rect_drag(e){
       y: startRaphaelY + e.offsetY - startMouseY
     });
   }).bind('mouseup mouseleave', function(){
-    $('#user_canvas').removeClass('reverse_spotlight');
+    $('#user_canvas').removeClass('spotlight');
     current_raphael_shape.attr('opacity', '');
     overlay.unbind('mousemove mouseup');
   });
