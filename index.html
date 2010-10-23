@@ -265,7 +265,6 @@ var raphael_shape_click = $.noop;
 //calls the canonical 'current' click handler,
 //attached to all shapes on creation (e.g. rect)
 function call_raphael_shape_click(){
-  console.log('raphael shape clicked:', arguments);
   raphael_shape_click.apply(this, arguments);
 }
 
@@ -378,7 +377,6 @@ function shapes_list_click_when_moving(e){
     overlay.show();
 }
 function raphael_shape_click_when_moving(e){
-  console.log('click handler for moving called')
   $(this.node).data('shapes list').click();
   rect_drag(e);
 }
