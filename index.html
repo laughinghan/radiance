@@ -169,6 +169,9 @@ zoom_overlay.drag(zoom_move, function(x, y, e){ //start
 
 
 
+
+
+
 var timeslider = Raphael('timeslider', 480, 30),
   timebar = timeslider.path('M 0 15, L 480 15'),
   time_overlay = timeslider.rect(0, 0, 480, 30).attr({fill:'#000', opacity: 0}),
@@ -206,45 +209,36 @@ user_canvas.text(200,150,'hello world').attr('font-size',40);
 //list of raphael shapes and sets
 var shapes_list_click = $.noop, //canonical 'current' click handler on shapes_list
     //(set by e.g. Move button, then reset by click handler for all toolbars)
-  shapes_list = $('#shapes_list').click(
-    function(e){
-  if(e.target !== this)
-    return shapes_list_click.apply(this, arguments);
-  current_list_shape.removeClass('current');
-  list_shape_options.detach();
-  current_list_shape = $();
-  shapes_list_click.apply(this, arguments);
-});
+  shapes_list = $('#shapes_list').click(function(e){
+    if(e.target !== this)
+      return shapes_list_click.apply(this, arguments);
+    current_list_shape.removeClass('current');
+    list_shape_options.detach();
+    current_list_shape = $();
+    shapes_list_click.apply(this, arguments);
+  });
 
-//shape in list
+//shape in list, options thereof
 var current_list_shape = $(), list_shape_options = $('<p class="list_shape_options"></p>'),
   //rename
-  rename = $('<form>Rename: <input type="text" name="rename" id="rename_option"></form>').submit(
-    function(){
-  list_shape_options.prev().html(this.rename.value);
-  return false;
-}).appendTo(list_shape_options).find('#rename_option'),
+  rename = $('<form>Rename: <input type="text" name="rename" id="rename_option"></form>').submit(function(){
+    list_shape_options.prev().html(this.rename.value);
+    return false;
+  }).appendTo(list_shape_options).find('#rename_option'),
   //fill
-  fill = $('<input type="checkbox" value="fill" name="fill">').change(
-    function(){
-      var current_raphael_shape = current_list_shape.data('raphael');
-      current_raphael_shape.attr('fill-opacity', +this.checked);
-    return false;
-    }).appendTo(list_shape_options),
+  fill = $('<input type="checkbox" id="fill" name="fill" style="width:auto"><label for="fill">fill</label>').change(function(){
+    current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
+  }).appendTo(list_shape_options),
   //x
-  x_value = $('<form>X: <input type="text" name ="x_value" id ="x_value_option">').submit(
-    function(){
-    var current_raphael_shape = current_list_shape.data('raphael');
-    current_raphael_shape.attr('x', this.x_value.value);
+  x_pos = $('<form>X: <input type="text" name="x_pos" id="x_pos_option">').submit(function(){
+    current_list_shape.data('raphael').attr('x', this.x_pos.value);
     return false;
-    }).appendTo(list_shape_options).find('#x_value_option'),
+  }).appendTo(list_shape_options).find('#x_pos_option'),
   //y
-  y_value = $('<form>Y: <input type="text" name ="y_value" id ="y_value_option">').submit(
-      function(){
-      var current_raphael_shape = current_list_shape.data('raphael');
-      current_raphael_shape.attr('y', this.y_value.value);
-      return false;
-      }).appendTo(list_shape_options).find('#y_value_option');
+  y_pos = $('<form>Y: <input type="text" name="y_pos" id="y_pos_option">').submit(function(){
+    current_list_shape.data('raphael').attr('y', this.y_pos.value);
+    return false;
+  }).appendTo(list_shape_options).find('#y_pos_option');
 //remove
 $('<button>Remove</button>').click(function(){
   var shape = list_shape_options.prev();
@@ -253,6 +247,8 @@ $('<button>Remove</button>').click(function(){
   list_shape_options.detach();
   current_list_shape = $();
 }).appendTo(list_shape_options);
+
+//click handler attached to each list item in list of shapes
 function list_shape_click(){
   current_list_shape.removeClass('current');
   current_list_shape = $(this).addClass('current');
@@ -294,7 +290,8 @@ $('#rect_button').click(function(){
   overlay.mousedown(function(e){
     rect_count += 1;
     var startX = e.offsetX, startY = e.offsetY,
-      rect = user_canvas.rect(startX, startY, 0, 0).attr('fill', 'transparent').mousedown(call_raphael_shape_click),
+      rect = user_canvas.rect(startX, startY, 0, 0).attr('fill', 'transparent')
+        .mousedown(call_raphael_shape_click),
       list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
         .click(list_shape_click).appendTo(shapes_list);
     $(rect.node).data('shapes list', list_rect_jQ);
@@ -369,9 +366,7 @@ $('#text_button').click(function(){
 $('#move_button').click(function(){
   shapes_list_click = shapes_list_click_when_moving;
   raphael_shape_click = raphael_shape_click_when_moving;
-  overlay.mousedown(function(e){
-    rect_drag(e);
-  });
+  overlay.mousedown(rect_drag);
 
   if(!current_list_shape.length)
     overlay.hide();
