@@ -404,7 +404,7 @@ function rect_drag(e){
   }).bind('mouseup mouseleave', function(){
     $('#user_canvas').removeClass('spotlight');
     current_raphael_shape.attr('opacity', '');
-    overlay.unbind('mousemove mouseup');
+    overlay.unbind('mousemove mouseup mouseleave');
   });
 }
 
