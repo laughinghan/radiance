@@ -78,8 +78,9 @@ input {
   background-color: mediumblue;
   color: white;
 }
-#shapes_list .list_shape_options {
-  font-size: .7em;
+#shapes_list #list_shape_options {
+  font-size: 80%;
+  margin: 2pt;
 }
 #shapes_list input {
   width: 100px;
@@ -215,13 +216,13 @@ var shapes_list_click = $.noop, //canonical 'current' click handler on shapes_li
     if(e.target !== this)
       return shapes_list_click.apply(this, arguments);
     current_list_shape.removeClass('current');
-    list_shape_options.detach();
     current_list_shape = $();
+    list_shape_options.detach();
     shapes_list_click.apply(this, arguments);
   });
 
 //shape in list, options thereof
-var current_list_shape = $(), list_shape_options = $('<p class="list_shape_options"></p>'),
+var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"></p>'),
   //rename
   rename = $('<form>Rename: <input type="text" name="rename" id="rename_option"></form>').submit(function(){
     list_shape_options.prev().html(this.rename.value);
@@ -232,12 +233,12 @@ var current_list_shape = $(), list_shape_options = $('<p class="list_shape_optio
     current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
   }).appendTo(list_shape_options),
   //x
-  x_pos = $('<form>X: <input type="text" name="x_pos" id="x_pos_option">').submit(function(){
+  x_pos = $('<form><label for="x_pos_option"><i>x</i>: </label><input type="text" name="x_pos" id="x_pos_option">').submit(function(){
     current_list_shape.data('raphael').attr('x', this.x_pos.value);
     return false;
   }).appendTo(list_shape_options).find('#x_pos_option'),
   //y
-  y_pos = $('<form>Y: <input type="text" name="y_pos" id="y_pos_option">').submit(function(){
+  y_pos = $('<form><label for="y_pos_option"><i>y</i>: </label><input type="text" name="y_pos" id="y_pos_option">').submit(function(){
     current_list_shape.data('raphael').attr('y', this.y_pos.value);
     return false;
   }).appendTo(list_shape_options).find('#y_pos_option');
