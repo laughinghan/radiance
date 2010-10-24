@@ -241,12 +241,12 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
   x_pos = $('<form><label for="x_pos_option"><i>x</i>: </label><input type="text" name="x_pos" id="x_pos_option">').submit(function(){
     current_list_shape.data('raphael').attr('x', this.x_pos.value);
     return false;
-  }).appendTo(list_shape_options).find('#x_pos_option'),
+  }).appendTo(list_shape_options).find('input'),
   //y
   y_pos = $('<form><label for="y_pos_option"><i>y</i>: </label><input type="text" name="y_pos" id="y_pos_option">').submit(function(){
     current_list_shape.data('raphael').attr('y', this.y_pos.value);
     return false;
-  }).appendTo(list_shape_options).find('#y_pos_option');
+  }).appendTo(list_shape_options).find('input');
 //remove
 $('<button>Remove</button>').click(function(){
   var shape = list_shape_options.prev();
