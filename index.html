@@ -204,11 +204,6 @@ time_overlay.drag(time_move, function(x, y, e){ //start
 
 
 
-var user_canvas = Raphael('user_canvas', 640, 480);
-user_canvas.text(200,150,'hello world').attr('font-size',40);
-
-
-
 //list of raphael shapes and sets
 var shapes_list_click = $.noop, //canonical 'current' click handler on shapes_list
     //(set by e.g. Move button, then reset by click handler for all toolbars)
@@ -273,21 +268,12 @@ function list_shape_click(){
 
 
 
-//canonical 'current' click handler on all shapes in the user canvas
-//(set by e.g. Move button, then reset by click handler for all toolbars)
-var raphael_shape_click = $.noop;
-//calls the canonical 'current' click handler,
-//attached to all shapes on creation (e.g. rect)
-function call_raphael_shape_click(){
-  raphael_shape_click.apply(this, arguments);
-}
 
 
 
-//catches all the mouse events over the user_canvas
-var overlay = $('#user_canvas_overlay');
-
-
+//the Raphael canvas on which all the shapes are drawn
+var user_canvas = Raphael('user_canvas', 640, 480);
+user_canvas.text(200,150,'hello world').attr('font-size',40);
 
 //highlight a Raphael shape in the user_canvas
 var spotlight = (function(){
@@ -303,6 +289,22 @@ var spotlight = (function(){
   spotlight.off = off;
   return spotlight;
 }());
+
+
+
+//catches all the mouse events over the user_canvas
+var overlay = $('#user_canvas_overlay');
+
+
+
+//canonical 'current' click handler on all shapes in the user canvas
+//(set by e.g. Move button, then reset by click handler for all toolbars)
+var raphael_shape_click = $.noop;
+//calls the canonical 'current' click handler,
+//attached to all shapes on creation (e.g. rect)
+function call_raphael_shape_click(){
+  raphael_shape_click.apply(this, arguments);
+}
 
 
 
