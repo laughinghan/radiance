@@ -224,10 +224,15 @@ var shapes_list_click = $.noop, //canonical 'current' click handler on shapes_li
 //shape in list, options thereof
 var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"></p>'),
   //rename
-  rename = $('<form>Rename: <input type="text" name="rename" id="rename_option"></form>').submit(function(){
-    list_shape_options.prev().html(this.rename.value);
-    return false;
-  }).appendTo(list_shape_options).find('#rename_option'),
+  rename = $('<p>Name: <input type="text" name="rename" id="rename_option"></p>')
+    .appendTo(list_shape_options).find('input').bind('keydown keypress', (function(){
+      function update_name(){
+        list_shape_options.prev().html(rename.val() || '&nbsp;');
+      }
+      return function(){
+        setTimeout(update_name, 0);
+      };
+    }())),
   //fill
   fill = $('<input type="checkbox" id="fill" name="fill" style="width:auto"><label for="fill">fill</label>').change(function(){
     current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
@@ -258,7 +263,7 @@ function list_shape_click(){
 
   var current_raphael_shape = current_list_shape.data('raphael');
 
-  rename.val(this.innerHTML);
+  rename.val(this.innerHTML === '&nbsp;' ? '' : this.innerHTML);
   fill[0].checked = current_raphael_shape.attr('fill-opacity') === 1;
   x_pos.val(current_raphael_shape.attr('x'));
   y_pos.val(current_raphael_shape.attr('y'));
