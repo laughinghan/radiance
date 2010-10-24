@@ -295,6 +295,28 @@ var spotlight = (function(){
 //catches all the mouse events over the user_canvas
 var overlay = $('#user_canvas_overlay');
 
+//drag-and-drop subroutine
+//USAGE: drag([event Object], [mousemove handler function(dx, dy){...}]);
+var drag = (function(){
+  var doc = $(document), initialX, initialY, onmove;
+  function mousemove(e){
+    onmove(e.clientX - initialX, e.clientY - initialY);
+    return false;
+  }
+  function mouseup(){
+    spotlight.off();
+    doc.unbind('mousemove mouseup');
+    return false;
+  }
+  function drag(e, move){
+    initialX = e.clientX;
+    initialY = e.clientY;
+    onmove = move;
+    doc.mousemove(mousemove).mouseup(mouseup);
+  }
+  return drag;
+}());
+
 
 
 //canonical 'current' click handler on all shapes in the user canvas
@@ -325,8 +347,8 @@ var rect_count = 0;
 $('#rect_button').click(function(){
   overlay.mousedown(function(e){
     rect_count += 1;
-    var startX = e.offsetX, startY = e.offsetY,
-      rect = user_canvas.rect(startX, startY, 0, 0).attr('fill', 'transparent')
+    var cornerX = e.offsetX, cornerY = e.offsetY,
+      rect = user_canvas.rect(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
         .mousedown(call_raphael_shape_click),
       list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
         .click(list_shape_click).appendTo(shapes_list);
@@ -334,22 +356,30 @@ $('#rect_button').click(function(){
 
     spotlight(rect);
 
-    overlay.mousemove(function(e){
-      var x = e.offsetX, y = e.offsetY;
-      rect.attr({
-        x: x > startX ? startX : x,
-        y: y > startY ? startY : y,
-        width: x > startX ? x - startX : startX - x,
-        height: y > startY ? y - startY : startY - y
-      });
-    }).bind('mouseup mouseleave', function(){
-      spotlight.off();
-      overlay.unbind('mousemove mouseup mouseleave');
-    }).mouseleave(function(){
-      list_rect_jQ.remove();
-      rect.remove();
-      rect_count -= 1;
+    drag(e, function(dx, dy){
+      if(dx < 0)
+        rect.attr({
+          width: -dx,
+          x: cornerX + dx
+        });
+      else
+        rect.attr({
+          width: dx,
+          x: cornerX
+        });
+      if(dy < 0)
+        rect.attr({
+          height: -dy,
+          y: cornerY + dy
+        });
+      else
+        rect.attr({
+          height: dy,
+          y: cornerY
+        });
     });
+
+    return false;
   });
 });
 
@@ -423,20 +453,16 @@ function raphael_shape_click_when_moving(e){
 
 function rect_drag(e){
   var current_raphael_shape = current_list_shape.data('raphael'),
-    startMouseX = e.offsetX, startMouseY = e.offsetY,
-    startRaphaelX = current_raphael_shape.attr('x'),
-    startRaphaelY = current_raphael_shape.attr('y');
+    startX = current_raphael_shape.attr('x'),
+    startY = current_raphael_shape.attr('y');
   spotlight(current_raphael_shape);
-  overlay.mousemove(function(e){
+  drag(e, function(dx, dy){
     current_raphael_shape.attr({
-      x: startRaphaelX + e.offsetX - startMouseX,
-      y: startRaphaelY + e.offsetY - startMouseY
+      x: startX + dx,
+      y: startY + dy
     });
     x_pos.val(current_raphael_shape.attr('x'));
     y_pos.val(current_raphael_shape.attr('y'));
-  }).bind('mouseup mouseleave', function(){
-    spotlight.off();
-    overlay.unbind('mousemove mouseup mouseleave');
   });
 }
 
