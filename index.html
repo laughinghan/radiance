@@ -453,8 +453,8 @@ function raphael_shape_click_when_moving(e){
 
 function rect_drag(e){
   var current_raphael_shape = current_list_shape.data('raphael'),
-    startX = current_raphael_shape.attr('x'),
-    startY = current_raphael_shape.attr('y');
+    startX = +current_raphael_shape.attr('x'),
+    startY = +current_raphael_shape.attr('y');
   spotlight(current_raphael_shape);
   drag(e, function(dx, dy){
     current_raphael_shape.attr({
