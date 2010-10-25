@@ -227,21 +227,10 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
       return function(){
         setTimeout(update_name, 0);
       };
-    }())),
-  //fill
-  fill = $('<input type="checkbox" id="fill" name="fill" style="width:auto"><label for="fill">fill</label>').change(function(){
-    current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
-  }).appendTo(list_shape_options),
-  //x
-  x_pos = $('<form><label for="x_pos_option"><i>x</i>: </label><input type="text" name="x_pos" id="x_pos_option">').submit(function(){
-    current_list_shape.data('raphael').attr('x', this.x_pos.value);
-    return false;
-  }).appendTo(list_shape_options).find('input'),
-  //y
-  y_pos = $('<form><label for="y_pos_option"><i>y</i>: </label><input type="text" name="y_pos" id="y_pos_option">').submit(function(){
-    current_list_shape.data('raphael').attr('y', this.y_pos.value);
-    return false;
-  }).appendTo(list_shape_options).find('input');
+    }()));
+    add_fill_option();
+    add_x_pos_option();
+    add_y_pos_option();
 //remove
 $('<button>Remove</button>').click(function(){
   var shape = list_shape_options.prev();
@@ -250,6 +239,29 @@ $('<button>Remove</button>').click(function(){
   list_shape_options.detach();
   current_list_shape = $();
 }).appendTo(list_shape_options);
+
+//functions for shape list
+//fill
+function add_fill_option(){
+return fill = $('<input type="checkbox" id="fill" name="fill" style="width:auto"><label  for="fill">fill</label>').change(function(){
+    current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
+  }).appendTo(list_shape_options);
+}
+//x_pos
+function add_x_pos_option(){
+return  x_pos = $('<form><label for="x_pos_option"><i>x</i>: </label><input type="text" name="x_pos" id="x_pos_option">').submit(function(){
+    current_list_shape.data('raphael').attr('x', this.x_pos.value);
+    return false;
+  }).appendTo(list_shape_options).find('input');
+}
+//y_pos
+function add_y_pos_option(){
+return y_pos = $('<form><label for="y_pos_option"><i>y</i>: </label><input type="text" name="y_pos" id="y_pos_option">').submit(function(){
+  current_list_shape.data('raphael').attr('y', this.y_pos.value);
+  return false;
+}).appendTo(list_shape_options).find('input');
+}
+
 
 //click handler attached to each list item in list of shapes
 function list_shape_click(){
