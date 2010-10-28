@@ -241,15 +241,15 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
   y_pos = $('<form><label for="y_pos_option"><i>y</i>: </label><input type="text" name="y_pos" id="y_pos_option">').submit(function(){
     current_list_shape.data('raphael').attr('y', this.y_pos.value);
     return false;
-  }).appendTo(list_shape_options).find('input');
-//remove
-$('<button>Remove</button>').click(function(){
-  var shape = list_shape_options.prev();
-  shape.data('raphael').remove();
-  shape.remove();
-  list_shape_options.detach();
-  current_list_shape = $();
-}).appendTo(list_shape_options);
+  }).appendTo(list_shape_options).find('input'),
+  //remove
+  remove = $('<button>Remove</button>').click(function(){
+    var shape = list_shape_options.prev();
+    shape.data('raphael').remove();
+    shape.remove();
+    list_shape_options.detach();
+    current_list_shape = $();
+  }).appendTo(list_shape_options);
 
 //click handler attached to each list item in list of shapes
 function list_shape_click(){
