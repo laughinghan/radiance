@@ -228,10 +228,6 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
         setTimeout(update_name, 0);
       };
     }())),
-  //fill
-  fill = $('<input type="checkbox" id="fill" name="fill" style="width:auto"><label for="fill">fill</label>').change(function(){
-    current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
-  }).appendTo(list_shape_options),
   //x
   x_pos = $('<form><label for="x_pos_option"><i>x</i>: </label><input type="text" name="x_pos" id="x_pos_option">').submit(function(){
     current_list_shape.data('raphael').attr('x', this.x_pos.value);
@@ -253,21 +249,35 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
 
 //click handler attached to each list item in list of shapes
 function list_shape_click(){
-  current_list_shape.removeClass('current');
+  (current_list_shape.removeClass('current').data('remove list options') || $.noop)();
   current_list_shape = $(this).addClass('current');
 
   var current_raphael_shape = current_list_shape.data('raphael');
 
   rename.val(this.innerHTML === '&nbsp;' ? '' : this.innerHTML);
-  fill[0].checked = current_raphael_shape.attr('fill-opacity') === 1;
   x_pos.val(current_raphael_shape.attr('x'));
   y_pos.val(current_raphael_shape.attr('y'));
+
+  current_list_shape.data('add list options')(current_raphael_shape);
 
   list_shape_options.insertAfter(this);
 }
 
 
 
+//additional options to be added on a per-shape basis:
+//fill
+var fill = $('<p><input type="checkbox" id="fill" name="fill" style="width:auto"><label for="fill">fill</label></p>'),
+  fill_checkbox = fill.find('input').change(function(){
+    current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
+  });
+function add_fill(raphael_shape){
+  fill_checkbox[0].checked = raphael_shape.attr('fill-opacity') === 1;
+  fill.insertBefore(remove);
+}
+function rm_fill(){
+  fill.detach();
+}
 
 
 
@@ -351,7 +361,15 @@ $('#rect_button').click(function(){
       rect = user_canvas.rect(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
         .mousedown(call_raphael_shape_click),
       list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
-        .click(list_shape_click).appendTo(shapes_list);
+        .data('add list options', function(raphael_shape){
+          add_fill(raphael_shape);
+          //add_width(raphael_shape);
+          //add_height(raphael_shape);
+        }).data('remove list options', function(){
+          rm_fill();
+          //rm_width();
+          //rm_height();
+        }).click(list_shape_click).appendTo(shapes_list);
     $(rect.node).data('shapes list', list_rect_jQ);
 
     spotlight(rect);
