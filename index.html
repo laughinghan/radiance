@@ -286,7 +286,9 @@ function list_shape_click(){
 //the Raphael canvas on which all the shapes are drawn
 var user_canvas = Raphael('user_canvas', 640, 480);
 user_canvas.text(200,150,'hello world').attr('font-size',40);
-
+user_canvas.customAttributes.element_type = function (element_type) {
+  return (element_type)
+};
 //highlight a Raphael shape in the user_canvas
 var spotlight = (function(){
   var spotlit_shape, user_canvas_div = $('#user_canvas');
@@ -360,7 +362,7 @@ $('#rect_button').click(function(){
   overlay.mousedown(function(e){
     rect_count += 1;
     var cornerX = e.offsetX, cornerY = e.offsetY,
-      rect = user_canvas.rect(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
+      rect = user_canvas.rect(cornerX, cornerY, 0, 0).attr({fill: 'transparent', element_type: 'rectangle'})
         .mousedown(call_raphael_shape_click),
       list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
         .click(list_shape_click).appendTo(shapes_list);
