@@ -186,6 +186,9 @@ function time_move(dx, dy){
   now = now < 0 ? 0 : (now > duration ? duration : now);
   $('#current_time').val((now/1000).toFixed(3)+'s');
   timeknob.attr('x', Math.round(now*480/duration) - 3);
+  shapes_list.children().each(function(){
+    ($(this).data('animation state') || $.noop)(this);
+  });
 }
 timeknob.drag(time_move, function(){ //start
   time_startX = timeknob.attr('x') + 3;
@@ -384,6 +387,24 @@ $('#rect_button').click(function(){
       rect = user_canvas.rect(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
         .mousedown(call_raphael_shape_click),
       list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect).data('history', history)
+        .data('animation state', function(list_el){
+          var raphael_this = $(list_el).data('raphael');
+          //animation state now
+          for(var attr in history){
+            var past = 0, future = duration;
+            for(var time in history[attr])
+              if(time <= now && time > past)
+                past = time;
+            for(var time in history[attr])
+              if(time >= now && time < future)
+                future = time;
+            if(future === past || future === duration)
+              raphael_this.attr(attr, history[attr][past]);
+            else
+              raphael_this.attr(attr, history[attr][past] +
+                (history[attr][future] - history[attr][past])*(now - past)/(future - past)); //replace with proper easing
+          }
+        }).data('add list options', function(raphael_shape){
           add_fill(raphael_shape);
           //add_width(raphael_shape);
           //add_height(raphael_shape);
