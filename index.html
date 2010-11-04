@@ -198,6 +198,9 @@ time_overlay.drag(time_move, function(x, y, e){ //start
   now = Math.round(time_startX*duration/480);
   $('#current_time').val((now/1000).toFixed(3)+'s');
   timeknob.attr('x', time_startX - 3);
+  shapes_list.children().each(function(){
+    ($(this).data('animation state') || $.noop)(this, 'find current state');
+  });
 });
 
 
