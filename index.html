@@ -308,7 +308,7 @@ var overlay = $('#user_canvas_overlay');
 //drag-and-drop subroutine
 //USAGE: drag([event Object], [mousemove handler function(dx, dy){...}]);
 var drag = (function(){
-  var doc = $(document), initialX, initialY, onmove;
+  var doc = $(document), initialX, initialY, onmove, onup;
   function mousemove(e){
     onmove(e.clientX - initialX, e.clientY - initialY);
     return false;
@@ -316,12 +316,14 @@ var drag = (function(){
   function mouseup(){
     spotlight.off();
     doc.unbind('mousemove mouseup');
+    onup();
     return false;
   }
-  function drag(e, move){
+  function drag(e, move, up){
     initialX = e.clientX;
     initialY = e.clientY;
     onmove = move;
+    onup = up;
     doc.mousemove(mousemove).mouseup(mouseup);
   }
   return drag;
@@ -378,10 +380,10 @@ $('#rect_button').click(function(){
   overlay.mousedown(function(e){
     rect_count += 1;
     var cornerX = e.offsetX, cornerY = e.offsetY,
+      history = {},
       rect = user_canvas.rect(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
         .mousedown(call_raphael_shape_click),
-      list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
-        .data('add list options', function(raphael_shape){
+      list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect).data('history', history)
           add_fill(raphael_shape);
           //add_width(raphael_shape);
           //add_height(raphael_shape);
@@ -415,6 +417,11 @@ $('#rect_button').click(function(){
           height: dy,
           y: cornerY
         });
+    }, function(){
+      $.each(['x', 'y', 'width', 'height'], function(i, attr){
+        history[attr] = [];
+        history[attr][0] = rect.attr(attr);
+      });
     });
 
     return false;
@@ -501,9 +508,12 @@ function rect_drag(e){
     });
     x_pos.val(current_raphael_shape.attr('x'));
     y_pos.val(current_raphael_shape.attr('y'));
+  }, function(){
+      $.each(['x', 'y', 'width', 'height'], function(i, attr){
+        current_list_shape.data('history')[attr][now] = current_raphael_shape.attr(attr);
+      });
   });
 }
-
 
 </script>
 
