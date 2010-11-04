@@ -180,20 +180,20 @@ var timeslider = Raphael('timeslider', 480, 30),
   time_overlay = timeslider.rect(0, 0, 480, 30).attr({fill:'#000', opacity: 0}),
   timeknob = timeslider.rect(-3, 5, 6, 20).attr({fill: '#000', stroke: 'none'});
 
-var time = 0, time_startX, duration = 5000;
+var now = 0, time_startX, duration = 5000;
 function time_move(dx, dy){
-  time = Math.round((time_startX+dx)*duration/480);
-  time = time < 0 ? 0 : (time > duration ? duration : time);
-  $('#current_time').val((time/1000).toFixed(3)+'s');
-  timeknob.attr('x', Math.round(time*480/duration) - 3);
+  now = Math.round((time_startX+dx)*duration/480);
+  now = now < 0 ? 0 : (now > duration ? duration : now);
+  $('#current_time').val((now/1000).toFixed(3)+'s');
+  timeknob.attr('x', Math.round(now*480/duration) - 3);
 }
 timeknob.drag(time_move, function(){ //start
   time_startX = timeknob.attr('x') + 3;
 });
 time_overlay.drag(time_move, function(x, y, e){ //start
   time_startX = e.offsetX;
-  time = Math.round(time_startX*duration/480);
-  $('#current_time').val((time/1000).toFixed(3)+'s');
+  now = Math.round(time_startX*duration/480);
+  $('#current_time').val((now/1000).toFixed(3)+'s');
   timeknob.attr('x', time_startX - 3);
 });
 
