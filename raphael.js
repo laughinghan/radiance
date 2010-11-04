@@ -3443,7 +3443,7 @@
                 attr = {value: params[key]};
                 key == "from" && (key = 0);
                 key == "to" && (key = 100);
-                attr.key = toInt(key, 10);
+                attr.key = toFloat(key, 10);
                 attrs.push(attr);
             }
             attrs.sort(sortByKey);
