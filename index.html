@@ -204,11 +204,16 @@ time_overlay.drag(time_move, function(x, y, e){ //start
 });
 
 
-/*$('#user_canvas_controls button').click(function(){
+$('#user_canvas_controls button').click(function(){
+  now = 0;
+  timeknob.attr('x', 0)
   shapes_list.children().each(function(){
-    $(this).data('animation state')();
+    ($(this).data('animation state') || $.noop)(this, 'find current state');
   });
-});*/
+  shapes_list.children().each(function(){
+    ($(this).data('animation state') || $.noop)(this, 'animate');
+  });
+});
 
 
 
@@ -385,7 +390,27 @@ $(<previously_created_Raphael_shape_in_user_canvas>.node)
 //and most likely spotlight the shape in user_canvas
 spotlight(<previously_created_Raphael_shape_in_user_canvas>);
 ****/
+function call_next_animate(current_time, history, attr, raphael_this){
+  var next_future = duration + 1;
+  for(var time in history[attr]){
+    // if(next_future === 0 && time != 0 && current_time != time)
+    //   next_future = time;
+     if(time > current_time && time < next_future)
+      next_future = time;
+  }
+  if(next_future != duration + 1)
+    raphael_this.animate_variable_attribute(raphael_this, attr, history[attr][next_future], next_future - current_time, call_next_animate(next_future, history, attr, raphael_this));
+}
 
+Raphael.el.animate_variable_attribute = function (raphael_this, variable_attribute, value, time, callback) {
+    switch(variable_attribute) {
+      case 'x': raphael_this.animate({x: value}, time, callback); break;
+      case 'y': raphael_this.animate({y: value}, time, callback); break;
+      case 'width': raphael_this.animate({width: value}, time, callback); break;
+      case 'height': raphael_this.animate({height: value}, time, callback); break;
+      default: throw "variable_attribute is not known";
+    }
+ };
 
 //rectangle tool
 var rect_count = 0;
@@ -417,6 +442,9 @@ $('#rect_button').click(function(){
             }
           }
           else if (task === 'animate'){
+            for(var attr in history){
+              call_next_animate(0, history, attr, raphael_this);
+            }
           }
         }).data('add list options', function(raphael_shape){
           add_fill(raphael_shape);
