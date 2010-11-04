@@ -434,7 +434,7 @@ $('#rect_button').click(function(){
               for(var time in history[attr])
                 if(time >= now && time < future)
                   future = time;
-              if(future === past || future === duration)
+              if(future == past || future === duration)
                 raphael_this.attr(attr, history[attr][past]);
               else
                 raphael_this.attr(attr, history[attr][past] +
