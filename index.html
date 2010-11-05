@@ -403,14 +403,10 @@ function call_next_animate(current_time, history, attr, raphael_this){
 }
 
 Raphael.el.animate_variable_attribute = function (variable_attribute, value, time, callback) {
-    switch(variable_attribute) {
-      case 'x': this.animate({x: value}, time, callback); break;
-      case 'y': this.animate({y: value}, time, callback); break;
-      case 'width': this.animate({width: value}, time, callback); break;
-      case 'height': this.animate({height: value}, time, callback); break;
-      default: throw "variable_attribute is not known";
-    }
- };
+    var attrs = {};
+    attrs[variable_attribute] = value;
+    this.animate(attrs, time, callback);
+};
 
 //rectangle tool
 var rect_count = 0;
