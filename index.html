@@ -425,6 +425,7 @@ function call_next_animate(current_time, history, attr, raphael_this){
   }
   raphael_this.animate_variable_attribute(attr, keyframe, keyframe[i-1][0]);
 }
+
 /*
 $.each([],function(i,val){
 	var attrs = {};
@@ -472,6 +473,14 @@ Raphael.el.animate_variable_attribute = function (variable_attribute, values, en
       case 'default': throw('not a known variable attribute');
 	}
  };
+
+
+Raphael.el.animate_variable_attribute = function (variable_attribute, value, time, callback) {
+    var attrs = {};
+    attrs[variable_attribute] = value;
+    this.animate(attrs, time, callback);
+};
+>>>>>>> afa32d7b39f4d45d4b6b9b3dd9c97abe1415b2ee
 
 //rectangle tool
 var rect_count = 0;
