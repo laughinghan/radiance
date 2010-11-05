@@ -390,26 +390,87 @@ $(<previously_created_Raphael_shape_in_user_canvas>.node)
 //and most likely spotlight the shape in user_canvas
 spotlight(<previously_created_Raphael_shape_in_user_canvas>);
 ****/
+// function call_next_animate(current_time, history, attr, raphael_this){
+//   var next_future = duration + 1;
+//   for(var time in history[attr]){
+//     // if(next_future === 0 && time != 0 && current_time != time)
+//     //   next_future = time;
+//      if((time > current_time) && (time < next_future))
+//       next_future = time;
+//   }
+//   if(next_future != duration + 1)
+//     raphael_this.animate_variable_attribute(attr, history[attr][next_future], next_future - current_time, call_next_animate(next_future, history, attr, raphael_this));
+// }
+// 
+// Raphael.el.animate_variable_attribute = function (variable_attribute, value, time, callback) {
+//     var attrs = {};
+//     attrs[variable_attribute] = value;
+//     this.animate(attrs, time, callback);
+// };
 function call_next_animate(current_time, history, attr, raphael_this){
-  var next_future = duration + 1;
-  for(var time in history[attr]){
-    // if(next_future === 0 && time != 0 && current_time != time)
-    //   next_future = time;
-     if((time > current_time) && (time < next_future))
-      next_future = time;
-  }
-  if(next_future != duration + 1)
-    raphael_this.animate_variable_attribute(attr, history[attr][next_future], next_future - current_time, call_next_animate(next_future, history, attr, raphael_this));
-}
-
-Raphael.el.animate_variable_attribute = function (variable_attribute, value, time, callback) {
-    switch(variable_attribute) {
-      case 'x': this.animate({x: value}, time, callback); break;
-      case 'y': this.animate({y: value}, time, callback); break;
-      case 'width': this.animate({width: value}, time, callback); break;
-      case 'height': this.animate({height: value}, time, callback); break;
-      default: throw "variable_attribute is not known";
+  var next_future = duration + 1, keyframe = [], i = 0;
+  for(time in history[attr]){
+    for(var time in history[attr]){
+      // if(next_future === 0 && time != 0 && current_time != time)
+      //   next_future = time;
+       if((time > current_time) && (time < next_future))
+        next_future = time;
     }
+    if(next_future != duration + 1){
+	  keyframe[i] = [];
+      keyframe[i][0] = time;
+      keyframe[i][1] = history[attr][time];
+      i++;
+    }
+  }
+  raphael_this.animate_variable_attribute(attr, keyframe, keyframe[i-1][0]);
+}
+/*
+$.each([],function(i,val){
+	var attrs = {};
+	attrs[now/duration*100+'%'] = 
+})
+*/
+Raphael.el.animate_variable_attribute = function (variable_attribute, values, end_time) {
+    switch(variable_attribute) {
+      case 'x': {
+				//       	var  constructor = function () {};
+				//        	for(var time in values){
+				// 	       		var thisTime = values[0]/end_time;
+				// 	       		var block = {thisTime: {x: time[1]}};
+				// 	        	constructor.push(block);
+				// }
+      	this.animate(this.data('keyframe constructor')('x', values, end_time), end_time); break;
+       }
+      case 'y': {
+      	var  constructor = function () {};
+       	for(var time in values){
+	       		var thisTime = time[0]/end_time;
+	       		var block = {thisTime: {y: time[1]}};
+	        	constructor.push(block);
+     		}
+      	this.animate(constructor, end_time); break;
+       }
+      case 'width': {
+      	var  constructor = function () {};
+       	for(var time in values){
+	       		var thisTime = time[0]/end_time;
+	       		var block = {thisTime: {width: time[1]}};
+	        	constructor.push(block);
+     		}
+      	this.animate(constructor, end_time); break;
+       }
+      case 'height': {
+      	var  constructor = function () {};
+       	for(var time in values){
+	       		var thisTime = time[0]/end_time;
+	       		var block = {thisTime: {height: time[1]}};
+	        	constructor.push(block);
+     		}
+      	this.animate(constructor, end_time); break;
+       }
+      case 'default': throw('not a known variable attribute');
+	}
  };
 
 //rectangle tool
@@ -446,7 +507,13 @@ $('#rect_button').click(function(){
               call_next_animate(0, history, attr, raphael_this);
             }
           }
-        }).data('add list options', function(raphael_shape){
+        }).data('keyframe constructor', function(attr){
+					       	for(var time in values){
+						       		var thisTime = values[0]/end_time;
+						       		var block = {thisTime: {attr: time[1]}};
+						        	
+					}
+				}).data('add list options', function(raphael_shape){
           add_fill(raphael_shape);
           //add_width(raphael_shape);
           //add_height(raphael_shape);
