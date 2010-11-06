@@ -186,9 +186,7 @@ function time_move(dx, dy){
   now = now < 0 ? 0 : (now > duration ? duration : now);
   $('#current_time').val((now/1000).toFixed(3)+'s');
   timeknob.attr('x', Math.round(now*480/duration) - 3);
-  shapes_list.children().each(function(){
-    ($(this).data('animation state') || $.noop)(this);
-  });
+  shapes_list.children().each(interpolate_anim_state);
 }
 timeknob.drag(time_move, function(){ //start
   time_startX = timeknob.attr('x') + 3;
@@ -198,25 +196,59 @@ time_overlay.drag(time_move, function(x, y, e){ //start
   now = Math.round(time_startX*duration/480);
   $('#current_time').val((now/1000).toFixed(3)+'s');
   timeknob.attr('x', time_startX - 3);
-  shapes_list.children().each(function(){
-    ($(this).data('animation state') || $.noop)(this);
-  });
+  shapes_list.children().each(interpolate_anim_state);
 });
 
 
+//Play button
 $('#user_canvas_controls button').click(function(){
   now = 0;
   timeknob.attr('x', -3);
+  shapes_list.children().each(interpolate_anim_state);
   shapes_list.children().each(function(){
-    ($(this).data('animation state') || $.noop)(this);
-  });
-  shapes_list.children().each(function(){
-    ($(this).data('animate') || $.noop)(this);
+    var raphael_this = $(this).data('raphael'), history = $(this).data('history');
+    for(var attr in history)
+      (function(attr){
+        (function(){
+          now = Math.round((timeknob.attr('x') + 3)*duration/480);
+          var new_attr = {};
+          for(var next in history[attr])
+            if(next > now)
+              break;
+            else
+              next = duration + 1;
+          next = +next;
+          new_attr[attr] = history[attr][next];
+          if(next > duration)
+            now = duration;
+          else
+            raphael_this.animate(new_attr, next - now, arguments.callee);
+        }());
+      }(attr));
   });
   timeknob.animate({'x': 477}, duration);
 });
 
-
+function interpolate_anim_state(){
+  var raphael_this = $(this).data('raphael'), history = $(this).data('history');
+  if(raphael_this === undefined)
+    return;
+  //animation state now
+  for(var attr in history){
+    var past = 0, future = duration + 1;
+    for(var time in history[attr])
+      if(time <= now && time > past)
+        past = +time;
+    for(var time in history[attr])
+      if(time >= now && time < future)
+        future = +time;
+    if(future === past || future > duration)
+      raphael_this.attr(attr, history[attr][past]);
+    else
+      raphael_this.attr(attr, history[attr][past] +
+        (history[attr][future] - history[attr][past])*(now - past)/(future - past)); //replace with proper easing
+  }
+}
 
 
 
@@ -374,21 +406,6 @@ $('#toolbar button').click(function(){
 });
 
 
-function call_next_animate(current_time, history, attr, raphael_this){
-  var next_future = duration + 1, new_attr = {};
-  for(var time in history[attr]){
-    if(+time > current_time && +time < next_future)
-      next_future = +time;
-  }
-  new_attr[attr] = history[attr][next_future];
-  if(next_future <= duration)
-    raphael_this.animate(new_attr, next_future - current_time,
-      function(){call_next_animate(next_future, history, attr, raphael_this);});
-  else
-    now = duration;
-}
-
-
 /****
 So at this point, checklist for creating user shapes:
 user_canvas.<Raphael API call>.attr(<more Raphael API>)
@@ -413,42 +430,22 @@ var rect_count = 0;
 $('#rect_button').click(function(){
   overlay.mousedown(function(e){
     rect_count += 1;
-    var cornerX = e.offsetX, cornerY = e.offsetY,
-      history = {},
+    var cornerX = e.offsetX, cornerY = e.offsetY, history = {},
       rect = user_canvas.rect(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
         .mousedown(call_raphael_shape_click),
-      list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect).data('history', history)
-        .data('animation state', function(list_el){
-          var raphael_this = $(list_el).data('raphael');
-          //animation state now
-          for(var attr in history){
-            var past = 0, future = duration + 1;
-            for(var time in history[attr])
-              if(time <= now && time > past)
-                past = +time;
-            for(var time in history[attr])
-              if(time >= now && time < future)
-                future = +time;
-            if(future === past || future > duration)
-              raphael_this.attr(attr, history[attr][past]);
-            else
-              raphael_this.attr(attr, history[attr][past] +
-                (history[attr][future] - history[attr][past])*(now - past)/(future - past)); //replace with proper easing
-          }
-        }).data('animate', function(list_el){
-          var raphael_this = $(list_el).data('raphael');
-          for(var attr in history){
-            call_next_animate(0, history, attr, raphael_this);
-          }
-        }).data('add list options', function(raphael_shape){
+      list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
+        .data('history', history)
+        .data('add list options', function(raphael_shape){
           add_fill(raphael_shape);
           //add_width(raphael_shape);
           //add_height(raphael_shape);
-        }).data('remove list options', function(){
+        })
+        .data('remove list options', function(){
           rm_fill();
           //rm_width();
           //rm_height();
-        }).click(list_shape_click).appendTo(shapes_list);
+        })
+        .click(list_shape_click).appendTo(shapes_list);
     $(rect.node).data('shapes list', list_rect_jQ);
 
     spotlight(rect);
