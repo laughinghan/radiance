@@ -500,11 +500,11 @@ $('#rect_button').click(function(){
               var past = 0, future = duration;
               for(var time in history[attr])
                 if(time <= now && time > past)
-                  past = time;
+                  past = +time;
               for(var time in history[attr])
                 if(time >= now && time < future)
-                  future = time;
-              if(future == past || future === duration)
+                  future = +time;
+              if(future === past || future === duration)
                 raphael_this.attr(attr, history[attr][past]);
               else
                 raphael_this.attr(attr, history[attr][past] +
