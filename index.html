@@ -374,23 +374,17 @@ $('#toolbar button').click(function(){
 
 
 function call_next_animate(current_time, history, attr, raphael_this){
-  var next_future = duration + 1, keyframe = [], i = 0;
-  for(time in history[attr]){
-    for(var time in history[attr]){
-      // if(next_future === 0 && time != 0 && current_time != time)
-      //   next_future = time;
-       if((time > current_time) && (time < next_future))
-        next_future = time;
-    }
-    if(next_future != duration + 1){
-	  keyframe[i] = [];
-      keyframe[i][0] = time;
-      keyframe[i][1] = history[attr][time];
-      i++;
-    }
+  var next_future = duration + 1;
+  for(var time in history[attr]){
+    // if(next_future === 0 && time != 0 && current_time != time)
+    //   next_future = time;
+     if((time > current_time) && (time < next_future))
+      next_future = time;
   }
-  raphael_this.animate_variable_attribute(attr, keyframe, keyframe[i-1][0]);
+  if(next_future != duration + 1)
+    raphael_this.animate_variable_attribute(attr, history[attr][next_future], next_future - current_time, call_next_animate(next_future, history, attr, raphael_this));
 }
+
 
 /*
 $.each([],function(i,val){
@@ -460,13 +454,7 @@ $('#rect_button').click(function(){
               call_next_animate(0, history, attr, raphael_this);
             }
           }
-        }).data('keyframe constructor', function(attr){
-					       	for(var time in values){
-						       		var thisTime = values[0]/end_time;
-						       		var block = {thisTime: {attr: time[1]}};
-						        	
-					}
-				}).data('add list options', function(raphael_shape){
+        }).data('add list options', function(raphael_shape){
           add_fill(raphael_shape);
           //add_width(raphael_shape);
           //add_height(raphael_shape);
