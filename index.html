@@ -375,31 +375,18 @@ $('#toolbar button').click(function(){
 
 
 function call_next_animate(current_time, history, attr, raphael_this){
-  var next_future = duration + 1;
+  var next_future = duration + 1, new_attr = {};
   for(var time in history[attr]){
-    // if(next_future === 0 && time != 0 && current_time != time)
-    //   next_future = time;
-     if((time > current_time) && (time < next_future))
-      next_future = time;
+    if(+time > current_time && +time < next_future)
+      next_future = +time;
   }
-  if(next_future != duration + 1)
-    raphael_this.animate_variable_attribute(attr, history[attr][next_future], next_future - current_time, call_next_animate(next_future, history, attr, raphael_this));
+  new_attr[attr] = history[attr][next_future];
+  if(next_future <= duration)
+    raphael_this.animate(new_attr, next_future - current_time,
+      function(){call_next_animate(next_future, history, attr, raphael_this);});
+  else
+    now = duration;
 }
-
-
-/*
-$.each([],function(i,val){
-	var attrs = {};
-	attrs[now/duration*100+'%'] = 
-})
-*/
-
-
-Raphael.el.animate_variable_attribute = function (variable_attribute, value, time, callback) {
-    var attrs = {};
-    attrs[variable_attribute] = value;
-    this.animate(attrs, time, callback);
-};
 
 
 /****
@@ -435,14 +422,14 @@ $('#rect_button').click(function(){
           var raphael_this = $(list_el).data('raphael');
           //animation state now
           for(var attr in history){
-            var past = 0, future = duration;
+            var past = 0, future = duration + 1;
             for(var time in history[attr])
               if(time <= now && time > past)
                 past = +time;
             for(var time in history[attr])
               if(time >= now && time < future)
                 future = +time;
-            if(future === past || future === duration)
+            if(future === past || future > duration)
               raphael_this.attr(attr, history[attr][past]);
             else
               raphael_this.attr(attr, history[attr][past] +
