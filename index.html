@@ -373,40 +373,6 @@ $('#toolbar button').click(function(){
 });
 
 
-/****
-So at this point, checklist for creating user shapes:
-user_canvas.<Raphael API call>.attr(<more Raphael API>)
-  .mousedown(call_raphael_shape_click); //bound to every user_canvas shape
-//next, item in shapes list
-$('<some html>').data('raphael', <previously_created_Raphael_shape_in_user_canvas>)
-  .data('add list options', function(){
-    //when this list item is clicked, add options
-  }).data('remove list options', function(){
-    //when another list item is clicked, remove options
-  }).click(list_shape_click) //bound to every list item
-  .appendTo(shapes_list);
-$(<previously_created_Raphael_shape_in_user_canvas>.node)
-  .data('shapes list', <previously_created_shapes_list_item_jQ>);
-//and most likely spotlight the shape in user_canvas
-spotlight(<previously_created_Raphael_shape_in_user_canvas>);
-****/
-// function call_next_animate(current_time, history, attr, raphael_this){
-//   var next_future = duration + 1;
-//   for(var time in history[attr]){
-//     // if(next_future === 0 && time != 0 && current_time != time)
-//     //   next_future = time;
-//      if((time > current_time) && (time < next_future))
-//       next_future = time;
-//   }
-//   if(next_future != duration + 1)
-//     raphael_this.animate_variable_attribute(attr, history[attr][next_future], next_future - current_time, call_next_animate(next_future, history, attr, raphael_this));
-// }
-// 
-// Raphael.el.animate_variable_attribute = function (variable_attribute, value, time, callback) {
-//     var attrs = {};
-//     attrs[variable_attribute] = value;
-//     this.animate(attrs, time, callback);
-// };
 function call_next_animate(current_time, history, attr, raphael_this){
   var next_future = duration + 1, keyframe = [], i = 0;
   for(time in history[attr]){
@@ -432,47 +398,6 @@ $.each([],function(i,val){
 	attrs[now/duration*100+'%'] = 
 })
 */
-Raphael.el.animate_variable_attribute = function (variable_attribute, values, end_time) {
-    switch(variable_attribute) {
-      case 'x': {
-				//       	var  constructor = function () {};
-				//        	for(var time in values){
-				// 	       		var thisTime = values[0]/end_time;
-				// 	       		var block = {thisTime: {x: time[1]}};
-				// 	        	constructor.push(block);
-				// }
-      	this.animate(this.data('keyframe constructor')('x', values, end_time), end_time); break;
-       }
-      case 'y': {
-      	var  constructor = function () {};
-       	for(var time in values){
-	       		var thisTime = time[0]/end_time;
-	       		var block = {thisTime: {y: time[1]}};
-	        	constructor.push(block);
-     		}
-      	this.animate(constructor, end_time); break;
-       }
-      case 'width': {
-      	var  constructor = function () {};
-       	for(var time in values){
-	       		var thisTime = time[0]/end_time;
-	       		var block = {thisTime: {width: time[1]}};
-	        	constructor.push(block);
-     		}
-      	this.animate(constructor, end_time); break;
-       }
-      case 'height': {
-      	var  constructor = function () {};
-       	for(var time in values){
-	       		var thisTime = time[0]/end_time;
-	       		var block = {thisTime: {height: time[1]}};
-	        	constructor.push(block);
-     		}
-      	this.animate(constructor, end_time); break;
-       }
-      case 'default': throw('not a known variable attribute');
-	}
- };
 
 
 Raphael.el.animate_variable_attribute = function (variable_attribute, value, time, callback) {
@@ -480,6 +405,25 @@ Raphael.el.animate_variable_attribute = function (variable_attribute, value, tim
     attrs[variable_attribute] = value;
     this.animate(attrs, time, callback);
 };
+
+
+/****
+So at this point, checklist for creating user shapes:
+user_canvas.<Raphael API call>.attr(<more Raphael API>)
+  .mousedown(call_raphael_shape_click); //bound to every user_canvas shape
+//next, item in shapes list
+$('<some html>').data('raphael', <previously_created_Raphael_shape_in_user_canvas>)
+  .data('add list options', function(){
+    //when this list item is clicked, add options
+  }).data('remove list options', function(){
+    //when another list item is clicked, remove options
+  }).click(list_shape_click) //bound to every list item
+  .appendTo(shapes_list);
+$(<previously_created_Raphael_shape_in_user_canvas>.node)
+  .data('shapes list', <previously_created_shapes_list_item_jQ>);
+//and most likely spotlight the shape in user_canvas
+spotlight(<previously_created_Raphael_shape_in_user_canvas>);
+****/
 
 
 //rectangle tool
