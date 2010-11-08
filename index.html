@@ -147,6 +147,8 @@ input {
   <input type="text" id = "current_time" value="0.000s">/<input type="text" id = "duration" value="5.000s">
 </div>
 
+<button id="embed">Embed this in your Web page</button>
+
 <script type="text/javascript">
 var zoomslider = Raphael('zoomslider', 200, 30),
   zoombar = zoomslider.path('M 0 15 L 200 15'),
@@ -159,16 +161,16 @@ function zoom_move(dx, dy){
   zoom = zoom < 50 ? 50 : (zoom > 250 ? 250 : zoom);
   $('#zoom').val(zoom+'%');
   zoomknob.attr('x', zoom - 53);
-}
+} //zoom!
 zoomknob.drag(zoom_move, function(){ //start
   zoom_startX = zoomknob.attr('x') + 3;
-});
+}); //zoom!!
 zoom_overlay.drag(zoom_move, function(x, y, e){ //start
   zoom_startX = e.offsetX;
   zoom = zoom_startX + 50;
   $('#zoom').val(zoom+'%');
   zoomknob.attr('x', zoom_startX - 3);
-});
+}); //zoom!!!
 
 
 
