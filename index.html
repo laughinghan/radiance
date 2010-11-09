@@ -631,9 +631,14 @@ $('#line_button').click(function(){
 $('#move_button').click(function(){
   shapes_list_click = shapes_list_click_when_moving;
   raphael_shape_click = raphael_shape_click_when_moving;
-
   if(!current_list_shape.length)
     overlay.hide();
+  else{
+    if(current_list_shape.data('raphael').attr('x'))
+  		overlay.mousedown(shape_drag);
+  	else
+  		alert('tried to move');
+  }
 });
 function shapes_list_click_when_moving(e){
   if(e.target === this)
@@ -643,8 +648,10 @@ function shapes_list_click_when_moving(e){
 }
 function raphael_shape_click_when_moving(e){
   $(this.node).data('shapes list').click();
-  rect_drag(e);
+	if(this.attr('x'))
   	shape_drag(e);
+	else
+		alert("tried to move");
 }
 
 function shape_drag(e){
