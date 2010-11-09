@@ -524,6 +524,10 @@ $('#text_button').click(function(){
         })
         .click(list_shape_click).appendTo(shapes_list);
     $(text.node).data('shapes list', list_text_jQ);
+    $.each(['x', 'y'], function(i, attr){
+      history[attr] = [];
+      history[attr][0] = text.attr(attr);
+    });
   });
 });
 
