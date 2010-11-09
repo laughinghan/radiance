@@ -202,21 +202,21 @@ time_overlay.drag(time_move, function(x, y, e){ //start
 });
 
 Raphael.easing_formulas.time_easing = function(n){
-	if (now === 0)
-		change = now;
-	now = n * duration / 1000;
-	if (now-change > .12){
-		change = now;
-  	$('#current_time').val(now.toFixed(3)+'s');
-	}
-	return n
+  if (now === 0)
+    change = now;
+  now = n * duration / 1000;
+  if (now-change > .12){
+    change = now;
+    $('#current_time').val(now.toFixed(3)+'s');
+  }
+  return n
 }
 
 //Play button
 $('#user_canvas_controls button').click(function(){
   now = 0;
   timeknob.attr('x', -3);
-	$('current_time').val(0.000 + 's')
+  $('current_time').val(0.000 + 's')
   shapes_list.children().each(interpolate_anim_state);
   shapes_list.children().each(function(){
     var raphael_this = $(this).data('raphael'), history = $(this).data('history');
@@ -239,10 +239,10 @@ $('#user_canvas_controls button').click(function(){
         }());
       }(attr));
   });
-  timeknob.animate({'x': 477}, duration, "time_easing",function(){
-		now = 5000;
-		$('#current_time').val((now/1000).toFixed(3)+'s');
-	  });
+  timeknob.animate({'x': 477}, duration, "time_easing", function(){
+    now = 5000;
+    $('#current_time').val((now/1000).toFixed(3)+'s');
+  });
 });
 
 function interpolate_anim_state(){
@@ -345,20 +345,20 @@ function add_fill(raphael_shape){
 function rm_fill(){
   fill.detach();
 }
-var text_option = $('<p id="text_option_p"><label for="text_option">text</label><input type ="text" id="text_option" name="text_option" style="width:auto"></p>'),
-	update_raphael_text = function(){
-		raphael_text = current_list_shape.data('raphael'), text_option_text = $('#text_option');
-		return function(){
-		//we need to figure out how to change the text of text elements here.
-		}
-	}
-function add_text_option(raphael_shape){
-	text_option.insertBefore(remove)
-}
 
+var text_option = $('<p id="text_option_p"><label for="text_option">Text:</label><input type ="text" id="text_option" name="text_option" style="width:auto"></p>'),
+  update_raphael_text = function(){
+    raphael_text = current_list_shape.data('raphael'), text_option_text = $('#text_option');
+    return function(){
+    //we need to figure out how to change the text of text elements here.
+    }
+  };
+function add_text_option(raphael_shape){
+  text_option.insertBefore(remove)
+}
 //not working, why?
 function rm_text_option(){
-	$('#text_option_p').detach();
+  $('#text_option_p').detach();
 }
 
 
@@ -518,57 +518,17 @@ $('#text_button').click(function(){
   overlay.click(function(e){
     text_count += 1;
     var text = user_canvas.text(e.offsetX, e.offsetY, ''), 
-			history = {}
-			list_text_jQ = $('<p>Text ' +text_count+'</p>').data('raphael', text)
-				.data('history', history)
-				.data('add list options', function(raphael_shape){
-					add_text_option(raphael_shape);
-				})
-				.data('remove list options', function(){
-					rm_text_option();
-				})
-				.click(list_shape_click).appendTo(shapes_list);
-		$(text.node).data('shapes list', list_text_jQ);
-    // (function(){
-    //   var empty = true;
-    //   function onfocus()
-    //   {
-    //     if(empty)
-    //     {
-    //       this.value = '';
-    //       this.style.color = 'black';
-    //       this.onkeydown();
-    //     }
-    //   }
-    //   function onblur()
-    //   {
-    //     empty = this.value === '';
-    //     if(empty)
-    //     {
-    //       this.value = 'math';
-    //       this.style.color = 'gray';
-    //       this.onkeydown();
-    //     }
-    //   }
-    //   var updateLink = (function(){
-    //     var link = document.getElementById('link'), text = document.getElementsByTagName('input')[0];
-    //     return function()
-    //     {
-    //       link.href = '/chat/' + text.value;
-    //       link.innerHTML = 'http://lolgebra.com/chat/' + text.value;
-    //     };
-    //   }());
-    //   function onkeydown()
-    //   {
-    //     setTimeout(updateLink,0);
-    //   }
-    //   (function(){
-    //     var textbox = document.getElementsByTagName('input')[0];
-    //     textbox.onfocus = onfocus;
-    //     textbox.onblur = onblur;
-    //     textbox.onkeypress = textbox.onkeydown = onkeydown;
-    //   }());
-    // }());
+      history = {},
+      list_text_jQ = $('<p>Text ' +text_count+'</p>').data('raphael', text)
+        .data('history', history)
+        .data('add list options', function(raphael_shape){
+          add_text_option(raphael_shape);
+        })
+        .data('remove list options', function(){
+          rm_text_option();
+        })
+        .click(list_shape_click).appendTo(shapes_list);
+    $(text.node).data('shapes list', list_text_jQ);
   })
 })
 
