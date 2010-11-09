@@ -461,7 +461,13 @@ $('#rect_button').click(function(){
           //rm_width();
           //rm_height();
         })
-        .click(list_shape_click).appendTo(shapes_list);
+        .click(list_shape_click)
+        .hover(function(){
+          spotlight(rect);
+        }, function(){
+          spotlight.off();
+        })
+        .appendTo(shapes_list);
     $(rect.node).data('shapes list', list_rect_jQ);
 
     spotlight(rect);
@@ -522,7 +528,13 @@ $('#text_button').click(function(){
         .data('remove list options', function(){
           text_option.detach();
         })
-        .click(list_shape_click).appendTo(shapes_list);
+        .click(list_shape_click)
+        .hover(function(){
+          spotlight(rect);
+        }, function(){
+          spotlight.off();
+        })
+        .appendTo(shapes_list);
     $(text.node).data('shapes list', list_text_jQ);
     $.each(['x', 'y'], function(i, attr){
       history[attr] = [];
