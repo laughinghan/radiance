@@ -502,12 +502,12 @@ var text_count = 0;
 $('#text_button').click(function(){
   overlay.click(function(e){
     text_count += 1;
-    var text = user_canvas.text(e.offsetX, e.offsetY, 'text'), 
+    var text = user_canvas.text(e.offsetX, e.offsetY, 'text').attr('font-size',24), 
       history = {},
-      text_option = $('<p id="text_option_p"><label for="text_option">Text:</label><input type="text" id="text_option" name="text_option" style="width:auto"></p>')
-        .find('input').bind('keydown keypress', (function(){
+      text_option = $('<p id="text_option_p"><label for="text_option">Text:</label><input type="text" id="text_option" name="text_option" style="width:auto"></p>'),
+      text_opt_input = text_option.find('input').bind('keydown keypress', (function(){
           function update_text(){
-            $(text.node).children().text(text_option.val());
+            $(text.node).children().text(text_opt_input.val());
           }
           return function(){
             setTimeout(update_text, 0);
@@ -516,7 +516,8 @@ $('#text_button').click(function(){
       list_text_jQ = $('<p>Text ' + text_count + '</p>').data('raphael', text)
         .data('history', history)
         .data('add list options', function(){
-          text_option.val($(text.node).children().text()).insertBefore(remove);
+          text_opt_input.val($(text.node).children().text());
+          text_option.insertBefore(remove);
         })
         .data('remove list options', function(){
           text_option.detach();
