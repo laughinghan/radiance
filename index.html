@@ -631,7 +631,6 @@ $('#line_button').click(function(){
 $('#move_button').click(function(){
   shapes_list_click = shapes_list_click_when_moving;
   raphael_shape_click = raphael_shape_click_when_moving;
-  overlay.mousedown(rect_drag);
 
   if(!current_list_shape.length)
     overlay.hide();
@@ -645,9 +644,10 @@ function shapes_list_click_when_moving(e){
 function raphael_shape_click_when_moving(e){
   $(this.node).data('shapes list').click();
   rect_drag(e);
+  	shape_drag(e);
 }
 
-function rect_drag(e){
+function shape_drag(e){
   var current_raphael_shape = current_list_shape.data('raphael'),
     startX = +current_raphael_shape.attr('x'),
     startY = +current_raphael_shape.attr('y');
