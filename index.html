@@ -335,7 +335,7 @@ function list_shape_click(){
 
 //additional options to be added on a per-shape basis:
 //fill
-var fill = $('<p><label for="fill">fill</label><input type="checkbox" id="fill" name="fill" style="width:auto"></p>'),
+var fill = $('<p><label for="fill">Fill</label><input type="checkbox" id="fill" name="fill" style="width:auto"></p>'),
   fill_checkbox = fill.find('input').change(function(){
     current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
   });
@@ -347,7 +347,24 @@ function rm_fill(){
   fill.detach();
 }
 
+//endpoint for lines (including curves - don't move into lines)
+// var end_point = $('<form><label for="endpoint_x_field">Point 2 X</label><input type="text" id="endpoint_x_field" name="endpoint_x_field">
+//   <label for="endpoint_y_field">Point 2 Y</label><input type="text" id="endpoint_y_field" name="endpoint_y_field">').submit(function(){
+//     current_list_shape.data('raphael').attr('path', '');
+//     return false;
+//   }).appendTo(list_shape_options).find('input');
+var end_point = $('<form><label for="endpoint_x_field">Point 2 X</label><input type="text" id="endpoint_x_field" name="endpoint_x_field">
+   <label for="endpoint_y_field">Point 2 Y</label><input type="text" id="endpoint_y_field" name="endpoint_y_field">').submit(function(){
+    current_list_shape.data('raphael').attr('path', '');
+    return false;
+  }).appendTo(list_shape_options).find('input');
 
+function add_endpoint(raphael_shape){
+  end_point.insertBefore(remove);
+}
+function rm_endpoint(){
+  end_point.detach();
+}
 
 //the Raphael canvas on which all the shapes are drawn
 var user_canvas = Raphael('user_canvas', 640, 480);
