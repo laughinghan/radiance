@@ -115,6 +115,7 @@ input {
   <p><button id="text_button">Text</button>
   <p class="hidden">Size
     <br>Font
+	<p><button id="line_button">Line</button>
   <p><button id="move_button">Move</button>
   <p class="hidden">Choose a shape from the list
 </div>
@@ -572,6 +573,60 @@ $('#text_button').click(function(){
   })
 })
 
+var line_count = 0;
+$('#line_button').click(function(){
+  overlay.mousedown(function(e){
+    line_count += 1;
+    var cornerX = e.offsetX, cornerY = e.offsetY, history = {},
+      line = user_canvas.path('M'+cornerX+' '+cornerY+'L'+cornerX +' '+cornerY)
+        .mousedown(call_raphael_shape_click),
+      list_line_jQ = $('<p>Line '+line_count+'</p>').data('raphael', line)
+        .data('history', history)
+        .data('add list options', function(raphael_shape){
+          add_endpoint(raphael_shape);
+          //add_width(raphael_shape);
+          //add_height(raphael_shape);
+        })
+        .data('remove list options', function(){
+          rm_endpoint();
+          //rm_width();
+          //rm_height();
+        })
+        .click(list_shape_click).appendTo(shapes_list);
+    $(line.node).data('shapes list', list_line_jQ);
+
+    spotlight(line);
+
+    drag(e, function(dx, dy){
+      // if(dx < 0)
+        line.attr({
+          path: 'M'+cornerX+' '+cornerY+'l'+dx+' '+dy
+        });
+      // else
+      //   line.attr({
+      //     width: dx,
+      //     x: cornerX
+      //   });
+      // if(dy < 0)
+      //   line.attr({
+      //     height: -dy,
+      //     y: cornerY + dy
+      //   });
+      // else
+      //   line.attr({
+      //     height: dy,
+      //     y: cornerY
+      //   });
+    }, function(){
+      $.each(['line'], function(i, attr){
+        history[attr] = [];
+        history[attr][0] = line.attr(attr);
+      });
+    });
+
+    return false;
+  });
+});
 //move tool
 $('#move_button').click(function(){
   shapes_list_click = shapes_list_click_when_moving;
