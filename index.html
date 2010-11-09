@@ -638,7 +638,7 @@ function shape_drag(e){
     x_pos.val(current_raphael_shape.attr('x'));
     y_pos.val(current_raphael_shape.attr('y'));
   }, function(){
-      $.each(['x', 'y', 'width', 'height'], function(i, attr){
+      $.each(['x', 'y'], function(i, attr){
         current_list_shape.data('history')[attr][now] = current_raphael_shape.attr(attr);
       });
   });
