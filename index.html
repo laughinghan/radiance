@@ -182,7 +182,7 @@ var timeslider = Raphael('timeslider', 480, 30),
   time_overlay = timeslider.rect(0, 0, 480, 30).attr({fill:'#000', opacity: 0}),
   timeknob = timeslider.rect(-3, 5, 6, 20).attr({fill: '#000', stroke: 'none'});
 
-var now = 0, time_startX, duration = 5000;
+var now = 0, time_startX, duration = 5000, change = 0;
 function time_move(dx, dy){
   now = Math.round((time_startX+dx)*duration/480);
   now = now < 0 ? 0 : (now > duration ? duration : now);
@@ -201,11 +201,22 @@ time_overlay.drag(time_move, function(x, y, e){ //start
   shapes_list.children().each(interpolate_anim_state);
 });
 
+Raphael.easing_formulas.time_easing = function(n){
+	if (now === 0)
+		change = now;
+	now = n * duration / 1000;
+	if (now-change > .12){
+		change = now;
+  	$('#current_time').val(now.toFixed(3)+'s');
+	}
+	return n
+}
 
 //Play button
 $('#user_canvas_controls button').click(function(){
   now = 0;
   timeknob.attr('x', -3);
+	$('current_time').val(0.000 + 's')
   shapes_list.children().each(interpolate_anim_state);
   shapes_list.children().each(function(){
     var raphael_this = $(this).data('raphael'), history = $(this).data('history');
@@ -228,7 +239,10 @@ $('#user_canvas_controls button').click(function(){
         }());
       }(attr));
   });
-  timeknob.animate({'x': 477}, duration);
+  timeknob.animate({'x': 477}, duration, "time_easing",function(){
+		now = 5000;
+		$('#current_time').val((now/1000).toFixed(3)+'s');
+	  });
 });
 
 function interpolate_anim_state(){
