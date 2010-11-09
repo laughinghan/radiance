@@ -346,21 +346,6 @@ function rm_fill(){
   fill.detach();
 }
 
-var text_option = $('<p id="text_option_p"><label for="text_option">Text:</label><input type ="text" id="text_option" name="text_option" style="width:auto"></p>'),
-  update_raphael_text = function(){
-    raphael_text = current_list_shape.data('raphael'), text_option_text = $('#text_option');
-    return function(){
-    //we need to figure out how to change the text of text elements here.
-    }
-  };
-function add_text_option(raphael_shape){
-  text_option.insertBefore(remove)
-}
-//not working, why?
-function rm_text_option(){
-  $('#text_option_p').detach();
-}
-
 
 
 //the Raphael canvas on which all the shapes are drawn
@@ -517,20 +502,29 @@ var text_count = 0;
 $('#text_button').click(function(){
   overlay.click(function(e){
     text_count += 1;
-    var text = user_canvas.text(e.offsetX, e.offsetY, ''), 
+    var text = user_canvas.text(e.offsetX, e.offsetY, 'text'), 
       history = {},
-      list_text_jQ = $('<p>Text ' +text_count+'</p>').data('raphael', text)
+      text_option = $('<p id="text_option_p"><label for="text_option">Text:</label><input type="text" id="text_option" name="text_option" style="width:auto"></p>')
+        .find('input').bind('keydown keypress', (function(){
+          function update_text(){
+            $(text.node).children().text(text_option.val());
+          }
+          return function(){
+            setTimeout(update_text, 0);
+          };
+        }())),
+      list_text_jQ = $('<p>Text ' + text_count + '</p>').data('raphael', text)
         .data('history', history)
-        .data('add list options', function(raphael_shape){
-          add_text_option(raphael_shape);
+        .data('add list options', function(){
+          text_option.val($(text.node).children().text()).insertBefore(remove);
         })
         .data('remove list options', function(){
-          rm_text_option();
+          text_option.detach();
         })
         .click(list_shape_click).appendTo(shapes_list);
     $(text.node).data('shapes list', list_text_jQ);
-  })
-})
+  });
+});
 
 //move tool
 $('#move_button').click(function(){
