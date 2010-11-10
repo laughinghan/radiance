@@ -569,11 +569,12 @@ var line_count = 0;
 $('#line_button').click(function(){
   overlay.mousedown(function(e){
     line_count += 1;
-    var cornerX = e.offsetX, cornerY = e.offsetY, history = {},
+    var cornerX = e.offsetX, cornerY = e.offsetY, history = {}, current_points = {},
       line = user_canvas.path('M'+cornerX+' '+cornerY+'L'+cornerX +' '+cornerY)
         .mousedown(call_raphael_shape_click),
       list_line_jQ = $('<p>Line '+line_count+'</p>').data('raphael', line)
         .data('history', history)
+        .data('current points', current_points)
         .data('add list options', function(raphael_shape){
           add_linepoints(raphael_shape);
         })
@@ -589,8 +590,12 @@ $('#line_button').click(function(){
         line.attr({
           path: 'M'+cornerX+' '+cornerY+'l'+dx+' '+dy
         });
+        current_points['end_x'] = dx;
+        current_points['end_y'] = dy;
+        current_points['start_x'] = cornerX;
+        current_points['start_y'] = cornerY;
     }, function(){
-      $.each(['line'], function(i, attr){
+      $.each(['path'], function(i, attr){
         history[attr] = [];
         history[attr][0] = line.attr(attr);
       });
@@ -598,6 +603,8 @@ $('#line_button').click(function(){
     return false;
   });
 });
+
+
 //move tool
 $('#move_button').click(function(){
   shapes_list_click = shapes_list_click_when_moving;
