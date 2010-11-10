@@ -352,18 +352,26 @@ function rm_fill(){
 }
 
 //endpoint for lines (including curves - don't move into lines)
-var end_point = $('<form><label for="endpoint_x_field">Point 2 X</label><input type="text" id="endpoint_x_field" name="endpoint_x_field">'+
-    '<label for="endpoint_y_field">Point 2 Y</label><input type="text" id="endpoint_y_field" name="endpoint_y_field"></form>')
-    end_point_submit = end_point.find('form').submit(function(){
-      current_list_shape.data('raphael').attr('path');
+var end_point_x = $('<form><label for="endpoint_x_field">Point 2 X</label><input type="text" id="endpoint_x_field" name="endpoint_x_field">')
+    end_point_x_submit = end_point_x.find('form').submit(function(){
+      current_list_shape.data('current points')['end_x'] = this.end_point_x.value;
+      current_list_shape.data('raphael').attr('M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
+      return false;
+    }).appendTo(list_shape_options).find('input');
+var end_point_y = $('<form><label for="endpoint_y_field">Point 2 Y</label><input type="text" id="endpoint_y_field" name="endpoint_y_field">')
+    end_point_y_submit = end_point_x.find('form').submit(function(){
+      current_list_shape.data('current points')['end_y'] = this.end_point_y.value;
+      current_list_shape.data('raphael').attr('M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
       return false;
     }).appendTo(list_shape_options).find('input');
 
 function add_linepoints(raphael_shape){
-  end_point.insertBefore(remove);
+  end_point_x.insertBefore(remove);
+  end_point_y.insertBefore(remove);
 }
 function rm_linepoints(){
-  end_point.detach();
+  end_point_x.detach();
+  end_point_y.detach();
 }
 
 //the Raphael canvas on which all the shapes are drawn
@@ -590,10 +598,10 @@ $('#line_button').click(function(){
         line.attr({
           path: 'M'+cornerX+' '+cornerY+'l'+dx+' '+dy
         });
-        current_points['end_x'] = dx;
-        current_points['end_y'] = dy;
         current_points['start_x'] = cornerX;
         current_points['start_y'] = cornerY;
+        current_points['end_x'] = dx;
+        current_points['end_y'] = dy;
     }, function(){
       $.each(['path'], function(i, attr){
         history[attr] = [];
