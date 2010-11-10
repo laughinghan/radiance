@@ -268,10 +268,6 @@ function interpolate_anim_state(){
 }
 
 
-
-
-
-
 //list of raphael shapes and sets
 var shapes_list_click = $.noop, //canonical 'current' click handler on shapes_list
     //(set by e.g. Move button, then reset by click handler for all toolbars)
@@ -582,32 +578,15 @@ $('#line_button').click(function(){
     spotlight(line);
 
     drag(e, function(dx, dy){
-      // if(dx < 0)
         line.attr({
           path: 'M'+cornerX+' '+cornerY+'l'+dx+' '+dy
         });
-      // else
-      //   line.attr({
-      //     width: dx,
-      //     x: cornerX
-      //   });
-      // if(dy < 0)
-      //   line.attr({
-      //     height: -dy,
-      //     y: cornerY + dy
-      //   });
-      // else
-      //   line.attr({
-      //     height: dy,
-      //     y: cornerY
-      //   });
     }, function(){
       $.each(['line'], function(i, attr){
         history[attr] = [];
         history[attr][0] = line.attr(attr);
       });
     });
-
     return false;
   });
 });
