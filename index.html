@@ -269,6 +269,18 @@ function interpolate_anim_state(){
 }
 
 
+
+
+//defer execution by a thread. Used by live text input boxes
+function defer(fn){
+  return function(){
+    setTimeout(fn, 0);
+  };
+}
+
+
+
+
 //list of raphael shapes and sets
 var shapes_list_click = $.noop, //canonical 'current' click handler on shapes_list
     //(set by e.g. Move button, then reset by click handler for all toolbars)
@@ -285,14 +297,9 @@ var shapes_list_click = $.noop, //canonical 'current' click handler on shapes_li
 var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"></p>'),
   //rename
   rename = $('<p>Name: <input type="text" name="rename" id="rename_option"></p>')
-    .appendTo(list_shape_options).find('input').bind('keydown keypress', (function(){
-      function update_name(){
-        list_shape_options.prev().html(rename.val() || '&nbsp;');
-      }
-      return function(){
-        setTimeout(update_name, 0);
-      };
-    }())),
+    .appendTo(list_shape_options).find('input').bind('keydown keypress', defer(function(){
+      list_shape_options.prev().html(rename.val() || '&nbsp;');
+    })),
   //remove
   remove = $('<button>Remove</button>').click(function(){
     var shape = list_shape_options.prev();
@@ -479,7 +486,6 @@ var spotlight = (function(){
   spotlight.off = off;
   return spotlight;
 }());
-
 
 
 //catches all the mouse events over the user_canvas
@@ -690,14 +696,9 @@ $('#text_button').click(function(){
     var text = user_canvas.text(e.offsetX, e.offsetY, 'text').attr('font-size',24), 
       history = {},
       text_option = $('<p id="text_option_p"><label for="text_option">Text:</label><input type="text" id="text_option" name="text_option" style="width:auto"></p>'),
-      text_opt_input = text_option.find('input').bind('keydown keypress', (function(){
-          function update_text(){
-            $(text.node).children().text(text_opt_input.val());
-          }
-          return function(){
-            setTimeout(update_text, 0);
-          };
-        }())),
+      text_opt_input = text_option.find('input').bind('keydown keypress', defer(function(){
+        $(text.node).children().text(text_opt_input.val());
+      })),
       list_text_jQ = $('<p>Text ' + text_count + '</p>').data('raphael', text)
         .data('history', history)
         .data('add list options', function(){
