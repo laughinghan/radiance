@@ -292,16 +292,6 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
         setTimeout(update_name, 0);
       };
     }())),
-  //x
-  x_pos = $('<form><label for="x_pos_option"><i>x</i>: </label><input type="text" name="x_pos" id="x_pos_option">').submit(function(){
-    current_list_shape.data('raphael').attr('x', this.x_pos.value);
-    return false;
-  }).appendTo(list_shape_options).find('input'),
-  //y
-  y_pos = $('<form><label for="y_pos_option"><i>y</i>: </label><input type="text" name="y_pos" id="y_pos_option">').submit(function(){
-    current_list_shape.data('raphael').attr('y', this.y_pos.value);
-    return false;
-  }).appendTo(list_shape_options).find('input'),
   //remove
   remove = $('<button>Remove</button>').click(function(){
     var shape = list_shape_options.prev();
@@ -326,9 +316,27 @@ function list_shape_click(){
 
   list_shape_options.insertAfter(this);
 }
+//x
+var x_pos = $('<form><label for="x_pos_option"><i>x</i>: </label><input type="text" name="x_pos" id="x_pos_option">'),
+    x_input = x_pos.submit(function(){
+      current_list_shape.data('raphael').attr('x', this.x_pos.value);
+      return false;
+    }).appendTo(list_shape_options).find('input'),
+//y
+    y_pos = $('<form><label for="y_pos_option"><i>y</i>: </label><input type="text" name="y_pos" id="y_pos_option">'),
+    y_input = y_pos.submit(function(){
+      current_list_shape.data('raphael').attr('y', this.y_pos.value);
+      return false;
+    }).appendTo(list_shape_options).find('input');
 
-
-
+function add_xy(){
+  x_pos.insertBefore(remove);
+  y_pos.insertBefore(remove);
+}
+function rm_xy(){
+  x_pos.detach();
+  y_pos.detach();
+}
 //additional options to be added on a per-shape basis:
 //fill
 var fill = $('<p><label for="fill">Fill</label><input type="checkbox" id="fill" name="fill" style="width:auto"></p>'),
@@ -462,11 +470,13 @@ $('#rect_button').click(function(){
       list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
         .data('history', history)
         .data('add list options', function(raphael_shape){
+          add_xy();
           add_fill(raphael_shape);
           //add_width(raphael_shape);
           //add_height(raphael_shape);
         })
         .data('remove list options', function(){
+          rm_xy();
           rm_fill();
           //rm_width();
           //rm_height();
@@ -532,10 +542,12 @@ $('#text_button').click(function(){
       list_text_jQ = $('<p>Text ' + text_count + '</p>').data('raphael', text)
         .data('history', history)
         .data('add list options', function(){
+          add_xy();
           text_opt_input.val($(text.node).children().text());
           text_option.insertBefore(remove);
         })
         .data('remove list options', function(){
+          rm_xy();
           text_option.detach();
         })
         .click(list_shape_click)
