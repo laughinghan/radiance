@@ -112,6 +112,7 @@ input {
   <p class="hidden">Thickness
     <br>Corner Radius
     <br>Fill
+  <p><button id="ellipse_button">Ellipse</button>
   <p><button id="text_button">Text</button>
   <p class="hidden">Size
     <br>Font
@@ -337,7 +338,30 @@ function rm_xy(){
   x_pos.detach();
   y_pos.detach();
 }
-//additional options to be added on a per-shape basis:
+
+//cx
+var cx_pos = $('<form><label for="cx_pos_option"><i>cx</i>: </label><input type="text" name="cx_pos" id="cx_pos_option"></form>'),
+    cx_input = cx_pos.submit(function(){
+      current_list_shape.data('raphael').attr('cx', this.cx_pos.value);
+      return false;
+    }).find('input'),
+//cy
+    cy_pos = $('<form><label for="cy_pos_option"><i>cy</i>: </label><input type="teåxt" name="cy_pos" id="cy_pos_option"></form>'),
+    cy_input = cy_pos.submit(function(){
+      current_list_shape.data('raphael').attr('cy', this.cy_pos.value);
+      return false;
+    }).find('input');
+
+function add_cxcy(){
+  cx_pos.insertBefore(remove);
+  cy_pos.insertBefore(remove);
+}
+function rm_cxcy(){
+  cx_pos.detach();
+  cy_pos.detach();
+}
+
+
 //fill
 var fill = $('<p><label for="fill">Fill</label><input type="checkbox" id="fill" name="fill" style="width:auto"></p>'),
   fill_checkbox = fill.find('input').change(function(){
@@ -532,6 +556,66 @@ $('#rect_button').click(function(){
   });
 });
 
+var ellipse_count = 0;
+$('#ellipse_button').click(function(){
+  overlay.mousedown(function(e){
+    ellipse_count += 1;
+    var cornerX = e.offsetX, cornerY = e.offsetY, history = {},
+      ellipse = user_canvas.ellipse(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
+        .mousedown(call_raphael_shape_click),
+      list_ellipse_jQ = $('<p>Ellipse '+ellipse_count+'</p>').data('raphael', ellipse)
+        .data('history', history)
+        .data('add list options', function(raphael_shape){
+          add_cxcy();
+          add_fill(raphael_shape);
+          //add_width(raphael_shape);
+          //add_height(raphael_shape);
+        })
+        .data('remove list options', function(){
+          rm_cxcy();
+          rm_fill();
+          //rm_width();
+          //rm_height();
+        })
+        .click(list_shape_click)
+        .hover(function(){
+          spotlight(ellipse);
+        }, function(){
+          spotlight.off();
+        })
+        .appendTo(shapes_list);
+    $(ellipse.node).data('shapes list', list_ellipse_jQ);
+
+    spotlight(ellipse);
+
+    drag(e, function(dx, dy){
+      if(dx < 0)
+        ellipse.attr({
+          rx: -dx,
+        });
+      else
+        ellipse.attr({
+          rx: dx,
+        });
+      if(dy < 0)
+        ellipse.attr({
+          ry: -dy,
+        });
+      else
+        ellipse.attr({
+          ry: dy,
+        });
+    }, function(){
+      $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
+        history[attr] = [];
+        history[attr][0] = ellipse.attr(attr);
+      });
+    });
+
+    return false;
+  });
+});
+
 var text_count = 0;
 $('#text_button').click(function(){
   overlay.click(function(e){
@@ -621,7 +705,9 @@ $('#move_button').click(function(){
     overlay.hide();
   else{
     if(current_list_shape.data('raphael').attr('x'))
-  		overlay.mousedown(shape_drag);
+  		overlay.mousedown(xy_drag);
+  	else if(current_list_shape.data('raphael').attr('cx'))
+  	  overlay.mousedown(cxcy_drag);
   	else
   		alert('tried to move');
   }
@@ -635,12 +721,14 @@ function shapes_list_click_when_moving(e){
 function raphael_shape_click_when_moving(e){
   $(this.node).data('shapes list').click();
 	if(this.attr('x'))
-  	shape_drag(e);
+  	xy_drag(e);
+  else if(this.attr('cx'))
+  	overlay.mousedown(cxcy_drag);
 	else
 		alert("tried to move");
 }
 
-function shape_drag(e){
+function xy_drag(e){
   var current_raphael_shape = current_list_shape.data('raphael'),
     startX = +current_raphael_shape.attr('x'),
     startY = +current_raphael_shape.attr('y');
@@ -659,6 +747,24 @@ function shape_drag(e){
   });
 }
 
+function cxcy_drag(e){
+  var current_raphael_shape = current_list_shape.data('raphael'),
+    startX = +current_raphael_shape.attr('cx'),
+    startY = +current_raphael_shape.attr('cy');
+  spotlight(current_raphael_shape);
+  drag(e, function(dx, dy){
+    current_raphael_shape.attr({
+      cx: startX + dx,
+      cy: startY + dy
+    });
+    cx_pos.val(current_raphael_shape.attr('cx'));
+    cy_pos.val(current_raphael_shape.attr('cy'));
+  }, function(){
+      $.each(['cx', 'cy'], function(i, attr){
+        current_list_shape.data('history')[attr][now] = current_raphael_shape.attr(attr);
+      });
+  });
+}
 
 
 
