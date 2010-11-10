@@ -340,6 +340,28 @@ function rm_xy(){
   y_pos.detach();
 }
 
+//width
+var width = $('<form><label for="width_option"><i>width</i>: </label><input type="text" name="width" id="width_option"></form>'),
+    width_input = width.submit(function(){
+      current_list_shape.data('raphael').attr('width', this.width.value);
+      return false;
+    }).find('input'),
+//height
+    height = $('<form><label for="height_option"><i>height</i>: </label><input type="text" name="height" id="height_option"></form>'),
+    height_input = height.submit(function(){
+      current_list_shape.data('raphael').attr('height', this.height.value);
+      return false;
+    }).find('input');
+
+function add_width_height(){
+  width.insertBefore(remove);
+  height.insertBefore(remove);
+}
+function rm_width_height(){
+  width.detach();
+  height.detach();
+}
+
 //cx
 var cx_pos = $('<form><label for="cx_pos_option"><i>cx</i>: </label><input type="text" name="cx_pos" id="cx_pos_option"></form>'),
     cx_input = cx_pos.submit(function(){
@@ -347,7 +369,7 @@ var cx_pos = $('<form><label for="cx_pos_option"><i>cx</i>: </label><input type=
       return false;
     }).find('input'),
 //cy
-    cy_pos = $('<form><label for="cy_pos_option"><i>cy</i>: </label><input type="teåxt" name="cy_pos" id="cy_pos_option"></form>'),
+    cy_pos = $('<form><label for="cy_pos_option"><i>cy</i>: </label><input type="text" name="cy_pos" id="cy_pos_option"></form>'),
     cy_input = cy_pos.submit(function(){
       current_list_shape.data('raphael').attr('cy', this.cy_pos.value);
       return false;
@@ -360,6 +382,28 @@ function add_cxcy(){
 function rm_cxcy(){
   cx_pos.detach();
   cy_pos.detach();
+}
+
+//rx
+var rx_pos = $('<form><label for="rx_pos_option"><i>rx</i>: </label><input type="text" name="rx_pos" id="rx_pos_option"></form>'),
+    rx_input = rx_pos.submit(function(){
+      current_list_shape.data('raphael').attr('rx', this.rx_pos.value);
+      return false;
+    }).find('input'),
+//ry
+    ry_pos = $('<form><label for="ry_pos_option"><i>ry</i>: </label><input type="text" name="ry_pos" id="ry_pos_option"></form>'),
+    ry_input = ry_pos.submit(function(){
+      current_list_shape.data('raphael').attr('ry', this.ry_pos.value);
+      return false;
+    }).find('input');
+
+function add_rxry(){
+  rx_pos.insertBefore(remove);
+  ry_pos.insertBefore(remove);
+}
+function rm_rxry(){
+  rx_pos.detach();
+  ry_pos.detach();
 }
 
 
@@ -522,12 +566,14 @@ $('#rect_button').click(function(){
         .data('history', history)
         .data('add list options', function(raphael_shape){
           add_xy();
+          add_width_height();
           add_fill(raphael_shape);
           //add_width(raphael_shape);
           //add_height(raphael_shape);
         })
         .data('remove list options', function(){
           rm_xy();
+          rm_width_height();
           rm_fill();
           //rm_width();
           //rm_height();
@@ -586,12 +632,14 @@ $('#ellipse_button').click(function(){
         .data('history', history)
         .data('add list options', function(raphael_shape){
           add_cxcy();
+          add_rxry();
           add_fill(raphael_shape);
           //add_width(raphael_shape);
           //add_height(raphael_shape);
         })
         .data('remove list options', function(){
           rm_cxcy();
+          rm_rxry();
           rm_fill();
           //rm_width();
           //rm_height();
