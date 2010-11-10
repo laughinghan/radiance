@@ -348,11 +348,12 @@ function rm_fill(){
 }
 
 //endpoint for lines (including curves - don't move into lines)
-var end_point = $('<form><label for="endpoint_x_field">Point 2 X</label><input type="text" id="endpoint_x_field" name="endpoint_x_field">
-   <label for="endpoint_y_field">Point 2 Y</label><input type="text" id="endpoint_y_field" name="endpoint_y_field">').submit(function(){
-    current_list_shape.data('raphael').attr('path', '');
-    return false;
-  }).appendTo(list_shape_options).find('input');
+var end_point = $('<form><label for="endpoint_x_field">Point 2 X</label><input type="text" id="endpoint_x_field" name="endpoint_x_field">'+
+    '<label for="endpoint_y_field">Point 2 Y</label><input type="text" id="endpoint_y_field" name="endpoint_y_field"></form>')
+    end_point_submit = end_point.find('form').submit(function(){
+      current_list_shape.data('raphael').attr('path');
+      return false;
+    }).appendTo(list_shape_options).find('input');
 
 function add_endpoint(raphael_shape){
   end_point.insertBefore(remove);
