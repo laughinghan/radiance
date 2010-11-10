@@ -112,9 +112,11 @@ input {
   <p class="hidden">Thickness
     <br>Corner Radius
     <br>Fill
+  <p><button id="ellipse_button">Ellipse</button>
   <p><button id="text_button">Text</button>
   <p class="hidden">Size
     <br>Font
+	<p><button id="line_button">Line</button>
   <p><button id="move_button">Move</button>
   <p class="hidden">Choose a shape from the list
 </div>
@@ -298,16 +300,6 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
     .appendTo(list_shape_options).find('input').bind('keydown keypress', defer(function(){
       list_shape_options.prev().html(rename.val() || '&nbsp;');
     })),
-  //x
-  x_pos = $('<form><label for="x_pos_option"><i>x</i>: </label><input type="text" name="x_pos" id="x_pos_option">').submit(function(){
-    current_list_shape.data('raphael').attr('x', this.x_pos.value);
-    return false;
-  }).appendTo(list_shape_options).find('input'),
-  //y
-  y_pos = $('<form><label for="y_pos_option"><i>y</i>: </label><input type="text" name="y_pos" id="y_pos_option">').submit(function(){
-    current_list_shape.data('raphael').attr('y', this.y_pos.value);
-    return false;
-  }).appendTo(list_shape_options).find('input'),
   //remove
   remove = $('<button>Remove</button>').click(function(){
     var shape = list_shape_options.prev();
@@ -332,12 +324,54 @@ function list_shape_click(){
 
   list_shape_options.insertAfter(this);
 }
-
-
-
 //additional options to be added on a per-shape basis:
+//x
+var x_pos = $('<form><label for="x_pos_option"><i>x</i>: </label><input type="text" name="x_pos" id="x_pos_option"></form>'),
+    x_input = x_pos.submit(function(){
+      current_list_shape.data('raphael').attr('x', this.x_pos.value);
+      return false;
+    }).find('input'),
+//y
+    y_pos = $('<form><label for="y_pos_option"><i>y</i>: </label><input type="text" name="y_pos" id="y_pos_option"></form>'),
+    y_input = y_pos.submit(function(){
+      current_list_shape.data('raphael').attr('y', this.y_pos.value);
+      return false;
+    }).find('input');
+
+function add_xy(){
+  x_pos.insertBefore(remove);
+  y_pos.insertBefore(remove);
+}
+function rm_xy(){
+  x_pos.detach();
+  y_pos.detach();
+}
+
+//cx
+var cx_pos = $('<form><label for="cx_pos_option"><i>cx</i>: </label><input type="text" name="cx_pos" id="cx_pos_option"></form>'),
+    cx_input = cx_pos.submit(function(){
+      current_list_shape.data('raphael').attr('cx', this.cx_pos.value);
+      return false;
+    }).find('input'),
+//cy
+    cy_pos = $('<form><label for="cy_pos_option"><i>cy</i>: </label><input type="teåxt" name="cy_pos" id="cy_pos_option"></form>'),
+    cy_input = cy_pos.submit(function(){
+      current_list_shape.data('raphael').attr('cy', this.cy_pos.value);
+      return false;
+    }).find('input');
+
+function add_cxcy(){
+  cx_pos.insertBefore(remove);
+  cy_pos.insertBefore(remove);
+}
+function rm_cxcy(){
+  cx_pos.detach();
+  cy_pos.detach();
+}
+
+
 //fill
-var fill = $('<p><label for="fill">fill</label><input type="checkbox" id="fill" name="fill" style="width:auto"></p>'),
+var fill = $('<p><label for="fill">Fill</label><input type="checkbox" id="fill" name="fill" style="width:auto"></p>'),
   fill_checkbox = fill.find('input').change(function(){
     current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
   });
@@ -349,7 +383,46 @@ function rm_fill(){
   fill.detach();
 }
 
+//starpoint for lines (including curves - don't move into lines)
+var start_point_x = $('<form><label for="startpoint_x_field">Point 1 X</label><input type="text" id="startpoint_x_field" name="startpoint_x_field"></form>')
+    start_point_x_submit = start_point_x.submit(function(){
+      current_list_shape.data('current points')['start_x'] = this.start_point_x.value;
+      current_list_shape.data('raphael').attr('path', 'M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
+      return false;
+    }).find('input');
+var start_point_y = $('<form><label for="startpoint_y_field">Point 1 Y</label><input type="text" id="startpoint_y_field" name="startpoint_y_field"></form>')
+    start_point_y_submit = start_point_y.submit(function(){
+      current_list_shape.data('current points')['start_y'] = this.start_point_y.value;
+      current_list_shape.data('raphael').attr('path', 'M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
+      return false;
+    }).find('input');
 
+//endpoint for lines (including curves - don't move into lines)
+var end_point_x = $('<form><label for="endpoint_x_field">Point 2 X</label><input type="text" id="endpoint_x_field" name="endpoint_x_field"></form>')
+    end_point_x_submit = end_point_x.submit(function(){
+      current_list_shape.data('current points')['end_x'] = this.end_point_x.value;
+      current_list_shape.data('raphael').attr('path', 'M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
+      return false;
+    }).find('input');
+var end_point_y = $('<form><label for="endpoint_y_field">Point 2 Y</label><input type="text" id="endpoint_y_field" name="endpoint_y_field"></form>')
+    end_point_y_submit = end_point_y.submit(function(){
+      current_list_shape.data('current points')['end_y'] = this.end_point_y.value;
+      current_list_shape.data('raphael').attr('path', 'M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
+      return false;
+    }).find('input');
+
+function add_linepoints(raphael_shape){
+  start_point_x.insertBefore(remove);
+  start_point_y.insertBefore(remove);
+  end_point_x.insertBefore(remove);
+  end_point_y.insertBefore(remove);
+}
+function rm_linepoints(){
+  start_point_x.detach();
+  start_point_y.detach();
+  end_point_x.detach();
+  end_point_y.detach();
+}
 
 //the Raphael canvas on which all the shapes are drawn
 var user_canvas = Raphael('user_canvas', 640, 480);
@@ -414,8 +487,8 @@ function call_raphael_shape_click(){
 //show/hide toolbar button options
 var current_button_description = $();
 $('#toolbar button').click(function(){
-  current_button_description.hide();
-  current_button_description = $(this).parent().next().show();
+  // current_button_description.hide();
+  // current_button_description = $(this).parent().next().show();
 
   //make sure overlay not hidden, reset event handlers
   overlay.unbind().show();
@@ -454,11 +527,13 @@ $('#rect_button').click(function(){
       list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
         .data('history', history)
         .data('add list options', function(raphael_shape){
+          add_xy();
           add_fill(raphael_shape);
           //add_width(raphael_shape);
           //add_height(raphael_shape);
         })
         .data('remove list options', function(){
+          rm_xy();
           rm_fill();
           //rm_width();
           //rm_height();
@@ -506,6 +581,66 @@ $('#rect_button').click(function(){
   });
 });
 
+var ellipse_count = 0;
+$('#ellipse_button').click(function(){
+  overlay.mousedown(function(e){
+    ellipse_count += 1;
+    var cornerX = e.offsetX, cornerY = e.offsetY, history = {},
+      ellipse = user_canvas.ellipse(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
+        .mousedown(call_raphael_shape_click),
+      list_ellipse_jQ = $('<p>Ellipse '+ellipse_count+'</p>').data('raphael', ellipse)
+        .data('history', history)
+        .data('add list options', function(raphael_shape){
+          add_cxcy();
+          add_fill(raphael_shape);
+          //add_width(raphael_shape);
+          //add_height(raphael_shape);
+        })
+        .data('remove list options', function(){
+          rm_cxcy();
+          rm_fill();
+          //rm_width();
+          //rm_height();
+        })
+        .click(list_shape_click)
+        .hover(function(){
+          spotlight(ellipse);
+        }, function(){
+          spotlight.off();
+        })
+        .appendTo(shapes_list);
+    $(ellipse.node).data('shapes list', list_ellipse_jQ);
+
+    spotlight(ellipse);
+
+    drag(e, function(dx, dy){
+      if(dx < 0)
+        ellipse.attr({
+          rx: -dx,
+        });
+      else
+        ellipse.attr({
+          rx: dx,
+        });
+      if(dy < 0)
+        ellipse.attr({
+          ry: -dy,
+        });
+      else
+        ellipse.attr({
+          ry: dy,
+        });
+    }, function(){
+      $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
+        history[attr] = [];
+        history[attr][0] = ellipse.attr(attr);
+      });
+    });
+
+    return false;
+  });
+});
+
 var text_count = 0;
 $('#text_button').click(function(){
   overlay.click(function(e){
@@ -519,15 +654,17 @@ $('#text_button').click(function(){
       list_text_jQ = $('<p>Text ' + text_count + '</p>').data('raphael', text)
         .data('history', history)
         .data('add list options', function(){
+          add_xy();
           text_opt_input.val($(text.node).children().text());
           text_option.insertBefore(remove);
         })
         .data('remove list options', function(){
+          rm_xy();
           text_option.detach();
         })
         .click(list_shape_click)
         .hover(function(){
-          spotlight(rect);
+          spotlight(text);
         }, function(){
           spotlight.off();
         })
@@ -540,14 +677,60 @@ $('#text_button').click(function(){
   });
 });
 
+var line_count = 0;
+$('#line_button').click(function(){
+  overlay.mousedown(function(e){
+    line_count += 1;
+    var cornerX = e.offsetX, cornerY = e.offsetY, history = {}, current_points = {},
+      line = user_canvas.path('M'+cornerX+' '+cornerY+'L'+cornerX +' '+cornerY)
+        .mousedown(call_raphael_shape_click),
+      list_line_jQ = $('<p>Line '+line_count+'</p>').data('raphael', line)
+        .data('history', history)
+        .data('current points', current_points)
+        .data('add list options', function(raphael_shape){
+          add_linepoints(raphael_shape);
+        })
+        .data('remove list options', function(){
+          rm_linepoints();
+        })
+        .click(list_shape_click).appendTo(shapes_list);
+    $(line.node).data('shapes list', list_line_jQ);
+
+    spotlight(line);
+
+    drag(e, function(dx, dy){
+        line.attr({
+          path: 'M'+cornerX+' '+cornerY+'l'+dx+' '+dy
+        });
+        current_points['start_x'] = cornerX;
+        current_points['start_y'] = cornerY;
+        current_points['end_x'] = dx;
+        current_points['end_y'] = dy;
+    }, function(){
+      $.each(['path'], function(i, attr){
+        history[attr] = [];
+        history[attr][0] = line.attr(attr);
+      });
+    });
+    return false;
+  });
+});
+
+
 //move tool
 $('#move_button').click(function(){
   shapes_list_click = shapes_list_click_when_moving;
   raphael_shape_click = raphael_shape_click_when_moving;
-  overlay.mousedown(rect_drag);
-
   if(!current_list_shape.length)
     overlay.hide();
+  else{
+    if(current_list_shape.data('raphael').attr('x'))
+  		overlay.mousedown(xy_drag);
+  	else if(current_list_shape.data('raphael').attr('cx'))
+  	  overlay.mousedown(cxcy_drag);
+  	else
+  		alert('tried to move');
+  }
 });
 function shapes_list_click_when_moving(e){
   if(e.target === this)
@@ -557,10 +740,15 @@ function shapes_list_click_when_moving(e){
 }
 function raphael_shape_click_when_moving(e){
   $(this.node).data('shapes list').click();
-  rect_drag(e);
+	if(this.attr('x'))
+  	xy_drag(e);
+  else if(this.attr('cx'))
+  	overlay.mousedown(cxcy_drag);
+	else
+		alert("tried to move");
 }
 
-function rect_drag(e){
+function xy_drag(e){
   var current_raphael_shape = current_list_shape.data('raphael'),
     startX = +current_raphael_shape.attr('x'),
     startY = +current_raphael_shape.attr('y');
@@ -573,12 +761,30 @@ function rect_drag(e){
     x_pos.val(current_raphael_shape.attr('x'));
     y_pos.val(current_raphael_shape.attr('y'));
   }, function(){
-      $.each(['x', 'y', 'width', 'height'], function(i, attr){
+      $.each(['x', 'y'], function(i, attr){
         current_list_shape.data('history')[attr][now] = current_raphael_shape.attr(attr);
       });
   });
 }
 
+function cxcy_drag(e){
+  var current_raphael_shape = current_list_shape.data('raphael'),
+    startX = +current_raphael_shape.attr('cx'),
+    startY = +current_raphael_shape.attr('cy');
+  spotlight(current_raphael_shape);
+  drag(e, function(dx, dy){
+    current_raphael_shape.attr({
+      cx: startX + dx,
+      cy: startY + dy
+    });
+    cx_pos.val(current_raphael_shape.attr('cx'));
+    cy_pos.val(current_raphael_shape.attr('cy'));
+  }, function(){
+      $.each(['cx', 'cy'], function(i, attr){
+        current_list_shape.data('history')[attr][now] = current_raphael_shape.attr(attr);
+      });
+  });
+}
 
 
 
