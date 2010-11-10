@@ -317,18 +317,19 @@ function list_shape_click(){
 
   list_shape_options.insertAfter(this);
 }
+//additional options to be added on a per-shape basis:
 //x
-var x_pos = $('<form><label for="x_pos_option"><i>x</i>: </label><input type="text" name="x_pos" id="x_pos_option">'),
+var x_pos = $('<form><label for="x_pos_option"><i>x</i>: </label><input type="text" name="x_pos" id="x_pos_option"></form>'),
     x_input = x_pos.submit(function(){
       current_list_shape.data('raphael').attr('x', this.x_pos.value);
       return false;
-    }).appendTo(list_shape_options).find('input'),
+    }).find('input'),
 //y
-    y_pos = $('<form><label for="y_pos_option"><i>y</i>: </label><input type="text" name="y_pos" id="y_pos_option">'),
+    y_pos = $('<form><label for="y_pos_option"><i>y</i>: </label><input type="text" name="y_pos" id="y_pos_option"></form>'),
     y_input = y_pos.submit(function(){
       current_list_shape.data('raphael').attr('y', this.y_pos.value);
       return false;
-    }).appendTo(list_shape_options).find('input');
+    }).find('input');
 
 function add_xy(){
   x_pos.insertBefore(remove);
@@ -644,7 +645,7 @@ $('#text_button').click(function(){
         })
         .click(list_shape_click)
         .hover(function(){
-          spotlight(rect);
+          spotlight(text);
         }, function(){
           spotlight.off();
         })
