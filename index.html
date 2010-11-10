@@ -376,25 +376,43 @@ function rm_fill(){
   fill.detach();
 }
 
+//starpoint for lines (including curves - don't move into lines)
+var start_point_x = $('<form><label for="startpoint_x_field">Point 1 X</label><input type="text" id="startpoint_x_field" name="startpoint_x_field"></form>')
+    start_point_x_submit = start_point_x.submit(function(){
+      current_list_shape.data('current points')['start_x'] = this.start_point_x.value;
+      current_list_shape.data('raphael').attr('path', 'M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
+      return false;
+    }).find('input');
+var start_point_y = $('<form><label for="startpoint_y_field">Point 1 Y</label><input type="text" id="startpoint_y_field" name="startpoint_y_field"></form>')
+    start_point_y_submit = start_point_y.submit(function(){
+      current_list_shape.data('current points')['start_y'] = this.start_point_y.value;
+      current_list_shape.data('raphael').attr('path', 'M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
+      return false;
+    }).find('input');
+
 //endpoint for lines (including curves - don't move into lines)
-var end_point_x = $('<form><label for="endpoint_x_field">Point 2 X</label><input type="text" id="endpoint_x_field" name="endpoint_x_field">')
-    end_point_x_submit = end_point_x.find('form').submit(function(){
+var end_point_x = $('<form><label for="endpoint_x_field">Point 2 X</label><input type="text" id="endpoint_x_field" name="endpoint_x_field"></form>')
+    end_point_x_submit = end_point_x.submit(function(){
       current_list_shape.data('current points')['end_x'] = this.end_point_x.value;
-      current_list_shape.data('raphael').attr('M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
+      current_list_shape.data('raphael').attr('path', 'M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
       return false;
-    }).appendTo(list_shape_options).find('input');
-var end_point_y = $('<form><label for="endpoint_y_field">Point 2 Y</label><input type="text" id="endpoint_y_field" name="endpoint_y_field">')
-    end_point_y_submit = end_point_x.find('form').submit(function(){
+    }).find('input');
+var end_point_y = $('<form><label for="endpoint_y_field">Point 2 Y</label><input type="text" id="endpoint_y_field" name="endpoint_y_field"></form>')
+    end_point_y_submit = end_point_y.submit(function(){
       current_list_shape.data('current points')['end_y'] = this.end_point_y.value;
-      current_list_shape.data('raphael').attr('M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
+      current_list_shape.data('raphael').attr('path', 'M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
       return false;
-    }).appendTo(list_shape_options).find('input');
+    }).find('input');
 
 function add_linepoints(raphael_shape){
+  start_point_x.insertBefore(remove);
+  start_point_y.insertBefore(remove);
   end_point_x.insertBefore(remove);
   end_point_y.insertBefore(remove);
 }
 function rm_linepoints(){
+  start_point_x.detach();
+  start_point_y.detach();
   end_point_x.detach();
   end_point_y.detach();
 }
