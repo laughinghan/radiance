@@ -350,20 +350,43 @@ function rm_fill(){
   fill.detach();
 }
 
-//stroke
-var stroke_width_option = $('<p><label for="stroke_width_option"> thickness: </label><input type="text" name="stroke" id="stroke_width_option"></p>'),
+//stroke color
+var stroke_color_option = $('<p><label for="stroke_color_option">Color: </label><input type="text" name="stroke_width" id="stroke_width_option">'+
+    '<select><option></option><option>Red</option><option>Orange</option><option>Yellow</option><option>Green</option><option>Blue</option>'+
+    '<option>Purple</option><option>Black</option><option>Gray</option><option>White</option></select></p>'),
+  stroke_color_input = stroke_color_option.find('input').bind('keydown keypress', defer(function(){
+    var raphael_shape = current_list_shape.data('raphael'), stroke_color_val = stroke_color_input.val();
+    if(!raphael_shape.attr('stroke-opacity'))
+      raphael_shape.attr('stroke-opacity', 1);
+    raphael_shape.attr('stroke', stroke_color_val);
+    stroke_color_select.val(stroke_color_val);
+  })),
+  stroke_color_select = stroke_color_option.find('select').change(function(){
+    stroke_color_input.val(this.value).keydown();
+  });
+function add_stroke_color(){
+  var stroke_color_val = current_list_shape.data('raphael').attr('stroke');
+  stroke_color_input.val(stroke_color_val);
+  stroke_color_option.insertBefore(remove);
+}
+function rm_stroke_color(){
+  stroke_color_option.detach();
+}
+
+//stroke width
+var stroke_width_option = $('<p><label for="stroke_width_option">Thickness: </label><input type="text" name="stroke_width" id="stroke_width_option"></p>'),
   stroke_width_input = stroke_width_option.find('input').bind('keydown keypress', defer(function(){
       var raphael_shape = current_list_shape.data('raphael');
       if(!raphael_shape.attr('stroke'))
         raphael_shape.attr('stroke', '#000');
       raphael_shape.attr('stroke-width', stroke_width_input.val());
     }));
-function add_stroke(){
+function add_stroke_width(){
   var stroke_width_val = current_list_shape.data('raphael').attr('stroke-width') || 1;
   stroke_width_input.val(stroke_width_val);
   stroke_width_option.insertBefore(remove);
 }
-function rm_stroke(){
+function rm_stroke_width(){
   stroke_width_option.detach();
 }
 //to get rid of jumpiness, change ".bind('keydown keypress', defer" to ".change("
@@ -543,12 +566,14 @@ $('#rect_button').click(function(){
           $.each({x: '<i>x</i> ', y: '<i>y</i> ', width: 'Width', height: 'Height'}, function(attr, label){
             attrs = attrs.add(add_attr_option(attr, label));
           });
-          add_stroke();
+          add_stroke_width();
+          add_stroke_color();
           add_fill(raphael_shape);
         })
         .data('remove list options', function(){
           attrs.remove();
-          rm_stroke();
+          rm_stroke_width();
+          rm_stroke_color();
           rm_fill();
         })
         .click(list_shape_click)
@@ -610,12 +635,14 @@ $('#ellipse_button').click(function(){
           $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
             attrs = attrs.add(add_attr_option(attr, attr));
           });
-          add_stroke();
+          add_stroke_width();
+          add_stroke_color();
           add_fill(raphael_shape);
         })
         .data('remove list options', function(){
           attrs.remove();
-          rm_stroke();
+          rm_stroke_width();
+          rm_stroke_color();
           rm_fill();
         })
         .click(list_shape_click)
@@ -711,11 +738,13 @@ $('#line_button').click(function(){
         .data('current points', current_points)
         .data('add list options', function(raphael_shape){
           add_linepoints(raphael_shape);
-          add_stroke();
+          add_stroke_width();
+          add_stroke_color();
         })
         .data('remove list options', function(){
           rm_linepoints();
-          rm_stroke();
+          rm_stroke_width();
+          rm_stroke_color();
         })
         .click(list_shape_click).appendTo(shapes_list);
     line.moved = function(){
