@@ -113,10 +113,13 @@ input {
     <br>Corner Radius
     <br>Fill
   <p><button id="ellipse_button">Ellipse</button>
+  <p class="hidden">Thickness
+    <br>Fill
   <p><button id="text_button">Text</button>
   <p class="hidden">Size
     <br>Font
-	<p><button id="line_button">Line</button>
+  <p><button id="line_button">Line</button>
+  <p class="hidden">Thickness
   <p><button id="move_button">Move</button>
   <p class="hidden">Choose a shape from the list
 </div>
@@ -539,8 +542,8 @@ function call_raphael_shape_click(){
 //show/hide toolbar button options
 var current_button_description = $();
 $('#toolbar button').click(function(){
-  // current_button_description.hide();
-  // current_button_description = $(this).parent().next().show();
+  current_button_description.hide();
+  current_button_description = $(this).parent().next().show();
 
   //make sure overlay not hidden, reset event handlers
   overlay.unbind().show();
