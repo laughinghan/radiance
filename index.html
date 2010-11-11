@@ -349,6 +349,23 @@ function add_fill(raphael_shape){
 function rm_fill(){
   fill.detach();
 }
+
+//stroke
+var stroke_width_option = $('<p><label for="stroke_width_option"> thickness: </label><input type="text" name="stroke" id="stroke_width_option"></p>'),
+  stroke_width_input = stroke_width_option.find('input').bind('keydown keypress', defer(function(){
+      var raphael_shape = current_list_shape.data('raphael');
+      if(!raphael_shape.attr('stroke'))
+        raphael_shape.attr('stroke', '#000');
+      raphael_shape.attr('stroke-width', stroke_input.val());
+    }));
+function add_stroke(){
+  var stroke_width_val = current_list_shape.data('raphael').attr('stroke-width') || 1;
+  stroke_width_input.val(stroke_width_val);
+  stroke_width_option.insertBefore(remove);
+}
+function rm_stroke(){
+  stroke_width_option.detach();
+}
 //to get rid of jumpiness, change ".bind('keydown keypress', defer" to ".change("
 //startpoint for lines (including curves - don't move into lines)
 var start_point_x = $('<p><label for="startpoint_x_field">Start <i>x</i></label><input type="text" id="startpoint_x_field" name="startpoint_x_field"></p>'),
@@ -663,9 +680,11 @@ $('#line_button').click(function(){
         .data('current points', current_points)
         .data('add list options', function(raphael_shape){
           add_linepoints(raphael_shape);
+          add_stroke();
         })
         .data('remove list options', function(){
           rm_linepoints();
+          rm_stroke();
         })
         .click(list_shape_click).appendTo(shapes_list);
     $(line.node).data('shapes list', list_line_jQ);
