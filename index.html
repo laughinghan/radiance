@@ -525,10 +525,12 @@ $('#rect_button').click(function(){
           $.each(['x', 'y', 'width', 'height'], function(i, attr){
             attrs = attrs.add(add_attr_option(attr));
           });
+          add_stroke();
           add_fill(raphael_shape);
         })
         .data('remove list options', function(){
           attrs.remove();
+          rm_stroke();
           rm_fill();
         })
         .click(list_shape_click)
@@ -587,10 +589,12 @@ $('#ellipse_button').click(function(){
           $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
             attrs = attrs.add(add_attr_option(attr));
           });
+          add_stroke();
           add_fill(raphael_shape);
         })
         .data('remove list options', function(){
           attrs.remove();
+          rm_stroke();
           rm_fill();
         })
         .click(list_shape_click)
