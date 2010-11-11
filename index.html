@@ -300,8 +300,18 @@ function interpolate_anim_state(){
   }
 }
 
+$('#current_time').bind('keydown keypress', defer(function(){
+  now = parseFloat($('#current_time').val()) * 1000;
+  if(now > duration)
+    now = duration;
+  timeknob.attr('x', Math.round(now*480/duration) - 3);
+  shapes_list.children().each(interpolate_anim_state);
+}))
 
-
+$('#duration').change(function(){
+  duration = parseFloat($('#duration').val(), 3) * 1000;
+  timeknob.attr('x', Math.round(now*480/duration) - 3);
+})
 
 //defer execution by a thread. Used by live text input boxes
 function defer(fn){
