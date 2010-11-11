@@ -365,9 +365,11 @@ function add_attr_option(attr){
 //fill
 var fill = $('<p><label for="fill">fill</label><input type="checkbox" id="fill" name="fill"></p>'),
   fill_checkbox = fill.find('input').change(function(){
-    current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
-    if(!current_list_shape.data('history')['fill-opacity'])
+    if(!current_list_shape.data('history')['fill-opacity']){
       current_list_shape.data('history')['fill-opacity'] = [];
+      current_list_shape.data('history')['fill-opacity'][0] = current_list_shape.data('raphael').attr('fill-opacity');
+    }
+    current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
     current_list_shape.data('history')['fill-opacity'][now] = current_list_shape.data('raphael').attr('fill-opacity');
   });
 function add_fill(raphael_shape){
@@ -386,7 +388,12 @@ var stroke_color_option = $('<p><label for="stroke_color_option">Color: </label>
     var raphael_shape = current_list_shape.data('raphael'), stroke_color_val = stroke_color_input.val();
     if(!raphael_shape.attr('stroke-opacity'))
       raphael_shape.attr('stroke-opacity', 1);
+      if(!current_list_shape.data('history')['stroke']){
+        current_list_shape.data('history')['stroke'] = [];
+        current_list_shape.data('history')['stroke'][0] = current_list_shape.data('raphael').attr('stroke');
+      }
     raphael_shape.attr('stroke', stroke_color_val);
+    current_list_shape.data('history')['stroke'][now] = current_list_shape.data('raphael').attr('stroke');
     stroke_color_select.val(stroke_color_val);
   })),
   stroke_color_select = stroke_color_option.find('select').change(function(){
@@ -407,7 +414,12 @@ var stroke_width_option = $('<p><label for="stroke_width_option"> thickness: </l
       var raphael_shape = current_list_shape.data('raphael');
       if(!raphael_shape.attr('stroke'))
         raphael_shape.attr('stroke', '#000');
+        if(!current_list_shape.data('history')['stroke-width']){
+          current_list_shape.data('history')['stroke-width'] = [];
+          current_list_shape.data('history')['stroke-width'][0] = current_list_shape.data('raphael').attr('stroke-width');
+        }
       raphael_shape.attr('stroke-width', stroke_width_input.val());
+      current_list_shape.data('history')['stroke-width'][now] = current_list_shape.data('raphael').attr('stroke-width');
     }));
 function add_stroke_width(){
   var stroke_width_val = current_list_shape.data('raphael').attr('stroke-width') || 1;
@@ -640,7 +652,7 @@ $('#rect_button').click(function(){
           y: cornerY
         });
     }, function(){
-      $.each(['x', 'y', 'width', 'height', 'fill-opactiy'], function(i, attr){
+      $.each(['x', 'y', 'width', 'height'], function(i, attr){
         history[attr] = [];
         history[attr][0] = rect.attr(attr);
       });
@@ -705,7 +717,7 @@ $('#ellipse_button').click(function(){
           ry: dy,
         });
     }, function(){
-      $.each(['cx', 'cy', 'rx', 'ry','fill-opacity''opacity'], function(i, attr){
+      $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
         history[attr] = [];
         history[attr][0] = ellipse.attr(attr);
       });
