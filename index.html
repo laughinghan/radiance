@@ -661,6 +661,11 @@ $('#rect_button').click(function(){
         history[attr] = [];
         history[attr][0] = rect.attr(attr);
       });
+      if(now != 0){
+        history['opacity'] = [];
+        history['opacity'][0] = 0;
+        history['opacity'][now] = 1;
+      }
     });
 
     return false;
@@ -726,6 +731,11 @@ $('#ellipse_button').click(function(){
         history[attr] = [];
         history[attr][0] = ellipse.attr(attr);
       });
+      if(now != 0){
+        history['opacity'] = [];
+        history['opacity'][0] = 0;
+        history['opacity'][now] = 1;
+      }
     });
 
     return false;
@@ -768,6 +778,11 @@ $('#text_button').click(function(){
       history[attr] = [];
       history[attr][0] = text.attr(attr);
     });
+    if(now != 0){
+      history['opacity'] = [];
+      history['opacity'][0] = 0;
+      history['opacity'][now] = 1;
+    }
   });
 });
 
@@ -815,6 +830,11 @@ $('#line_button').click(function(){
         history[attr] = [];
         history[attr][0] = line.attr(attr);
       });
+      if(now != 0){
+        history['opacity'] = [];
+        history['opacity'][0] = 0;
+        history['opacity'][now] = 1;
+      }
     });
     return false;
   });
