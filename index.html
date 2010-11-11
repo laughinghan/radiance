@@ -301,7 +301,7 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
   //rename
   rename = $('<p><label for="rename_option">Name</label> : <input type="text" name="rename" id="rename_option"></p>')
     .appendTo(list_shape_options).find('input').bind('keydown keypress', defer(function(){
-      list_shape_options.prev().html(rename.val() || '&nbsp;');
+      list_shape_options.prev().text(rename.val() || '&nbsp;');
     })),
   //remove
   remove = $('<button>Remove</button>').click(function(){
