@@ -583,13 +583,13 @@ function moved_xy(){
   this.attr_options().find('input')[0].value = this.attr('x');
   this.attr_options().find('input')[1].value = this.attr('y');
 }
-function moved_cxcy(x, y){
+function moved_cxcy(){
   this.attr_options().find('input')[0].value = this.attr('cx');
   this.attr_options().find('input')[1].value = this.attr('cy');
 }
 function doneMoving_xy(){
-  current_list_shape.data('history').x[now] = this.attr('x');
-  current_list_shape.data('history').y[now] = this.attr('y');
+  current_list_shape.data('history')['x'][now] = this.attr('x');
+  current_list_shape.data('history')['y'][now] = this.attr('y');
 }
 function doneMoving_cxcy(){
   current_list_shape.data('history').cx[now] = this.attr('cx');
