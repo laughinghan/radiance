@@ -230,6 +230,18 @@ $('#user_canvas_controls button').click(function(){
         (function(){
           now = Math.round((timeknob.attr('x') + 3)*duration/480);
           var new_attr = {};
+          if(attr in {fill:0,hidden:0}){
+            var prev = 0;
+            for(var next in history[attr])
+              if(next > now)
+                break;
+              else
+                prev = next;
+            new_attr[attr] = history[attr][prev];
+            raphael_this.attr(new_attr);
+            setTimeout(arguments.callee, next - now);
+            return;
+          }
           for(var next in history[attr])
             if(next > now)
               break;
