@@ -230,7 +230,7 @@ $('#user_canvas_controls button').click(function(){
         (function(){
           now = Math.round((timeknob.attr('x') + 3)*duration/480);
           var new_attr = {};
-          if(attr in {fill:0,hidden:0}){
+          if(attr in {fill-opacity:0,hidden:0}){
             var prev = 0;
             for(var next in history[attr])
               if(next > now)
@@ -353,6 +353,9 @@ function add_attr_option(attr){
 var fill = $('<p><label for="fill">fill</label><input type="checkbox" id="fill" name="fill"></p>'),
   fill_checkbox = fill.find('input').change(function(){
     current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
+    if(!current_list_shape.data('history')['fill-opacity'])
+      current_list_shape.data('history')['fill-opacity'] = [];
+    current_list_shape.data('history')['fill-opacity'][now] = current_list_shape.data('raphael').attr('fill-opacity');
   });
 function add_fill(raphael_shape){
   fill_checkbox[0].checked = raphael_shape.attr('fill-opacity') === 1;
@@ -624,7 +627,7 @@ $('#rect_button').click(function(){
           y: cornerY
         });
     }, function(){
-      $.each(['x', 'y', 'width', 'height'], function(i, attr){
+      $.each(['x', 'y', 'width', 'height', 'fill-opactiy'], function(i, attr){
         history[attr] = [];
         history[attr][0] = rect.attr(attr);
       });
@@ -689,7 +692,7 @@ $('#ellipse_button').click(function(){
           ry: dy,
         });
     }, function(){
-      $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
+      $.each(['cx', 'cy', 'rx', 'ry','fill-opacity''opacity'], function(i, attr){
         history[attr] = [];
         history[attr][0] = ellipse.attr(attr);
       });
