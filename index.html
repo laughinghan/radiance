@@ -311,7 +311,7 @@ var shapes_list_click = $.noop, //canonical 'current' click handler on shapes_li
 //shape in list, options thereof
 var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"></p>'),
   //rename
-  rename = $('<p><label for="rename_option">Name</label>: <input type="text" name="rename" id="rename_option"></p>')
+  rename = $('<p><label for="rename_option">name</label> : <input type="text" name="rename" id="rename_option"></p>')
     .appendTo(list_shape_options).find('input').bind('keydown keypress', defer(function(){
       list_shape_options.prev().text(rename.val() || '&nbsp;');
     })),
@@ -340,9 +340,9 @@ function list_shape_click(){
 
 
 //additional options to be added on a per-shape basis:
-function add_attr_option(attr, label){
+function add_attr_option(attr){
   var raphael_shape = current_list_shape.data('raphael'),
-    attr_option = $('<p><label for="'+attr+'_option">'+label+': </label><input type="text" name="'+attr+'" id="'+attr+'_option"></p>'),
+    attr_option = $('<p><label for="'+attr+'_option">'+attr+' : </label><input type="text" name="'+attr+'" id="'+attr+'_option"></p>'),
     attr_input = attr_option.find('input').bind('keydown keypress', defer(function(){
       raphael_shape.attr(attr, attr_input.val());
     })).val(raphael_shape.attr(attr));
@@ -350,7 +350,7 @@ function add_attr_option(attr, label){
 }
 
 //fill
-var fill = $('<p><label for="fill">Fill</label><input type="checkbox" id="fill" name="fill"></p>'),
+var fill = $('<p><label for="fill">fill</label><input type="checkbox" id="fill" name="fill"></p>'),
   fill_checkbox = fill.find('input').change(function(){
     current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
   });
@@ -386,7 +386,7 @@ function rm_stroke_color(){
 }
 
 //stroke width
-var stroke_width_option = $('<p><label for="stroke_width_option">Thickness: </label><input type="text" name="stroke_width" id="stroke_width_option"></p>'),
+var stroke_width_option = $('<p><label for="stroke_width_option"> thickness: </label><input type="text" name="stroke" id="stroke_width_option"></p>'),
   stroke_width_input = stroke_width_option.find('input').bind('keydown keypress', defer(function(){
       var raphael_shape = current_list_shape.data('raphael');
       if(!raphael_shape.attr('stroke'))
@@ -403,14 +403,14 @@ function rm_stroke_width(){
 }
 //to get rid of jumpiness, change ".bind('keydown keypress', defer" to ".change("
 //startpoint for lines (including curves - don't move into lines)
-var start_point_x = $('<p><label for="startpoint_x_field">start <i>x</i> : </label> <input type="text" id="startpoint_x_field" name="startpoint_x_field"></p>'),
+var start_point_x = $('<p><label for="startpoint_x_field">start <i>x</i></label><input type="text" id="startpoint_x_field" name="startpoint_x_field"></p>'),
   start_point_x_input = start_point_x.find('input').bind('keydown keypress', defer(function(){
     var current_points = current_list_shape.data('current points');
     current_points.start_x = start_point_x_input.val() || 0;
     current_list_shape.data('raphael').attr('path',
       'M'+current_points.start_x+' '+current_points.start_y+'L'+current_points.end_x+' '+current_points.end_y);
   })),
-  start_point_y = $('<p><label for="startpoint_y_field">start <i>y</i> : </label> <input type="text" id="startpoint_y_field" name="startpoint_y_field"></p>'),
+  start_point_y = $('<p><label for="startpoint_y_field">start <i>y</i></label><input type="text" id="startpoint_y_field" name="startpoint_y_field"></p>'),
   start_point_y_input = start_point_y.find('input').bind('keydown keypress', defer(function(){
     var current_points = current_list_shape.data('current points');
     current_points.start_y = start_point_y_input.val() || 0;
@@ -418,14 +418,14 @@ var start_point_x = $('<p><label for="startpoint_x_field">start <i>x</i> : </lab
       'M'+current_points.start_x+' '+current_points.start_y+'L'+current_points.end_x+' '+current_points.end_y);
   })),
 //endpoint for lines (including curves - don't move into lines)
-  end_point_x = $('<p><label for="startpoint_x_field">end <i>x</i> : </label> <input type="text" id="endpoint_x_field" name="endpoint_x_field"></p>'),
+  end_point_x = $('<p><label for="startpoint_x_field">end <i>x</i></label><input type="text" id="endpoint_x_field" name="endpoint_x_field"></p>'),
   end_point_x_input = end_point_x.find('input').bind('keydown keypress', defer(function(){
     var current_points = current_list_shape.data('current points');
     current_points.end_x = end_point_x_input.val() || 0;
     current_list_shape.data('raphael').attr('path',
       'M'+current_points.start_x+' '+current_points.start_y+'L'+current_points.end_x+' '+current_points.end_y);
   })),
-  end_point_y = $('<p><label for="startpoint_y_field">end <i>y</i> : </label> <input type="text" id="endpoint_y_field" name="endpoint_y_field"></p>'),
+  end_point_y = $('<p><label for="startpoint_y_field">end <i>y</i></label><input type="text" id="endpoint_y_field" name="endpoint_y_field"></p>'),
   end_point_y_input = end_point_y.find('input').bind('keydown keypress', defer(function(){
     var current_points = current_list_shape.data('current points');
     current_points.end_y = end_point_y_input.val() || 0;
@@ -575,8 +575,8 @@ $('#rect_button').click(function(){
       list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
         .data('history', history)
         .data('add list options', function(raphael_shape){
-          $.each({x: '<i>x</i> ', y: '<i>y</i> ', width: 'Width', height: 'Height'}, function(attr, label){
-            attrs = attrs.add(add_attr_option(attr, label));
+          $.each(['x', 'y', 'width', 'height'], function(i, attr){
+            attrs = attrs.add(add_attr_option(attr));
           });
           add_stroke_width();
           add_stroke_color();
@@ -645,7 +645,7 @@ $('#ellipse_button').click(function(){
         .data('history', history)
         .data('add list options', function(raphael_shape){
           $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
-            attrs = attrs.add(add_attr_option(attr, attr));
+            attrs = attrs.add(add_attr_option(attr));
           });
           add_stroke_width();
           add_stroke_color();
@@ -712,7 +712,7 @@ $('#text_button').click(function(){
       list_text_jQ = $('<p>Text ' + text_count + '</p>').data('raphael', text)
         .data('history', history)
         .data('add list options', function(){
-          attrs = add_attr_option('x', '<i>x</i> ').add(add_attr_option('y', '<i>y</i> '));
+          attrs = add_attr_option('x').add(add_attr_option('y'));
           text_opt_input.val($(text.node).children().text());
           text_option.insertBefore(remove);
         })
