@@ -268,6 +268,22 @@ function interpolate_anim_state(){
     return;
   //animation state now
   for(var attr in history){
+    var new_attr = {};
+    if(attr in {'fill-opacity':0,'opacity':0, apples:0}){
+      var prev = 0;
+      for(var next in history[attr])
+        if(next > now)
+          break;
+        else
+          prev = next;
+      new_attr[attr] = history[attr][prev];
+      raphael_this.attr(new_attr);
+      setTimeout(arguments.callee, next - now);
+      return;
+    }else
+    if(attr in {'stroke':0, apples:0}){
+      // we are going to need to use the same sort of interpolation raphael itself uses here. including the now fixed regex of DOOOOM.
+    }else{
     var past = 0, future = duration + 1;
     for(var time in history[attr])
       if(time <= now && time > past)
@@ -280,6 +296,7 @@ function interpolate_anim_state(){
     else
       raphael_this.attr(attr, history[attr][past] +
         (history[attr][future] - history[attr][past])*(now - past)/(future - past)); //replace with proper easing
+    }
   }
 }
 
@@ -320,7 +337,7 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
     hidden_option_checkbox = hidden_option.find('input').change(function(){
       if(!current_list_shape.data('history')['opacity']){
         current_list_shape.data('history')['opacity'] = [];
-        current_list_shape.data('history')['opacity'][0] = current_list_shape.data('raphael').attr('opacity');
+        current_list_shape.data('history')['opacity'][0] = current_list_shape.data('raphael').attr('opacity') || 1;
       }
       if(+this.checked)
         current_list_shape.data('raphael').attr('opacity', 0);
@@ -368,7 +385,7 @@ var fill = $('<p><label for="fill">fill : </label><input type="checkbox" id="fil
   fill_checkbox = fill.find('input').change(function(){
     if(!current_list_shape.data('history')['fill-opacity']){
       current_list_shape.data('history')['fill-opacity'] = [];
-      current_list_shape.data('history')['fill-opacity'][0] = current_list_shape.data('raphael').attr('fill-opacity');
+      current_list_shape.data('history')['fill-opacity'][0] = current_list_shape.data('raphael').attr('fill-opacity') || 0;
     }
     current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
     current_list_shape.data('history')['fill-opacity'][now] = current_list_shape.data('raphael').attr('fill-opacity');
