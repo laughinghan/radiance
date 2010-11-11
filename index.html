@@ -349,36 +349,43 @@ function add_fill(raphael_shape){
 function rm_fill(){
   fill.detach();
 }
-
-//starpoint for lines (including curves - don't move into lines)
-var start_point_x = $('<form><label for="startpoint_x_field">Point 1 X</label><input type="text" id="startpoint_x_field" name="startpoint_x_field"></form>')
-    start_point_x_submit = start_point_x.submit(function(){
-      current_list_shape.data('current points')['start_x'] = this.start_point_x.value;
-      current_list_shape.data('raphael').attr('path', 'M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
-      return false;
-    }).find('input');
-var start_point_y = $('<form><label for="startpoint_y_field">Point 1 Y</label><input type="text" id="startpoint_y_field" name="startpoint_y_field"></form>')
-    start_point_y_submit = start_point_y.submit(function(){
-      current_list_shape.data('current points')['start_y'] = this.start_point_y.value;
-      current_list_shape.data('raphael').attr('path', 'M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
-      return false;
-    }).find('input');
-
+//to get rid of jumpiness, change ".bind('keydown keypress', defer" to ".change("
+//startpoint for lines (including curves - don't move into lines)
+var start_point_x = $('<p><label for="startpoint_x_field">Start <i>x</i></label><input type="text" id="startpoint_x_field" name="startpoint_x_field"></p>'),
+  start_point_x_input = start_point_x.find('input').bind('keydown keypress', defer(function(){
+    var current_points = current_list_shape.data('current points');
+    current_points.start_x = start_point_x_input.val() || 0;
+    current_list_shape.data('raphael').attr('path',
+      'M'+current_points.start_x+' '+current_points.start_y+'L'+current_points.end_x+' '+current_points.end_y);
+  })),
+  start_point_y = $('<p><label for="startpoint_y_field">Start <i>y</i></label><input type="text" id="startpoint_y_field" name="startpoint_y_field"></p>'),
+  start_point_y_input = start_point_y.find('input').bind('keydown keypress', defer(function(){
+    var current_points = current_list_shape.data('current points');
+    current_points.start_y = start_point_y_input.val() || 0;
+    current_list_shape.data('raphael').attr('path',
+      'M'+current_points.start_x+' '+current_points.start_y+'L'+current_points.end_x+' '+current_points.end_y);
+  })),
 //endpoint for lines (including curves - don't move into lines)
-var end_point_x = $('<form><label for="endpoint_x_field">Point 2 X</label><input type="text" id="endpoint_x_field" name="endpoint_x_field"></form>')
-    end_point_x_submit = end_point_x.submit(function(){
-      current_list_shape.data('current points')['end_x'] = this.end_point_x.value;
-      current_list_shape.data('raphael').attr('path', 'M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
-      return false;
-    }).find('input');
-var end_point_y = $('<form><label for="endpoint_y_field">Point 2 Y</label><input type="text" id="endpoint_y_field" name="endpoint_y_field"></form>')
-    end_point_y_submit = end_point_y.submit(function(){
-      current_list_shape.data('current points')['end_y'] = this.end_point_y.value;
-      current_list_shape.data('raphael').attr('path', 'M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x']+' '+current_list_shape.data('current points')['end_y']);
-      return false;
-    }).find('input');
-
+  end_point_x = $('<p><label for="startpoint_x_field">End <i>x</i></label><input type="text" id="endpoint_x_field" name="endpoint_x_field"></p>'),
+  end_point_x_input = end_point_x.find('input').bind('keydown keypress', defer(function(){
+    var current_points = current_list_shape.data('current points');
+    current_points.end_x = end_point_x_input.val() || 0;
+    current_list_shape.data('raphael').attr('path',
+      'M'+current_points.start_x+' '+current_points.start_y+'L'+current_points.end_x+' '+current_points.end_y);
+  })),
+  end_point_y = $('<p><label for="startpoint_y_field">End <i>y</i></label><input type="text" id="endpoint_y_field" name="endpoint_y_field"></p>'),
+  end_point_y_input = end_point_y.find('input').bind('keydown keypress', defer(function(){
+    var current_points = current_list_shape.data('current points');
+    current_points.end_y = end_point_y_input.val() || 0;
+    current_list_shape.data('raphael').attr('path',
+      'M'+current_points.start_x+' '+current_points.start_y+'L'+current_points.end_x+' '+current_points.end_y);
+  }));
 function add_linepoints(raphael_shape){
+  var current_points = current_list_shape.data('current points');
+  start_point_x_input.val(current_points.start_x);
+  start_point_y_input.val(current_points.start_y);
+  end_point_x_input.val(current_points.end_x);
+  end_point_y_input.val(current_points.end_y);
   start_point_x.insertBefore(remove);
   start_point_y.insertBefore(remove);
   end_point_x.insertBefore(remove);
@@ -669,10 +676,10 @@ $('#line_button').click(function(){
         line.attr({
           path: 'M'+cornerX+' '+cornerY+'l'+dx+' '+dy
         });
-        current_points['start_x'] = cornerX;
-        current_points['start_y'] = cornerY;
-        current_points['end_x'] = dx;
-        current_points['end_y'] = dy;
+        current_points.start_x = cornerX;
+        current_points.start_y = cornerY;
+        current_points.end_x = dx;
+        current_points.end_y = dy;
     }, function(){
       $.each(['path'], function(i, attr){
         history[attr] = [];
