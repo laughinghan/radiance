@@ -417,7 +417,7 @@ function rm_rxry(){
 }
 
 //fill
-var fill = $('<p><label for="fill">Fill</label><input type="checkbox" id="fill" name="fill" style="width:auto"></p>'),
+var fill = $('<p><label for="fill">Fill</label><input type="checkbox" id="fill" name="fill"></p>'),
   fill_checkbox = fill.find('input').change(function(){
     current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
   });
