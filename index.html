@@ -587,6 +587,12 @@ function moved_cxcy(){
   this.attr_options().find('input')[0].value = this.attr('cx');
   this.attr_options().find('input')[1].value = this.attr('cy');
 }
+function moved_linepoints(){
+  $('#startpoint_x_field').val(this.attr('path')[0][1]);
+  $('#startpoint_y_field').val(this.attr('path')[0][2]);
+  $('#endpoint_x_field').val(this.attr('path')[1][1]);
+  $('#endpoint_y_field').val(this.attr('path')[1][2]);
+  }
 function doneMoving_xy(){
   current_list_shape.data('history')['x'][now] = this.attr('x');
   current_list_shape.data('history')['y'][now] = this.attr('y');
@@ -594,6 +600,13 @@ function doneMoving_xy(){
 function doneMoving_cxcy(){
   current_list_shape.data('history').cx[now] = this.attr('cx');
   current_list_shape.data('history').cy[now] = this.attr('cy');
+}
+function doneMoving_linepoints(){
+  current_list_shape.data('current points')['start_x'] = this.attr('path')[0][1];
+  current_list_shape.data('current points')['start_y'] = this.attr('path')[0][2];
+  current_list_shape.data('current points')['end_x'] = this.attr('path')[1][1];
+  current_list_shape.data('current points')['end_y'] = this.attr('path')[1][2];
+  current_list_shape.data('history').path[now] = 'M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x'] +' '+current_list_shape.data('current points')['end_y'];
 }
 
 
@@ -807,12 +820,8 @@ $('#line_button').click(function(){
           rm_stroke_color();
         })
         .click(list_shape_click).appendTo(shapes_list);
-    line.moved = function(){
-      //in the future, this will change the input fields
-    };
-    line.doneMoving = function(){
-      //in the futre, this will change the history
-    }
+    line.moved = moved_linepoints;
+    line.doneMoving = doneMoving_linepoints;
     $(line.node).data('shapes list', list_line_jQ);
 
     spotlight(line);
