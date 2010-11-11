@@ -358,6 +358,7 @@ function add_attr_option(attr){
     attr_option = $('<p><label for="'+attr+'_option">'+attr+' : </label><input type="text" name="'+attr+'" id="'+attr+'_option"></p>'),
     attr_input = attr_option.find('input').bind('keydown keypress', defer(function(){
       raphael_shape.attr(attr, attr_input.val());
+      current_list_shape.data('history')[attr][now] = current_list_shape.data('raphael').attr(attr);
     })).val(raphael_shape.attr(attr));
   return attr_option.insertBefore(remove);
 }
@@ -437,6 +438,7 @@ var start_point_x = $('<p><label for="startpoint_x_field">start <i>x</i> : </lab
     current_points.start_x = start_point_x_input.val() || 0;
     current_list_shape.data('raphael').attr('path',
       'M'+current_points.start_x+' '+current_points.start_y+'L'+current_points.end_x+' '+current_points.end_y);
+   current_list_shape.data('history')['path'][now] = current_list_shape.data('raphael').attr('path');
   })),
   start_point_y = $('<p><label for="startpoint_y_field">start <i>y</i></label> : <input type="text" id="startpoint_y_field" name="startpoint_y_field"></p>'),
   start_point_y_input = start_point_y.find('input').bind('keydown keypress', defer(function(){
@@ -444,6 +446,7 @@ var start_point_x = $('<p><label for="startpoint_x_field">start <i>x</i> : </lab
     current_points.start_y = start_point_y_input.val() || 0;
     current_list_shape.data('raphael').attr('path',
       'M'+current_points.start_x+' '+current_points.start_y+'L'+current_points.end_x+' '+current_points.end_y);
+    current_list_shape.data('history')['path'][now] = current_list_shape.data('raphael').attr('path');
   })),
 //endpoint for lines (including curves - don't move into lines)
   end_point_x = $('<p><label for="startpoint_x_field">end <i>x</i></label> : <input type="text" id="endpoint_x_field" name="endpoint_x_field"></p>'),
@@ -452,6 +455,7 @@ var start_point_x = $('<p><label for="startpoint_x_field">start <i>x</i> : </lab
     current_points.end_x = end_point_x_input.val() || 0;
     current_list_shape.data('raphael').attr('path',
       'M'+current_points.start_x+' '+current_points.start_y+'L'+current_points.end_x+' '+current_points.end_y);
+    current_list_shape.data('history')['path'][now] = current_list_shape.data('raphael').attr('path');
   })),
   end_point_y = $('<p><label for="startpoint_y_field">end <i>y</i></label> : <input type="text" id="endpoint_y_field" name="endpoint_y_field"></p>'),
   end_point_y_input = end_point_y.find('input').bind('keydown keypress', defer(function(){
@@ -459,6 +463,7 @@ var start_point_x = $('<p><label for="startpoint_x_field">start <i>x</i> : </lab
     current_points.end_y = end_point_y_input.val() || 0;
     current_list_shape.data('raphael').attr('path',
       'M'+current_points.start_x+' '+current_points.start_y+'L'+current_points.end_x+' '+current_points.end_y);
+    current_list_shape.data('history')['path'][now] = current_list_shape.data('raphael').attr('path');
   }));
 function add_linepoints(raphael_shape){
   var current_points = current_list_shape.data('current points');
