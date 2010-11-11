@@ -438,7 +438,7 @@ var stroke_width_option = $('<p><label for="stroke_width_option">thickness : </l
         }
       raphael_shape.attr('stroke-width', stroke_width_input.val());
       current_list_shape.data('history')['stroke-width'][now] = current_list_shape.data('raphael').attr('stroke-width');
-    }));
+  }));
 function add_stroke_width(){
   var stroke_width_val = current_list_shape.data('raphael').attr('stroke-width') || 1;
   stroke_width_input.val(stroke_width_val);
@@ -609,7 +609,7 @@ function moved_linepoints(){
   $('#startpoint_y_field').val(this.attr('path')[0][2]);
   $('#endpoint_x_field').val(this.attr('path')[1][1]);
   $('#endpoint_y_field').val(this.attr('path')[1][2]);
-  }
+}
 function doneMoving_xy(){
   current_list_shape.data('history')['x'][now] = this.attr('x');
   current_list_shape.data('history')['y'][now] = this.attr('y');
