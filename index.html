@@ -494,6 +494,24 @@ spotlight(<previously_created_Raphael_shape_in_user_canvas>);
 ****/
 
 
+function moved_xy(){
+  this.attr_options().find('input')[0].value = this.attr('x');
+  this.attr_options().find('input')[1].value = this.attr('y');
+}
+function moved_cxcy(x, y){
+  this.attr_options().find('input')[0].value = this.attr('cx');
+  this.attr_options().find('input')[1].value = this.attr('cy');
+}
+function doneMoving_xy(){
+  current_list_shape.data('history').x[now] = this.attr('x');
+  current_list_shape.data('history').y[now] = this.attr('y');
+}
+function doneMoving_cxcy(){
+  current_list_shape.data('history').cx[now] = this.attr('cx');
+  current_list_shape.data('history').cy[now] = this.attr('cy');
+}
+
+
 //rectangle tool
 var rect_count = 0;
 $('#rect_button').click(function(){
@@ -521,6 +539,9 @@ $('#rect_button').click(function(){
           spotlight.off();
         })
         .appendTo(shapes_list);
+    rect.attr_options = function(){return attrs;};
+    rect.moved = moved_xy;
+    rect.doneMoving = doneMoving_xy;
     $(rect.node).data('shapes list', list_rect_jQ);
 
     spotlight(rect);
@@ -583,6 +604,9 @@ $('#ellipse_button').click(function(){
           spotlight.off();
         })
         .appendTo(shapes_list);
+    ellipse.attr_options = function(){return attrs;};
+    ellipse.moved = moved_cxcy;
+    ellipse.doneMoving = doneMoving_cxcy;
     $(ellipse.node).data('shapes list', list_ellipse_jQ);
 
     spotlight(ellipse);
@@ -643,6 +667,9 @@ $('#text_button').click(function(){
           spotlight.off();
         })
         .appendTo(shapes_list);
+    text.attr_options = function(){return attrs;};
+    text.moved = moved_xy;
+    text.doneMoving = doneMoving_xy;
     $(text.node).data('shapes list', list_text_jQ);
     $.each(['x', 'y'], function(i, attr){
       history[attr] = [];
@@ -668,6 +695,12 @@ $('#line_button').click(function(){
           rm_linepoints();
         })
         .click(list_shape_click).appendTo(shapes_list);
+    line.moved = function(){
+      //in the future, this will change the input fields
+    };
+    line.doneMoving = function(){
+      //in the futre, this will change the history
+    }
     $(line.node).data('shapes list', list_line_jQ);
 
     spotlight(line);
@@ -692,19 +725,14 @@ $('#line_button').click(function(){
 
 
 //move tool
+var x_attr, y_attr;
 $('#move_button').click(function(){
   shapes_list_click = shapes_list_click_when_moving;
   raphael_shape_click = raphael_shape_click_when_moving;
-  if(!current_list_shape.length)
+  if(!current_list_shape.length) //test if there is a list shape selected
     overlay.hide();
-  else{
-    if(current_list_shape.data('raphael').attr('x'))
-  		overlay.mousedown(xy_drag);
-  	else if(current_list_shape.data('raphael').attr('cx'))
-  	  overlay.mousedown(cxcy_drag);
-  	else
-  		alert('tried to move');
-  }
+  else
+    overlay.show().mousedown(drag_when_moving);
 });
 function shapes_list_click_when_moving(e){
   if(e.target === this)
@@ -714,49 +742,19 @@ function shapes_list_click_when_moving(e){
 }
 function raphael_shape_click_when_moving(e){
   $(this.node).data('shapes list').click();
-	if(this.attr('x'))
-  	xy_drag(e);
-  else if(this.attr('cx'))
-  	overlay.mousedown(cxcy_drag);
-	else
-		alert("tried to move");
+  overlay.mousedown(drag_when_moving);
+  drag_when_moving(e);
 }
-
-function xy_drag(e){
+function drag_when_moving(e){
   var current_raphael_shape = current_list_shape.data('raphael'),
-    startX = +current_raphael_shape.attr('x'),
-    startY = +current_raphael_shape.attr('y');
+    prev_dx = 0, prev_dy = 0;
   spotlight(current_raphael_shape);
   drag(e, function(dx, dy){
-    current_raphael_shape.attr({
-      x: startX + dx,
-      y: startY + dy
-    });
-    x_pos.val(current_raphael_shape.attr('x'));
-    y_pos.val(current_raphael_shape.attr('y'));
+    current_raphael_shape.translate(dx - prev_dx, dy - prev_dy).moved();
+    prev_dx = dx;
+    prev_dy = dy;
   }, function(){
-      $.each(['x', 'y'], function(i, attr){
-        current_list_shape.data('history')[attr][now] = current_raphael_shape.attr(attr);
-      });
-  });
-}
-
-function cxcy_drag(e){
-  var current_raphael_shape = current_list_shape.data('raphael'),
-    startX = +current_raphael_shape.attr('cx'),
-    startY = +current_raphael_shape.attr('cy');
-  spotlight(current_raphael_shape);
-  drag(e, function(dx, dy){
-    current_raphael_shape.attr({
-      cx: startX + dx,
-      cy: startY + dy
-    });
-    cx_pos.val(current_raphael_shape.attr('cx'));
-    cy_pos.val(current_raphael_shape.attr('cy'));
-  }, function(){
-      $.each(['cx', 'cy'], function(i, attr){
-        current_list_shape.data('history')[attr][now] = current_raphael_shape.attr(attr);
-      });
+    current_raphael_shape.doneMoving();
   });
 }
 
