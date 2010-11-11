@@ -126,17 +126,17 @@ input {
 
 <p>
   <span id="newsave">
-    <button>New</button>
-    <button>Save</button>
-    <button>Undo</button>
-    <button>Redo</button>
+    <button disabled>New</button>
+    <button disabled>Save</button>
+    <button disabled>Undo</button>
+    <button disabled>Redo</button>
   </span>
   <label for="width">Width:</label>
-  <input type="text" id="width" value=640>
+  <input type="text" id="width" value=640 disabled>
   <label for="height">Height:</label>
-  <input type="text" id="height" value=480>
+  <input type="text" id="height" value=480 disabled>
   <label for="zoom">Zoom:</label>
-  <input type="text" id="zoom" value="100%" style="width:25px">
+  <input type="text" id="zoom" value="100%" style="width:25px" disabled>
   <span id="zoomslider"></span>
 </p>
 
@@ -158,7 +158,7 @@ input {
 var zoomslider = Raphael('zoomslider', 200, 30),
   zoombar = zoomslider.path('M 0 15 L 200 15'),
   zoom_overlay = zoomslider.rect(0, 0, 200, 30).attr({fill:'#000', opacity: 0}),
-  zoomknob = zoomslider.rect(50, 5, 6, 20).attr({fill: '#000', stroke: 'none'});
+  zoomknob = zoomslider.rect(50, 5, 6, 20).attr({fill: '#AAA', stroke: 'none'});
 
 var zoom = 100, zoom_startX;
 function zoom_move(dx, dy){
