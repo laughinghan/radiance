@@ -230,7 +230,7 @@ $('#user_canvas_controls button').click(function(){
         (function(){
           now = Math.round((timeknob.attr('x') + 3)*duration/480);
           var new_attr = {};
-          if(attr in {fill-opacity:0,hidden:0}){
+          if(attr in {'fill-opacity':0,'opacity':0, apples:0}){
             var prev = 0;
             for(var next in history[attr])
               if(next > now)
@@ -315,6 +315,19 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
     .appendTo(list_shape_options).find('input').bind('keydown keypress', defer(function(){
       list_shape_options.prev().text(rename.val() || '&nbsp;');
     })),
+  //hidden
+  hidden_option = $('<p><label for="display_option">apples</label><input type="checkbox" id="display_option" name="display_option"></p>'),
+    hidden_option_checkbox = hidden_option.find('input').change(function(){
+      if(!current_list_shape.data('history')['opacity']){
+        current_list_shape.data('history')['opacity'] = [];
+        current_list_shape.data('history')['opacity'][0] = current_list_shape.data('raphael').attr('opacity');
+      }
+      if(+this.checked)
+        current_list_shape.data('raphael').attr('opacity', 0);
+      else
+        current_list_shape.data('raphael').attr('opacity', 1);
+      current_list_shape.data('history')['opacity'][now] = current_list_shape.data('raphael').attr('opacity');
+    }).appendTo(list_shape_options),
   //remove
   remove = $('<button>remove</button>').click(function(){
     var shape = list_shape_options.prev();
