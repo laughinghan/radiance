@@ -290,7 +290,7 @@ var shapes_list_click = $.noop, //canonical 'current' click handler on shapes_li
   shapes_list = $('#shapes_list').click(function(e){
     if(e.target !== this)
       return shapes_list_click.apply(this, arguments);
-    current_list_shape.removeClass('current');
+    (current_list_shape.removeClass('current').data('remove list options') || $.noop)();
     current_list_shape = $();
     list_shape_options.detach();
     shapes_list_click.apply(this, arguments);
