@@ -217,6 +217,7 @@ Raphael.easing_formulas.time_easing = function(n){
   return n
 }
 
+//to optimize play button and interpolate, make so if ele hidden, it doesn't go through it for all attr, just sets them all with an interpolate_anim_state when becomes unhidden
 //Play button
 $('#user_canvas_controls button').click(function(){
   now = 0;
@@ -224,6 +225,7 @@ $('#user_canvas_controls button').click(function(){
   $('current_time').val(0.000 + 's')
   shapes_list.children().each(interpolate_anim_state);
   shapes_list.children().each(function(){
+    //recursive animation
     var raphael_this = $(this).data('raphael'), history = $(this).data('history');
     for(var attr in history)
       (function(attr){
@@ -269,7 +271,7 @@ function interpolate_anim_state(){
   //animation state now
   for(var attr in history){
     var new_attr = {};
-    if(attr in {'fill-opacity':0,'opacity':0, apples:0}){
+    if(attr in {'fill-opacity':0,opacity:0}){
       var prev = 0;
       for(var next in history[attr])
         if(next > now)
@@ -280,9 +282,6 @@ function interpolate_anim_state(){
       raphael_this.attr(new_attr);
       setTimeout(arguments.callee, next - now);
       return;
-    }else
-    if(attr in {'stroke':0, apples:0}){
-      // we are going to need to use the same sort of interpolation raphael itself uses here. including the now fixed regex of DOOOOM.
     }else{
     var past = 0, future = duration + 1;
     for(var time in history[attr])
@@ -293,7 +292,14 @@ function interpolate_anim_state(){
         future = +time;
     if(future === past || future > duration)
       raphael_this.attr(attr, history[attr][past]);
-    else
+    else if(attr in {fill:0,stroke:0}){
+      var past_rgb = Raphael.getRGB(history[attr][past]),
+        future_rgb = Raphael.getRGB(history[attr][future]),
+        delta = (now - past)/(future - past);
+      raphael_this.attr(attr, 'rgb(' + (past_rgb.r+(future_rgb.r - past_rgb.r)*delta) + ',' +
+        (past_rgb.g+(future_rgb.g - past_rgb.g)*delta) + ',' +
+        (past_rgb.b+(future_rgb.b - past_rgb.b)*delta) + ')');
+    }else
       raphael_this.attr(attr, history[attr][past] +
         (history[attr][future] - history[attr][past])*(now - past)/(future - past)); //replace with proper easing
     }
@@ -307,10 +313,14 @@ $('#current_time').bind('keydown keypress', defer(function(){
   timeknob.attr('x', Math.round(now*480/duration) - 3);
   shapes_list.children().each(interpolate_anim_state);
 }))
-
+// not working for now
+// $('#current_time').change(function(){
+//   $('#curent_time').val((now/1000).toFixed(3) + 's');
+// })
 $('#duration').change(function(){
   duration = parseFloat($('#duration').val(), 3) * 1000;
   timeknob.attr('x', Math.round(now*480/duration) - 3);
+  $('#duration').val((duration/1000).toFixed(3) + 's')
 })
 
 //defer execution by a thread. Used by live text input boxes
