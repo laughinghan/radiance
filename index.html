@@ -409,7 +409,7 @@ function rm_fill(){
 }
 
 //stroke color
-var stroke_color_option = $('<p><label for="stroke_color_option">color : </label><input type="text" name="stroke_width" id="stroke_width_option">'+
+var stroke_color_option = $('<p><label for="stroke_color_option">color : </label><input type="text" name="stroke_color_option" id="stroke_color_option">'+
     '<select><option></option><option>Red</option><option>Orange</option><option>Yellow</option><option>Green</option><option>Blue</option>'+
     '<option>Purple</option><option>Black</option><option>Gray</option><option>White</option></select></p>'),
   stroke_color_input = stroke_color_option.find('input').bind('keydown keypress', defer(function(){
@@ -436,6 +436,35 @@ function rm_stroke_color(){
   stroke_color_option.detach();
 }
 
+
+var fill_color_option = $('<p><label for="fill_color_option"></label><input type="text" name="fill_color_option_text_color" id="fill_color_option_text_color">'+
+    '<select><option></option><option>Red</option><option>Orange</option><option>Yellow</option><option>Green</option><option>Blue</option>'+
+    '<option>Purple</option><option>Black</option><option>Gray</option><option>White</option></select></p>'),
+  fill_color_input = fill_color_option.find('input').bind('keydown keypress', defer(function(){
+    var raphael_shape = current_list_shape.data('raphael'), fill_color_val = fill_color_input.val();
+    if(!raphael_shape.attr('fill-opacity'))
+      raphael_shape.attr('fill-opacity', 1);
+      if(!current_list_shape.data('history')['fill']){
+        current_list_shape.data('history')['fill'] = [];
+        current_list_shape.data('history')['fill'][0] = current_list_shape.data('raphael').attr('fill');
+      }
+    raphael_shape.attr('fill', fill_color_val);
+    current_list_shape.data('history')['fill'][now] = current_list_shape.data('raphael').attr('fill');
+    fill_color_select.val(fill_color_val);
+  })),
+  fill_color_select = fill_color_option.find('select').change(function(){
+    fill_color_input.val(this.value).keydown();
+  }),
+  fill_color_label = fill_color_option.find('label');
+  function add_fill_color(label){
+    var fill_color_val = current_list_shape.data('raphael').attr('fill');
+    fill_color_input.val(fill_color_val);
+    fill_color_label.text(label + ' : ');
+    fill_color_option.insertBefore(remove);
+  }
+  function rm_fill_color(){
+    fill_color_option.detach();
+  }
 //stroke width
 var stroke_width_option = $('<p><label for="stroke_width_option">thickness : </label><input type="text" name="stroke" id="stroke_width_option"></p>'),
   stroke_width_input = stroke_width_option.find('input').bind('keydown keypress', defer(function(){
@@ -654,12 +683,14 @@ $('#rect_button').click(function(){
           add_stroke_width();
           add_stroke_color();
           add_fill(raphael_shape);
+          add_fill_color('fill color');
         })
         .data('remove list options', function(){
           attrs.remove();
           rm_stroke_width();
           rm_stroke_color();
           rm_fill();
+          rm_fill_color();
         })
         .click(list_shape_click)
         .hover(function(){
@@ -728,12 +759,14 @@ $('#ellipse_button').click(function(){
           add_stroke_width();
           add_stroke_color();
           add_fill(raphael_shape);
+          add_fill_color('fill color');
         })
         .data('remove list options', function(){
           attrs.remove();
           rm_stroke_width();
           rm_stroke_color();
           rm_fill();
+          rm_fill_color();
         })
         .click(list_shape_click)
         .hover(function(){
@@ -788,7 +821,7 @@ $('#text_button').click(function(){
     text_count += 1;
     var text = user_canvas.text(e.offsetX, e.offsetY, 'text').attr('font-size',24), 
       history = {}, attrs,
-      text_option = $('<p id="text_option_p"><label for="text_option">Text:</label><input type="text" id="text_option" name="text_option" style="width:auto"></p>'),
+      text_option = $('<p id="text_option_p"><label for="text_option">text : </label><input type="text" id="text_option" name="text_option" style="width:auto"></p>'),
       text_opt_input = text_option.find('input').bind('keydown keypress', defer(function(){
         $(text.node).children().text(text_opt_input.val());
       })),
@@ -798,10 +831,12 @@ $('#text_button').click(function(){
           attrs = add_attr_option('x').add(add_attr_option('y'));
           text_opt_input.val($(text.node).children().text());
           text_option.insertBefore(remove);
+          add_fill_color('color');
         })
         .data('remove list options', function(){
           attrs.remove();
           text_option.detach();
+          rm_fill_color();
         })
         .click(list_shape_click)
         .hover(function(){
