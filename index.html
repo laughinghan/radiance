@@ -100,13 +100,6 @@ input {
 
 <h1>Ripple - Web Animation</h1>
 
-<p id="nav">
-  <a href="/">Ripple</a> |
-  <a href="instructions">Instructions</a> |
-  <a href="about">About</a> |
-  <a href="news">News</a>
-</p>
-
 <div id="toolbar">
   <p><button id="rect_button"><span></span> Rect</button>
   <p class="hidden">Thickness
@@ -555,7 +548,6 @@ function rm_linepoints(){
 
 //the Raphael canvas on which all the shapes are drawn
 var user_canvas = Raphael('user_canvas', 640, 480);
-user_canvas.text(200,150,'hello world').attr('font-size',40);
 
 //highlight a Raphael shape in the user_canvas
 var spotlight = (function(){
