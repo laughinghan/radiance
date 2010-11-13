@@ -1304,6 +1304,7 @@
                         case "cx":
                             rotxy && (att == "x" || att == "cx") && (rotxy[1] += value - attrs[att]);
                             node[setAttribute](att, value);
+                            attrs[att] = node[att].baseVal.value; //use computed value of attr
                             o.pattern && updatePosition(o);
                             break;
                         case "height":
@@ -1325,6 +1326,7 @@
                         case "cy":
                             rotxy && (att == "y" || att == "cy") && (rotxy[2] += value - attrs[att]);
                             node[setAttribute](att, value);
+                            attrs[att] = node[att].baseVal.value; //use computed value of attr
                             o.pattern && updatePosition(o);
                             break;
                         case "r":
@@ -3246,12 +3248,12 @@
             switch (this.type) {
                 case "circle":
                 case "ellipse":
-                    this.attr({cx: +x + +this.attrs.cx, cy: +y + +this.attrs.cy});
+                    this.attr({cx: +x + this.attrs.cx, cy: +y + this.attrs.cy});
                     break;
                 case "rect":
                 case "image":
                 case "text":
-                    this.attr({x: +x + +this.attrs.x, y: +y + +this.attrs.y});
+                    this.attr({x: +x + this.attrs.x, y: +y + this.attrs.y});
                     break;
                 case "path":
                     var path = pathToRelative(this.attrs.path);
