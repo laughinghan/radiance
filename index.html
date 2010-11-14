@@ -195,7 +195,7 @@ function time_move(dx, dy){
   now = Math.round((time_startX+dx)*duration/480);
   now = now < 0 ? 0 : (now > duration ? duration : now);
   $('#current_time').val((now/1000).toFixed(3)+'s');
-  timeknob.attr('x', Math.round(now*480/duration) - 3);
+  timeknob.attr('x', now*480/duration - 3);
   shapes_list.children().each(interpolate_anim_state);
 }
 timeknob.drag(time_move, function(){ //start
@@ -313,7 +313,7 @@ $('#current_time').bind('keydown keypress', defer(function(){
   now = parseFloat($('#current_time').val()) * 1000;
   if(now > duration)
     now = duration;
-  timeknob.attr('x', Math.round(now*480/duration) - 3);
+  timeknob.attr('x', now*480/duration - 3);
   shapes_list.children().each(interpolate_anim_state);
 }))
 // not working for now
@@ -322,7 +322,7 @@ $('#current_time').bind('keydown keypress', defer(function(){
 // })
 $('#duration').change(function(){
   duration = parseFloat($('#duration').val(), 3) * 1000;
-  timeknob.attr('x', Math.round(now*480/duration) - 3);
+  timeknob.attr('x', now*480/duration - 3);
   $('#duration').val((duration/1000).toFixed(3) + 's')
 })
 
