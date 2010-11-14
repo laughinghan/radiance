@@ -52,8 +52,11 @@ input {
   border: solid 1px black;
   position: relative;
 }
-#user_canvas.spotlight svg * {
+.spotlight svg * {
   opacity: .4;
+}
+.spotlight .spotlight, .spotlight .spotlight * {
+  opacity: .8;
 }
 #user_canvas_overlay {
   position: absolute;
@@ -180,12 +183,12 @@ var timeslider = Raphael('timeslider', 480, 30),
   time_overlay = timeslider.rect(0, 0, 480, 30).attr({fill:'#000', opacity: 0}),
   timeknob = timeslider.rect(-3, 5, 6, 20).attr({fill: '#000', stroke: 'none'});
 
-var now = 0, time_startX, duration = 5000, change = 0;
+var now = 0, time_startX, duration = 5000;
 function time_move(dx, dy){
   now = Math.round((time_startX+dx)*duration/480);
   now = now < 0 ? 0 : (now > duration ? duration : now);
-  $('#current_time').val((now/1000).toFixed(3)+'s');
-  timeknob.attr('x', Math.round(now*480/duration) - 3);
+  current_time.val((now/1000).toFixed(3)+'s');
+  timeknob.attr('x', now*480/duration - 3);
   shapes_list.children().each(interpolate_anim_state);
 }
 timeknob.drag(time_move, function(){ //start
@@ -194,20 +197,15 @@ timeknob.drag(time_move, function(){ //start
 time_overlay.drag(time_move, function(x, y, e){ //start
   time_startX = e.offsetX;
   now = Math.round(time_startX*duration/480);
-  $('#current_time').val((now/1000).toFixed(3)+'s');
+  current_time.val((now/1000).toFixed(3)+'s');
   timeknob.attr('x', time_startX - 3);
   shapes_list.children().each(interpolate_anim_state);
 });
 
 Raphael.easing_formulas.time_easing = function(n){
-  if (now === 0)
-    change = now;
   now = n * duration / 1000;
-  if (now-change > .12){
-    change = now;
-    $('#current_time').val(now.toFixed(3)+'s');
-  }
-  return n
+  current_time.val(now.toFixed(3)+'s');
+  return n;
 }
 
 //to optimize play button and interpolate, make so if ele hidden, it doesn't go through it for all attr, just sets them all with an interpolate_anim_state when becomes unhidden
@@ -215,7 +213,7 @@ Raphael.easing_formulas.time_easing = function(n){
 $('#user_canvas_controls button').click(function(){
   now = 0;
   timeknob.attr('x', -3);
-  $('current_time').val(0.000 + 's')
+  current_time.val('0.000s');
   shapes_list.children().each(interpolate_anim_state);
   shapes_list.children().each(function(){
     //recursive animation
@@ -253,7 +251,7 @@ $('#user_canvas_controls button').click(function(){
   });
   timeknob.animate({'x': 477}, duration, "time_easing", function(){
     now = 5000;
-    $('#current_time').val((now/1000).toFixed(3)+'s');
+    current_time.val((now/1000).toFixed(3)+'s');
   });
 });
 
@@ -299,22 +297,20 @@ function interpolate_anim_state(){
   }
 }
 
-$('#current_time').bind('keydown keypress', defer(function(){
-  now = parseFloat($('#current_time').val()) * 1000;
+var current_time = $('#current_time').bind('keydown keypress', defer(function(){
+  now = parseFloat(current_time.val()) * 1000;
   if(now > duration)
     now = duration;
-  timeknob.attr('x', Math.round(now*480/duration) - 3);
+  timeknob.attr('x', now*480/duration - 3);
   shapes_list.children().each(interpolate_anim_state);
-}))
-// not working for now
-// $('#current_time').change(function(){
-//   $('#curent_time').val((now/1000).toFixed(3) + 's');
-// })
+})).change(function(){
+  current_time.val((now/1000).toFixed(3) + 's');
+});
 $('#duration').change(function(){
   duration = parseFloat($('#duration').val(), 3) * 1000;
-  timeknob.attr('x', Math.round(now*480/duration) - 3);
+  timeknob.attr('x', now*480/duration - 3);
   $('#duration').val((duration/1000).toFixed(3) + 's')
-})
+});
 
 //defer execution by a thread. Used by live text input boxes
 function defer(fn){
@@ -387,11 +383,13 @@ function add_attr_option(attr){
   var raphael_shape = current_list_shape.data('raphael'),
     attr_option = $('<p><label for="'+attr+'_option">'+attr+' : </label><input type="text" name="'+attr+'" id="'+attr+'_option"></p>'),
     attr_input = attr_option.find('input').bind('keydown keypress', defer(function(){
-      raphael_shape.attr(attr, attr_input.val());
+      var val = attr_input.val();
+      raphael_shape.attr(attr, num_dot_regex.test(val) ? val.slice(0, -1) : val);
       current_list_shape.data('history')[attr][now] = current_list_shape.data('raphael').attr(attr);
     })).val(raphael_shape.attr(attr));
   return attr_option.insertBefore(remove);
 }
+var num_dot_regex = /^\d+\.$^/; //fix annoying css quirk where '123.' is an invalid number and is interpreted as 0
 
 //fill
 var fill = $('<p><label for="fill">Fill: </label><input type="checkbox" id="fill" name="fill"></p>'),
@@ -554,11 +552,11 @@ var spotlight = (function(){
   var spotlit_shape, user_canvas_div = $('#user_canvas');
   function spotlight(shape){
     user_canvas_div.addClass('spotlight');
-    spotlit_shape = shape.attr('opacity', .8);
+    (spotlit_shape = shape.node).setAttribute('class','spotlight');
   }
   function off(){
     user_canvas_div.removeClass('spotlight');
-    spotlit_shape.attr('opacity', '');
+    spotlit_shape.removeAttribute('class');
   }
   spotlight.off = off;
   return spotlight;
@@ -689,6 +687,7 @@ $('#rect_button').click(function(){
         })
         .data('remove list options', function(){
           attrs.remove();
+          attrs = $();
           rm_stroke_width();
           rm_stroke_color();
           rm_fill();
@@ -765,6 +764,7 @@ $('#ellipse_button').click(function(){
         })
         .data('remove list options', function(){
           attrs.remove();
+          attrs = $();
           rm_stroke_width();
           rm_stroke_color();
           rm_fill();
@@ -823,7 +823,7 @@ $('#text_button').click(function(){
     text_count += 1;
     var text = user_canvas.text(e.offsetX, e.offsetY, 'text').attr('font-size',24), 
       history = {}, attrs,
-      text_option = $('<p id="text_option_p"><label for="text_option">text : </label><input type="text" id="text_option" name="text_option" style="width:auto"></p>'),
+      text_option = $('<p id="text_option_p"><label for="text_option">Text: </label><input type="text" id="text_option" name="text_option"></p>'),
       text_opt_input = text_option.find('input').bind('keydown keypress', defer(function(){
         $(text.node).children().text(text_opt_input.val());
       })),
@@ -837,6 +837,7 @@ $('#text_button').click(function(){
         })
         .data('remove list options', function(){
           attrs.remove();
+          attrs = $();
           text_option.detach();
           rm_fill_color();
         })
@@ -919,10 +920,11 @@ var x_attr, y_attr;
 $('#move_button').click(function(){
   shapes_list_click = shapes_list_click_when_moving;
   raphael_shape_click = raphael_shape_click_when_moving;
+  overlay.mousedown(drag_when_moving);
   if(!current_list_shape.length) //test if there is a list shape selected
     overlay.hide();
   else
-    overlay.show().mousedown(drag_when_moving);
+    overlay.show();
 });
 function shapes_list_click_when_moving(e){
   if(e.target === this)
@@ -932,7 +934,6 @@ function shapes_list_click_when_moving(e){
 }
 function raphael_shape_click_when_moving(e){
   $(this.node).data('shapes list').click();
-  overlay.mousedown(drag_when_moving);
   drag_when_moving(e);
 }
 function drag_when_moving(e){
