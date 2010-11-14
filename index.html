@@ -929,10 +929,11 @@ var x_attr, y_attr;
 $('#move_button').click(function(){
   shapes_list_click = shapes_list_click_when_moving;
   raphael_shape_click = raphael_shape_click_when_moving;
+  overlay.mousedown(drag_when_moving);
   if(!current_list_shape.length) //test if there is a list shape selected
     overlay.hide();
   else
-    overlay.show().mousedown(drag_when_moving);
+    overlay.show();
 });
 function shapes_list_click_when_moving(e){
   if(e.target === this)
@@ -942,7 +943,6 @@ function shapes_list_click_when_moving(e){
 }
 function raphael_shape_click_when_moving(e){
   $(this.node).data('shapes list').click();
-  overlay.mousedown(drag_when_moving);
   drag_when_moving(e);
 }
 function drag_when_moving(e){
