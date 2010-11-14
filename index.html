@@ -52,8 +52,11 @@ input {
   border: solid 1px black;
   position: relative;
 }
-#user_canvas.spotlight svg * {
+.spotlight svg * {
   opacity: .4;
+}
+.spotlight .spotlight, .spotlight .spotlight * {
+  opacity: .8;
 }
 #user_canvas_overlay {
   position: absolute;
@@ -564,11 +567,11 @@ var spotlight = (function(){
   var spotlit_shape, user_canvas_div = $('#user_canvas');
   function spotlight(shape){
     user_canvas_div.addClass('spotlight');
-    spotlit_shape = shape.attr('opacity', .8);
+    (spotlit_shape = shape.node).setAttribute('class','spotlight');
   }
   function off(){
     user_canvas_div.removeClass('spotlight');
-    spotlit_shape.attr('opacity', '');
+    spotlit_shape.removeAttribute('class');
   }
   spotlight.off = off;
   return spotlight;
