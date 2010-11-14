@@ -394,11 +394,13 @@ function add_attr_option(attr){
   var raphael_shape = current_list_shape.data('raphael'),
     attr_option = $('<p><label for="'+attr+'_option">'+attr+' : </label><input type="text" name="'+attr+'" id="'+attr+'_option"></p>'),
     attr_input = attr_option.find('input').bind('keydown keypress', defer(function(){
-      raphael_shape.attr(attr, attr_input.val());
+      var val = attr_input.val();
+      raphael_shape.attr(attr, num_dot_regex.test(val) ? val.slice(0, -1) : val);
       current_list_shape.data('history')[attr][now] = current_list_shape.data('raphael').attr(attr);
     })).val(raphael_shape.attr(attr));
   return attr_option.insertBefore(remove);
 }
+var num_dot_regex = /^\d+\.$^/; //fix annoying css quirk where '123.' is an invalid number and is interpreted as 0
 
 //fill
 var fill = $('<p><label for="fill">Fill: </label><input type="checkbox" id="fill" name="fill"></p>'),
