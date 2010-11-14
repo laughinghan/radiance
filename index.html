@@ -161,16 +161,16 @@ function zoom_move(dx, dy){
   zoom = zoom_startX + dx + 50;
   zoom = zoom < 50 ? 50 : (zoom > 250 ? 250 : zoom);
   $('#zoom').val(zoom+'%');
-  zoomknob.attr('x', zoom - 53);
+  zoomknob.attr('x', zoom - 54);
 } //zoom!
 zoomknob.drag(zoom_move, function(){ //start
   zoom_startX = zoomknob.attr('x') + 3;
 }); //zoom!!
 zoom_overlay.drag(zoom_move, function(x, y, e){ //start
-  zoom_startX = e.offsetX;
+  zoom_startX = e.offsetX || e.pageX - $(zoom_overlay.node).offset().left;
   zoom = zoom_startX + 50;
   $('#zoom').val(zoom+'%');
-  zoomknob.attr('x', zoom_startX - 3);
+  zoomknob.attr('x', zoom_startX - 4);
 }); //zoom!!!
 
 
@@ -188,17 +188,17 @@ function time_move(dx, dy){
   now = Math.round((time_startX+dx)*duration/480);
   now = now < 0 ? 0 : (now > duration ? duration : now);
   current_time.val((now/1000).toFixed(3)+'s');
-  timeknob.attr('x', now*480/duration - 3);
+  timeknob.attr('x', now*480/duration - 4);
   shapes_list.children().each(interpolate_anim_state);
 }
 timeknob.drag(time_move, function(){ //start
   time_startX = timeknob.attr('x') + 3;
 });
 time_overlay.drag(time_move, function(x, y, e){ //start
-  time_startX = e.offsetX;
+  time_startX = e.offsetX || e.pageX - $(time_overlay.node).offset().left;
   now = Math.round(time_startX*duration/480);
   current_time.val((now/1000).toFixed(3)+'s');
-  timeknob.attr('x', time_startX - 3);
+  timeknob.attr('x', time_startX - 4);
   shapes_list.children().each(interpolate_anim_state);
 });
 
@@ -671,7 +671,7 @@ var rect_count = 0;
 $('#rect_button').click(function(){
   overlay.mousedown(function(e){
     rect_count += 1;
-    var cornerX = e.offsetX, cornerY = e.offsetY, history = {}, attrs = $(),
+    var cornerX = e.offsetX || e.pageX - overlay.offset().left, cornerY = e.offsetY || e.pageY - overlay.offset().top, history = {}, attrs = $(),
       rect = user_canvas.rect(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
         .mousedown(call_raphael_shape_click),
       list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
@@ -748,7 +748,7 @@ var ellipse_count = 0;
 $('#ellipse_button').click(function(){
   overlay.mousedown(function(e){
     ellipse_count += 1;
-    var cornerX = e.offsetX, cornerY = e.offsetY, history = {}, attrs = $(),
+    var cornerX = e.offsetX || e.pageX - overlay.offset().left, cornerY = e.offsetY || e.pageY - overlay.offset().top, history = {}, attrs = $(),
       ellipse = user_canvas.ellipse(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
         .mousedown(call_raphael_shape_click),
       list_ellipse_jQ = $('<p>Ellipse '+ellipse_count+'</p>').data('raphael', ellipse)
@@ -821,7 +821,7 @@ var text_count = 0;
 $('#text_button').click(function(){
   overlay.click(function(e){
     text_count += 1;
-    var text = user_canvas.text(e.offsetX, e.offsetY, 'text').attr('font-size',24), 
+    var text = user_canvas.text(e.offsetX || e.pageX - overlay.offset().left, e.offsetY || e.pageY - overlay.offset().top, 'text').attr('font-size',24), 
       history = {}, attrs,
       text_option = $('<p id="text_option_p"><label for="text_option">Text: </label><input type="text" id="text_option" name="text_option"></p>'),
       text_opt_input = text_option.find('input').bind('keydown keypress', defer(function(){
@@ -868,7 +868,7 @@ var line_count = 0;
 $('#line_button').click(function(){
   overlay.mousedown(function(e){
     line_count += 1;
-    var cornerX = e.offsetX, cornerY = e.offsetY, history = {}, current_points = {},
+    var cornerX = e.offsetX || e.pageX - overlay.offset().left, cornerY = e.offsetY || e.pageY - overlay.offset().top, history = {}, current_points = {},
       line = user_canvas.path('M'+cornerX+' '+cornerY+'L'+cornerX +' '+cornerY)
         .mousedown(call_raphael_shape_click),
       list_line_jQ = $('<p>Line '+line_count+'</p>').data('raphael', line)
