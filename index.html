@@ -833,7 +833,7 @@ $('#text_button').click(function(){
     text_count += 1;
     var text = user_canvas.text(e.offsetX, e.offsetY, 'text').attr('font-size',24), 
       history = {}, attrs,
-      text_option = $('<p id="text_option_p"><label for="text_option">text : </label><input type="text" id="text_option" name="text_option" style="width:auto"></p>'),
+      text_option = $('<p id="text_option_p"><label for="text_option">Text: </label><input type="text" id="text_option" name="text_option"></p>'),
       text_opt_input = text_option.find('input').bind('keydown keypress', defer(function(){
         $(text.node).children().text(text_opt_input.val());
       })),
