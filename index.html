@@ -102,7 +102,7 @@ input {
 </head>
 <body>
 
-<h1>Radiance</h1>
+<h1>Radiance <small>v0.0&alpha;</small></h1>
 <h2>JavaScript Web Animation</h2>
 
 <div id="toolbar">
@@ -919,37 +919,40 @@ $('#line_button').click(function(){
 
 //move tool
 var x_attr, y_attr;
-$('#move_button').click(function(){
-  shapes_list_click = shapes_list_click_when_moving;
-  raphael_shape_click = raphael_shape_click_when_moving;
-  overlay.mousedown(drag_when_moving);
-  if(!current_list_shape.length) //test if there is a list shape selected
-    overlay.hide();
-  else
+$('#move_button').click((function(){
+  function move_click(){
+    shapes_list_click = shapes_list_click_when_moving;
+    raphael_shape_click = raphael_shape_click_when_moving;
+    overlay.mousedown(drag_when_moving);
+    if(!current_list_shape.length) //test if there is a list shape selected
+      overlay.hide();
+    else
     overlay.show();
-});
-function shapes_list_click_when_moving(e){
-  if(e.target === this)
-    overlay.hide();
-  else
-    overlay.show();
-}
-function raphael_shape_click_when_moving(e){
-  $(this.node).data('shapes list').click();
-  drag_when_moving(e);
-}
-function drag_when_moving(e){
-  var current_raphael_shape = current_list_shape.data('raphael'),
-    prev_dx = 0, prev_dy = 0;
-  spotlight(current_raphael_shape);
-  drag(e, function(dx, dy){
-    current_raphael_shape.translate(dx - prev_dx, dy - prev_dy).moved();
-    prev_dx = dx;
-    prev_dy = dy;
-  }, function(){
-    current_raphael_shape.doneMoving();
-  });
-}
+  }
+  function shapes_list_click_when_moving(e){
+    if(e.target === this)
+      overlay.hide();
+    else
+      overlay.show();
+  }
+  function raphael_shape_click_when_moving(e){
+    $(this.node).data('shapes list').click();
+    drag_when_moving(e);
+  }
+  function drag_when_moving(e){
+    var current_raphael_shape = current_list_shape.data('raphael'),
+      prev_dx = 0, prev_dy = 0;
+    spotlight(current_raphael_shape);
+    drag(e, function(dx, dy){
+      current_raphael_shape.translate(dx - prev_dx, dy - prev_dy).moved();
+      prev_dx = dx;
+      prev_dy = dy;
+    }, function(){
+      current_raphael_shape.doneMoving();
+    });
+  }
+  return move_click;
+}()));
 
 
 
