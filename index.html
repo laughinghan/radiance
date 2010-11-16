@@ -285,22 +285,22 @@ function interpolate_anim_state(){
       setTimeout(arguments.callee, next - now);
       return;
     }else{
-    var past = 0, future = duration + 1;
-    for(var time in history[attr])
-      if(time <= now && time > past)
-        past = +time;
-    for(var time in history[attr])
-      if(time >= now && time < future)
-        future = +time;
-    if(future === past || future > duration)
-      raphael_this.attr(attr, history[attr][past]);
-    else if(attr in {fill:0,stroke:0}){
-      var past_rgb = Raphael.getRGB(history[attr][past]),
-        future_rgb = Raphael.getRGB(history[attr][future]),
-        delta = (now - past)/(future - past);
-      raphael_this.attr(attr, 'rgb(' + (past_rgb.r+(future_rgb.r - past_rgb.r)*delta) + ',' +
-        (past_rgb.g+(future_rgb.g - past_rgb.g)*delta) + ',' +
-        (past_rgb.b+(future_rgb.b - past_rgb.b)*delta) + ')');
+      var past = 0, future = duration + 1;
+      for(var time in history[attr])
+        if(time <= now && time > past)
+          past = +time;
+      for(var time in history[attr])
+        if(time >= now && time < future)
+          future = +time;
+      if(future === past || future > duration)
+        raphael_this.attr(attr, history[attr][past]);
+      else if(attr in {fill:0,stroke:0}){
+        var past_rgb = Raphael.getRGB(history[attr][past]),
+          future_rgb = Raphael.getRGB(history[attr][future]),
+          delta = (now - past)/(future - past);
+        raphael_this.attr(attr, 'rgb(' + (past_rgb.r+(future_rgb.r - past_rgb.r)*delta) + ',' +
+          (past_rgb.g+(future_rgb.g - past_rgb.g)*delta) + ',' +
+          (past_rgb.b+(future_rgb.b - past_rgb.b)*delta) + ')');
     }else
       raphael_this.attr(attr, history[attr][past] +
         (history[attr][future] - history[attr][past])*(now - past)/(future - past)); //replace with proper easing
