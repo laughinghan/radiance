@@ -348,7 +348,11 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
   //rename
   rename = $('<p><label for="rename_option">Name: </label><input type="text" name="rename" id="rename_option"></p>')
     .appendTo(list_shape_options).find('input').bind('keydown keypress', defer(function(){
-      list_shape_options.prev().text(rename.val() || '&nbsp;');
+      var name = rename.val();
+      if(all_spaces_regex.test(name))
+        list_shape_options.prev().html('&nbsp;');
+      else
+        list_shape_options.prev().text(name);
     })),
   //hidden
   hidden_option = $('<p><label for="hidden_option">Hidden: </label><input type="checkbox" id="hidden_option" name="hidden_option"></p>')
