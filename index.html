@@ -82,11 +82,12 @@ input {
   background-color: mediumblue;
   color: white;
 }
-#shapes_list #list_shape_options {
+#list_shape_options {
   font-size: 80%;
   margin: 2pt;
+  background-color: #DFF;
 }
-#shapes_list input {
+#list_shape_options input {
   width: 100px;
 }
 #user_canvas_controls {
@@ -210,7 +211,8 @@ Raphael.easing_formulas.time_easing = function(n){
   return n;
 }
 
-//to optimize play button and interpolate, make so if ele hidden, it doesn't go through it for all attr, just sets them all with an interpolate_anim_state when becomes unhidden
+//to optimize play button and interpolate, make so if ele hidden, it doesn't go through it for all attr,
+//just sets them all with an interpolate_anim_state when becomes unhidden
 //Play button
 $('#user_canvas_controls button').click(function(){
   now = 0;
@@ -341,7 +343,11 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
   //rename
   rename = $('<p><label for="rename_option">Name: </label><input type="text" name="rename" id="rename_option"></p>')
     .appendTo(list_shape_options).find('input').bind('keydown keypress', defer(function(){
-      list_shape_options.prev().text(rename.val() || '&nbsp;');
+      var name = rename.val();
+      if(all_spaces_regex.test(name))
+        list_shape_options.prev().html('&nbsp;');
+      else
+        list_shape_options.prev().text(name);
     })),
   //hidden
   hidden_option = $('<p><label for="hidden_option">Hidden: </label><input type="checkbox" id="hidden_option" name="hidden_option"></p>')
@@ -358,12 +364,13 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
     }),
   //remove
   remove = $('<button>Remove</button>').click(function(){
-    var shape = list_shape_options.prev();
-    shape.data('raphael').remove();
-    shape.remove();
+    (current_list_shape.data('remove list options') || $.noop)();
     list_shape_options.detach();
+    current_list_shape.data('raphael').remove();
+    current_list_shape.remove();
     current_list_shape = $();
-  }).appendTo(list_shape_options);
+  }).appendTo(list_shape_options),
+  all_spaces_regex = /^ *$/;
 
 //click handler attached to each list item in list of shapes
 function list_shape_click(){
