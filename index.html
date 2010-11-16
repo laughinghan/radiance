@@ -375,7 +375,8 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
     current_list_shape.data('raphael').remove();
     current_list_shape.remove();
     current_list_shape = $();
-  }).appendTo(list_shape_options);
+  }).appendTo(list_shape_options),
+  all_spaces_regex = /^ *$/;
 
 //click handler attached to each list item in list of shapes
 function list_shape_click(){
