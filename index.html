@@ -369,10 +369,10 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
     }),
   //remove
   remove = $('<button>Remove</button>').click(function(){
-    var shape = list_shape_options.prev();
-    shape.data('raphael').remove();
-    shape.remove();
+    (current_list_shape.data('remove list options') || $.noop)();
     list_shape_options.detach();
+    current_list_shape.data('raphael').remove();
+    current_list_shape.remove();
     current_list_shape = $();
   }).appendTo(list_shape_options);
 
