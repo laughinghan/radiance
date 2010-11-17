@@ -545,58 +545,6 @@ function add_stroke_width(){
 function rm_stroke_width(){
   stroke_width_option.detach();
 }
-//to get rid of jumpiness, change ".bind('keydown keypress', defer" to ".change("
-//startpoint for lines (including curves - don't move into lines)
-var start_point_x = $('<p><label for="startpoint_x_field">start <i>x</i> : </label><input type="text" id="startpoint_x_field" name="startpoint_x_field"></p>'),
-  start_point_x_input = start_point_x.find('input').bind('keydown keypress', defer(function(){
-    var current_points = current_list_shape.data('current points');
-    current_points.start_x = start_point_x_input.val() || 0;
-    current_list_shape.data('raphael').attr('path',
-      'M'+current_points.start_x+' '+current_points.start_y+'L'+current_points.end_x+' '+current_points.end_y);
-   current_list_shape.data('history')['path'][now] = current_list_shape.data('raphael').attr('path');
-  })),
-  start_point_y = $('<p><label for="startpoint_y_field">start <i>y</i></label> : <input type="text" id="startpoint_y_field" name="startpoint_y_field"></p>'),
-  start_point_y_input = start_point_y.find('input').bind('keydown keypress', defer(function(){
-    var current_points = current_list_shape.data('current points');
-    current_points.start_y = start_point_y_input.val() || 0;
-    current_list_shape.data('raphael').attr('path',
-      'M'+current_points.start_x+' '+current_points.start_y+'L'+current_points.end_x+' '+current_points.end_y);
-    current_list_shape.data('history')['path'][now] = current_list_shape.data('raphael').attr('path');
-  })),
-//endpoint for lines (including curves - don't move into lines)
-  end_point_x = $('<p><label for="startpoint_x_field">end <i>x</i></label> : <input type="text" id="endpoint_x_field" name="endpoint_x_field"></p>'),
-  end_point_x_input = end_point_x.find('input').bind('keydown keypress', defer(function(){
-    var current_points = current_list_shape.data('current points');
-    current_points.end_x = end_point_x_input.val() || 0;
-    current_list_shape.data('raphael').attr('path',
-      'M'+current_points.start_x+' '+current_points.start_y+'L'+current_points.end_x+' '+current_points.end_y);
-    current_list_shape.data('history')['path'][now] = current_list_shape.data('raphael').attr('path');
-  })),
-  end_point_y = $('<p><label for="startpoint_y_field">end <i>y</i></label> : <input type="text" id="endpoint_y_field" name="endpoint_y_field"></p>'),
-  end_point_y_input = end_point_y.find('input').bind('keydown keypress', defer(function(){
-    var current_points = current_list_shape.data('current points');
-    current_points.end_y = end_point_y_input.val() || 0;
-    current_list_shape.data('raphael').attr('path',
-      'M'+current_points.start_x+' '+current_points.start_y+'L'+current_points.end_x+' '+current_points.end_y);
-    current_list_shape.data('history')['path'][now] = current_list_shape.data('raphael').attr('path');
-  }));
-function add_linepoints(raphael_shape){
-  var current_points = current_list_shape.data('current points');
-  start_point_x_input.val(current_points.start_x);
-  start_point_y_input.val(current_points.start_y);
-  end_point_x_input.val(current_points.end_x);
-  end_point_y_input.val(current_points.end_y);
-  start_point_x.insertBefore(remove);
-  start_point_y.insertBefore(remove);
-  end_point_x.insertBefore(remove);
-  end_point_y.insertBefore(remove);
-}
-function rm_linepoints(){
-  start_point_x.detach();
-  start_point_y.detach();
-  end_point_x.detach();
-  end_point_y.detach();
-}
 
 
 
@@ -702,12 +650,6 @@ function moved_cxcy(){
   this.attr_options().find('input')[0].value = this.attr('cx');
   this.attr_options().find('input')[1].value = this.attr('cy');
 }
-function moved_linepoints(){
-  $('#startpoint_x_field').val(this.attr('path')[0][1]);
-  $('#startpoint_y_field').val(this.attr('path')[0][2]);
-  $('#endpoint_x_field').val(this.attr('path')[1][1]);
-  $('#endpoint_y_field').val(this.attr('path')[1][2]);
-}
 function doneMoving_xy(){
   current_list_shape.data('history')['x'][now] = this.attr('x');
   current_list_shape.data('history')['y'][now] = this.attr('y');
@@ -715,13 +657,6 @@ function doneMoving_xy(){
 function doneMoving_cxcy(){
   current_list_shape.data('history').cx[now] = this.attr('cx');
   current_list_shape.data('history').cy[now] = this.attr('cy');
-}
-function doneMoving_linepoints(){
-  current_list_shape.data('current points')['start_x'] = this.attr('path')[0][1];
-  current_list_shape.data('current points')['start_y'] = this.attr('path')[0][2];
-  current_list_shape.data('current points')['end_x'] = this.attr('path')[1][1];
-  current_list_shape.data('current points')['end_y'] = this.attr('path')[1][2];
-  current_list_shape.data('history').path[now] = 'M'+current_list_shape.data('current points')['start_x']+' '+current_list_shape.data('current points')['start_y']+'L'+current_list_shape.data('current points')['end_x'] +' '+current_list_shape.data('current points')['end_y'];
 }
 
 
@@ -925,44 +860,113 @@ $('#text_button').click(function(){
 });
 
 var line_count = 0;
-$('#line_button').click(function(){
-  overlay.mousedown(function(e){
-    line_count += 1;
-    var cornerX = e.offsetX || e.pageX - overlay.offset().left, cornerY = e.offsetY || e.pageY - overlay.offset().top, history = {}, current_points = {},
-      line = user_canvas.path('M'+cornerX+' '+cornerY+'L'+cornerX +' '+cornerY)
-        .mousedown(call_raphael_shape_click),
-      list_line_jQ = $('<p>Line '+line_count+'</p>').data('raphael', line)
-        .data('history', history)
-        .data('current points', current_points)
-        .data('add list options', function(raphael_shape){
-          add_linepoints(raphael_shape);
-          add_stroke_width();
-          add_stroke_color();
-        })
-        .data('remove list options', function(){
-          rm_linepoints();
-          rm_stroke_width();
-          rm_stroke_color();
-        })
-        .click(list_shape_click).appendTo(shapes_list);
-    line.moved = moved_linepoints;
-    line.doneMoving = doneMoving_linepoints;
-    $(line.node).data('shapes list', list_line_jQ);
+$('#line_button').click(function(){//to get rid of jumpiness, change ".bind('keydown keypress', defer" to ".change("
+  //startpoint for lines (including curves - don't move into lines)
+  var startX = $('<p><label for="startX_field">start <i>x</i> : </label><input type="text" id="startX_field" name="startX_field"></p>'),
+    startX_input = startX.find('input').bind('keydown keypress', defer(function(){
+      var path = current_list_shape.data('path');
+      path.startX = startX_input.val() || 0;
+      current_list_shape.data('history').path[now] = current_list_shape.data('raphael').attr('path', path).attr('path');
+    })),
+    startY = $('<p><label for="startY_field">start <i>y</i></label> : <input type="text" id="startY_field" name="startY_field"></p>'),
+    startY_input = startY.find('input').bind('keydown keypress', defer(function(){
+      var path = current_list_shape.data('path');
+      path.startY = startY_input.val() || 0;
+      current_list_shape.data('history').path[now] = current_list_shape.data('raphael').attr('path', path).attr('path');
+    })),
+  //endpoint for lines (including curves - don't move into lines)
+    endX = $('<p><label for="endX_field">end <i>x</i></label> : <input type="text" id="endX_field" name="endX_field"></p>'),
+    endX_input = endX.find('input').bind('keydown keypress', defer(function(){
+      var path = current_list_shape.data('path');
+      path.endX = endX_input.val() || 0;
+      current_list_shape.data('history').path[now] = current_list_shape.data('raphael').attr('path', path).attr('path');
+    })),
+    endY = $('<p><label for="endY_field">end <i>y</i></label> : <input type="text" id="endY_field" name="endY_field"></p>'),
+    endY_input = endY.find('input').bind('keydown keypress', defer(function(){
+      var path = current_list_shape.data('path');
+      path.endY = endY_input.val() || 0;
+      current_list_shape.data('history').path[now] = current_list_shape.data('raphael').attr('path', path).attr('path');
+    }));
+  function add_linepoints(raphael_shape, path){
+    startX_input.val(path.startX);
+    startY_input.val(path.startY);
+    endX_input.val(path.endX);
+    endY_input.val(path.endY);
+    startX.insertBefore(remove);
+    startY.insertBefore(remove);
+    endX.insertBefore(remove);
+    endY.insertBefore(remove);
+  }
+  function rm_linepoints(){
+    startX.detach();
+    startY.detach();
+    endX.detach();
+    endY.detach();
+  }
 
-    spotlight(line);
+  function moved_linepoints(){
+    var path_attr = this.attr('path');
+    $('#startX_field').val(path_attr[0][1]);
+    $('#startY_field').val(path_attr[0][2]);
+    $('#endX_field').val(path_attr[1][1]);
+    $('#endY_field').val(path_attr[1][2]);
+  }
+  function doneMoving_linepoints(){
+    var path = current_list_shape.data('path'), path_attr = this.attr('path');
+    path.startX = path_attr[0][1];
+    path.startY = path_attr[0][2];
+    path.endX = path_attr[1][1];
+    path.endY = path_attr[1][2];
+    current_list_shape.data('history').path[now] = this.attr('path');
+  }
 
-    drag(e, function(dx, dy){
-        line.attr({
-          path: 'M'+cornerX+' '+cornerY+'l'+dx+' '+dy
+  function Path(startX, startY, endX, endY){
+    this.startX = this.endX = startX;
+    this.startY = this.endY = startY;
+  }
+  Path.prototype.toString = function(){
+    return 'M'+this.startX+' '+this.startY+'L'+this.endX +' '+this.endY;
+  };
+
+  return function(){
+    overlay.mousedown(function(e){
+      line_count += 1;
+      var path = new Path(e.offsetX || e.pageX - overlay.offset().left, e.offsetY || e.pageY - overlay.offset().top), history = {},
+        line = user_canvas.path(path).mousedown(call_raphael_shape_click),
+        list_line_jQ = $('<p>Line '+line_count+'</p>').data('raphael', line)
+          .data('history', history)
+          .data('path', path)
+          .data('add list options', function(){
+            add_linepoints(line, path);
+            add_stroke_width(line);
+            add_stroke_color(line);
+          })
+          .data('remove list options', function(){
+            rm_linepoints();
+            rm_stroke_width();
+            rm_stroke_color();
+          })
+          .click(list_shape_click)
+          .hover(function(){
+            spotlight(line);
+          }, function(){
+            spotlight.off();
+          })
+          .appendTo(shapes_list);
+      line.moved = moved_linepoints;
+      line.doneMoving = doneMoving_linepoints;
+      $(line.node).data('shapes list', list_line_jQ);
+
+      spotlight(line);
+
+      drag(e, function(dx, dy){
+          path.endX = path.startX + dx;
+          path.endY = path.startY + dy;
+          line.attr({ path: path });
+      }, function(){
+        $.each(['path'], function(i, attr){
+          history[attr] = [ line.attr(attr) ];
         });
-        current_points.start_x = cornerX;
-        current_points.start_y = cornerY;
-        current_points.end_x = dx;
-        current_points.end_y = dy;
-    }, function(){
-      $.each(['path'], function(i, attr){
-        history[attr] = [];
-        history[attr][0] = line.attr(attr);
       });
       if(now != 0){
         history['opacity'] = [];
@@ -970,8 +974,8 @@ $('#line_button').click(function(){
         history['opacity'][now] = 1;
       }
     });
-  });
-});
+  };
+}());
 
 
 //move tool
