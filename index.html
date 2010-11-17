@@ -232,15 +232,16 @@ $('#user_canvas_controls button').click(function(){
     for(var attr in history)
       (function(attr){
         (function(){
-          now = Math.round((timeknob.attr('x') + 3)*duration/480);
           var new_attr = {};
           if(attr in {'fill-opacity':0,'opacity':0, apples:0}){
-            var prev = 0;
+            var prev = -1;
             for(var next in history[attr])
               if(next > now)
                 break;
               else
                 prev = next;
+            if(prev < 0)
+              return;
             new_attr[attr] = history[attr][prev];
             raphael_this.attr(new_attr);
             setTimeout(arguments.callee, next - now);
@@ -250,17 +251,15 @@ $('#user_canvas_controls button').click(function(){
             if(next > now)
               break;
             else
-              next = duration + 1;
-          next = +next;
+              next = -1;
+          if(next < 0)
+            return;
           new_attr[attr] = history[attr][next];
-          if(next > duration)
-            now = duration;
-          else
-            raphael_this.animate(new_attr, next - now, arguments.callee);
+          raphael_this.animate(new_attr, next - now, arguments.callee);
         }());
       }(attr));
   });
-  timeknob.animate({'x': 477}, duration, "time_easing", function(){
+  timeknob.animate({x: 477}, duration, "time_easing", function(){
     now = 5000;
     current_time.val((now/1000).toFixed(3)+'s');
   });
