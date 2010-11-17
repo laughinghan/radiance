@@ -520,7 +520,7 @@ var stroke_width_option = $('<p><label for="stroke_width_option">Thickness: </la
     if(!raphael_shape.attr('stroke'))
       raphael_shape.attr('stroke', '#000');
     if(!history['stroke-width'])
-      history['stroke-width'] = [ raphael_shape.attr('stroke-width') ];
+      history['stroke-width'] = [ raphael_shape.attr('stroke-width')  || 1 ];
     raphael_shape.attr('stroke-width', history['stroke-width'][now] = stroke_width_input.val());
   }));
 function add_stroke_width(raphael_shape){
