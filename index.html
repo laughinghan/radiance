@@ -371,7 +371,7 @@ function defer(fn){
 
 //based on Raphael.el.show and .hide in Raphael.js v1.5.2
 Raphael.el.toggleHide = function(hide){
-  !this.removed && (this.node.style.display = hide ? 'none' : '');
+  !this.removed && (this.node.style.display = hide ? 'none' : '') || this.paper.safari();
   return this;
 };
 
