@@ -245,21 +245,24 @@ $('#user_canvas_controls button').click(function(){
     for(var attr in history)
       (function(attr){
         (function(){
-          var new_attr = {};
-          if(attr in {'fill-opacity':0,'opacity':0, apples:0}){
-            var prev = -1;
+          if(attr === 'hidden' || attr === 'fill-opacity'){
+            var prev = 0;
             for(var next in history[attr]) //iterate through each singularity
               if(next > now) //until the first singularity after now
                 break;
-              else
+              else{
                 prev = next; //let prev be the last singularity before now
-            if(prev < 0) //if no singularities at all in history, forget it
-              return;
-            new_attr[attr] = history[attr][prev];
-            raphael_this.attr(new_attr);
-            setTimeout(arguments.callee, next - now);
+                next = -1;
+              }
+            if(attr === 'hidden')
+              raphael_this.toggleHide(history.hidden[prev]);
+            else
+              raphael_this.attr(attr, history[attr][prev]);
+            if(next >= 0)
+              setTimeout(arguments.callee, next - now);
             return;
           }
+          var new_attr = {};
           for(var next in history[attr]) //iterate through each singularity
             if(next > now) //until the first singularity after now
               break;
@@ -288,18 +291,18 @@ function interpolate_anim_state(){
     return;
 
   for(var attr in history){
-    var new_attr = {};
-    if(attr in {'fill-opacity':0,opacity:0}){
-      var prev = -1;
+    //binary attributes
+    if(attr === 'hidden' || attr === 'fill-opacity'){
+      var prev = 0;
       for(var next in history[attr]) //iterate through each singularity
         if(next > now) //until the first singularity after now
           break;
         else
           prev = next; //let prev be the last singularity before now
-      if(prev < 0) //if no singularities at all in history, forget it
-        return;
-      new_attr[attr] = history[attr][prev];
-      raphael_this.attr(new_attr);
+      if(attr === 'hidden')
+        raphael_this.toggleHide(history.hidden[prev]);
+      else
+        raphael_this.attr(attr, history[attr][prev]);
       return;
     }
 
