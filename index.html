@@ -228,7 +228,8 @@ $('#user_canvas_controls button').click(function(){
     play_button.html('&#9654;Play');
     playing = false;
     shapes_list.children().each(function(){
-      $(this).data('raphael').stop();
+      var raphael_this = $(this).data('raphael');
+      raphael_this && raphael_this.stop();
     });
     timeknob.stop();
     return;
