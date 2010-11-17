@@ -365,7 +365,7 @@ $('#duration').change(function(){
 //defer execution by a thread. Used by live text input boxes
 function defer(fn){
   return function(){
-    setTimeout(fn, 0);
+    setTimeout(fn);
   };
 }
 
