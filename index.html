@@ -226,8 +226,7 @@ $('#user_canvas_controls button').click(function(){
   timeknob.attr('x', -3);
   current_time.val('0.000s');
   shapes_list.children().each(interpolate_anim_state);
-  shapes_list.children().each(function(){
-    //recursive animation
+  shapes_list.children().each(function(){ //recursive animation
     var raphael_this = $(this).data('raphael'), history = $(this).data('history');
     for(var attr in history)
       (function(attr){
@@ -235,75 +234,84 @@ $('#user_canvas_controls button').click(function(){
           var new_attr = {};
           if(attr in {'fill-opacity':0,'opacity':0, apples:0}){
             var prev = -1;
-            for(var next in history[attr])
-              if(next > now)
+            for(var next in history[attr]) //iterate through each singularity
+              if(next > now) //until the first singularity after now
                 break;
               else
-                prev = next;
-            if(prev < 0)
+                prev = next; //let prev be the last singularity before now
+            if(prev < 0) //if no singularities at all in history, forget it
               return;
             new_attr[attr] = history[attr][prev];
             raphael_this.attr(new_attr);
             setTimeout(arguments.callee, next - now);
             return;
           }
-          for(var next in history[attr])
-            if(next > now)
+          for(var next in history[attr]) //iterate through each singularity
+            if(next > now) //until the first singularity after now
               break;
             else
-              next = -1;
-          if(next < 0)
+              next = -1; //if the singularity wasn't after now, flag
+          if(next < 0) //if no singularities after now in history, don't animate
             return;
           new_attr[attr] = history[attr][next];
           raphael_this.animate(new_attr, next - now, arguments.callee);
         }());
       }(attr));
   });
-  timeknob.animate({x: 477}, duration, "time_easing", function(){
+  timeknob.animate({x: 477}, duration, 'time_easing', function(){
     now = 5000;
     current_time.val((now/1000).toFixed(3)+'s');
   });
 });
 
+//interpolate current animation state
 function interpolate_anim_state(){
   var raphael_this = $(this).data('raphael'), history = $(this).data('history');
+
   if(raphael_this === undefined)
     return;
-  //animation state now
+
   for(var attr in history){
     var new_attr = {};
     if(attr in {'fill-opacity':0,opacity:0}){
-      var prev = 0;
-      for(var next in history[attr])
-        if(next > now)
+      var prev = -1;
+      for(var next in history[attr]) //iterate through each singularity
+        if(next > now) //until the first singularity after now
           break;
         else
-          prev = next;
+          prev = next; //let prev be the last singularity before now
+      if(prev < 0) //if no singularities at all in history, forget it
+        return;
       new_attr[attr] = history[attr][prev];
       raphael_this.attr(new_attr);
-      setTimeout(arguments.callee, next - now);
       return;
-    }else{
-      var past = 0, future = duration + 1;
-      for(var time in history[attr])
-        if(time <= now && time > past)
-          past = +time;
-      for(var time in history[attr])
-        if(time >= now && time < future)
-          future = +time;
-      if(future === past || future > duration)
-        raphael_this.attr(attr, history[attr][past]);
-      else if(attr in {fill:0,stroke:0}){
-        var past_rgb = Raphael.getRGB(history[attr][past]),
-          future_rgb = Raphael.getRGB(history[attr][future]),
-          delta = (now - past)/(future - past);
-        raphael_this.attr(attr, 'rgb(' + (past_rgb.r+(future_rgb.r - past_rgb.r)*delta) + ',' +
-          (past_rgb.g+(future_rgb.g - past_rgb.g)*delta) + ',' +
-          (past_rgb.b+(future_rgb.b - past_rgb.b)*delta) + ')');
+    }
+
+    var past = 0, future = duration + 1;
+
+    //seek singularity closest but <= now
+    for(var time in history[attr])
+      if(time <= now && time > past)
+        past = +time;
+
+    //seek singularity closest but >= now
+    for(var time in history[attr])
+      if(time >= now && time < future)
+        future = +time;
+
+    if(future === past || future > duration)
+      raphael_this.attr(attr, history[attr][past]);
+    else if(attr in {fill:0,stroke:0}){
+      var past_rgb = Raphael.getRGB(history[attr][past]),
+        future_rgb = Raphael.getRGB(history[attr][future]),
+        delta = (now - past)/(future - past);
+      raphael_this.attr(attr, 'rgb(' +
+        (past_rgb.r+(future_rgb.r - past_rgb.r)*delta) + ',' +
+        (past_rgb.g+(future_rgb.g - past_rgb.g)*delta) + ',' +
+        (past_rgb.b+(future_rgb.b - past_rgb.b)*delta) + ')');
     }else
       raphael_this.attr(attr, history[attr][past] +
         (history[attr][future] - history[attr][past])*(now - past)/(future - past)); //replace with proper easing
-    }
   }
 }
 
