@@ -303,7 +303,7 @@ function interpolate_anim_state(){
         raphael_this.toggleHide(history.hidden[prev]);
       else
         raphael_this.attr(attr, history[attr][prev]);
-      return;
+      continue;
     }
 
     var past = 0, future = duration + 1;
