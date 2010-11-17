@@ -369,6 +369,12 @@ function defer(fn){
   };
 }
 
+//based on Raphael.el.show and .hide in Raphael.js v1.5.2
+Raphael.el.toggleHide = function(hide){
+  !this.removed && (this.node.style.display = hide ? 'none' : '');
+  return this;
+};
+
 
 
 
@@ -398,15 +404,10 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
   //hidden
   hidden_option = $('<p><label for="hidden_option">Hidden: </label><input type="checkbox" id="hidden_option" name="hidden_option"></p>')
     .appendTo(list_shape_options).find('input').change(function(){
-      if(!current_list_shape.data('history').opacity){
-        current_list_shape.data('history').opacity = [];
-        current_list_shape.data('history').opacity[0] = current_list_shape.data('raphael').attr('opacity') || 1;
-      }
-      if(+this.checked)
-        current_list_shape.data('raphael').attr('opacity', 0);
-      else
-        current_list_shape.data('raphael').attr('opacity', 1);
-      current_list_shape.data('history').opacity[now] = current_list_shape.data('raphael').attr('opacity');
+      var history = current_list_shape.data('history');
+      if(!history.hidden)
+        history.hidden = [ true ];
+      current_list_shape.data('raphael').toggleHide(history.hidden[now] = this.checked);
     }),
   //remove
   remove = $('<button>Remove</button>').click(function(){
@@ -426,7 +427,7 @@ function list_shape_click(){
   current_list_shape = $(this).addClass('current');
 
   rename.val(this.innerHTML === '&nbsp;' ? '' : this.innerHTML);
-  current_list_shape.data('add list options')(current_list_shape.data('raphael'));
+  current_list_shape.data('add list options')();
 
   list_shape_options.insertAfter(this);
 }
@@ -436,13 +437,11 @@ function list_shape_click(){
 
 
 //additional options to be added on a per-shape basis:
-function add_attr_option(attr){
-  var raphael_shape = current_list_shape.data('raphael'),
-    attr_option = $('<p><label for="'+attr+'_option">'+attr+' : </label><input type="text" name="'+attr+'" id="'+attr+'_option"></p>'),
+function add_attr_option(raphael_shape, attr, history){
+  var attr_option = $('<p><label for="'+attr+'_option">'+attr+' : </label><input type="text" name="'+attr+'" id="'+attr+'_option"></p>'),
     attr_input = attr_option.find('input').bind('keydown keypress', defer(function(){
       var val = attr_input.val();
-      raphael_shape.attr(attr, num_dot_regex.test(val) ? val.slice(0, -1) : val);
-      current_list_shape.data('history')[attr][now] = current_list_shape.data('raphael').attr(attr);
+      raphael_shape.attr(attr, history[attr][now] = num_dot_regex.test(val) ? val.slice(0, -1) : val);
     })).val(raphael_shape.attr(attr));
   return attr_option.insertBefore(remove);
 }
@@ -451,12 +450,10 @@ var num_dot_regex = /^\d+\.$^/; //fix annoying css quirk where '123.' is an inva
 //fill
 var fill = $('<p><label for="fill">Fill: </label><input type="checkbox" id="fill" name="fill"></p>'),
   fill_checkbox = fill.find('input').change(function(){
-    if(!current_list_shape.data('history')['fill-opacity']){
-      current_list_shape.data('history')['fill-opacity'] = [];
-      current_list_shape.data('history')['fill-opacity'][0] = current_list_shape.data('raphael').attr('fill-opacity') || 0;
-    }
-    current_list_shape.data('raphael').attr('fill-opacity', +this.checked);
-    current_list_shape.data('history')['fill-opacity'][now] = current_list_shape.data('raphael').attr('fill-opacity');
+    var history = current_list_shape.data('history'), raphael_shape = current_list_shape.data('raphael');
+    if(!history['fill-opacity'])
+      history['fill-opacity'] = [ raphael_shape.attr('fill-opacity') || 0 ];
+    raphael_shape.attr('fill-opacity', history['fill-opacity'][now] = +this.checked);
   });
 function add_fill(raphael_shape){
   fill_checkbox[0].checked = raphael_shape.attr('fill-opacity') === 1;
@@ -471,53 +468,44 @@ var stroke_color_option = $('<p><label for="stroke_color_option">Color: </label>
     '<select><option></option><option>Red</option><option>Orange</option><option>Yellow</option><option>Green</option><option>Blue</option>'+
     '<option>Purple</option><option>Black</option><option>Gray</option><option>White</option></select></p>'),
   stroke_color_input = stroke_color_option.find('input').bind('keydown keypress', defer(function(){
-    var raphael_shape = current_list_shape.data('raphael'), stroke_color_val = stroke_color_input.val();
+    var raphael_shape = current_list_shape.data('raphael'), history = current_list_shape.data('history'), stroke_color_val = stroke_color_input.val();
     if(!raphael_shape.attr('stroke-opacity'))
       raphael_shape.attr('stroke-opacity', 1);
-      if(!current_list_shape.data('history')['stroke']){
-        current_list_shape.data('history')['stroke'] = [];
-        current_list_shape.data('history')['stroke'][0] = current_list_shape.data('raphael').attr('stroke');
-      }
-    raphael_shape.attr('stroke', stroke_color_val);
-    current_list_shape.data('history')['stroke'][now] = current_list_shape.data('raphael').attr('stroke');
+    if(!history['stroke'])
+      history['stroke'] = [ raphael_shape.attr('stroke') ];
+    raphael_shape.attr('stroke', history['stroke'][now] = stroke_color_val);
     stroke_color_select.val(stroke_color_val);
   })),
   stroke_color_select = stroke_color_option.find('select').change(function(){
     stroke_color_input.val(this.value).keydown();
   });
-function add_stroke_color(){
-  var stroke_color_val = current_list_shape.data('raphael').attr('stroke');
-  stroke_color_input.val(stroke_color_val);
+function add_stroke_color(raphael_shape){
+  stroke_color_input.val(raphael_shape.attr('stroke'));
   stroke_color_option.insertBefore(remove);
 }
 function rm_stroke_color(){
   stroke_color_option.detach();
 }
 
-
 var fill_color_option = $('<p><label for="fill_color_option"></label><input type="text" name="fill_color_option_text_color" id="fill_color_option_text_color">'+
     '<select><option></option><option>Red</option><option>Orange</option><option>Yellow</option><option>Green</option><option>Blue</option>'+
     '<option>Purple</option><option>Black</option><option>Gray</option><option>White</option></select></p>'),
   fill_color_input = fill_color_option.find('input').bind('keydown keypress', defer(function(){
-    var raphael_shape = current_list_shape.data('raphael'), fill_color_val = fill_color_input.val();
+    var raphael_shape = current_list_shape.data('raphael'), history = current_list_shape.data('history'), fill_color_val = fill_color_input.val();
     if(!raphael_shape.attr('fill-opacity'))
       raphael_shape.attr('fill-opacity', 1);
-      if(!current_list_shape.data('history')['fill']){
-        current_list_shape.data('history')['fill'] = [];
-        current_list_shape.data('history')['fill'][0] = current_list_shape.data('raphael').attr('fill');
-      }
-    raphael_shape.attr('fill', fill_color_val);
-    current_list_shape.data('history')['fill'][now] = current_list_shape.data('raphael').attr('fill');
+    if(!history.fill)
+      history.fill = [ raphael_shape.attr('fill') ];
+    raphael_shape.attr('fill', history.fill[now] = fill_color_val);
     fill_color_select.val(fill_color_val);
   })),
   fill_color_select = fill_color_option.find('select').change(function(){
     fill_color_input.val(this.value).keydown();
   }),
   fill_color_label = fill_color_option.find('label');
-  function add_fill_color(label){
-    var fill_color_val = current_list_shape.data('raphael').attr('fill');
-    fill_color_input.val(fill_color_val);
-    fill_color_label.text(label + ' : ');
+  function add_fill_color(raphael_shape, label){
+    fill_color_input.val(raphael_shape.attr('fill'));
+    fill_color_label.text(label + ': ');
     fill_color_option.insertBefore(remove);
   }
   function rm_fill_color(){
@@ -525,21 +513,17 @@ var fill_color_option = $('<p><label for="fill_color_option"></label><input type
   }
 
 //stroke width
-var stroke_width_option = $('<p><label for="stroke_width_option">Thickness : </label><input type="text" name="stroke" id="stroke_width_option"></p>'),
+var stroke_width_option = $('<p><label for="stroke_width_option">Thickness: </label><input type="text" name="stroke" id="stroke_width_option"></p>'),
   stroke_width_input = stroke_width_option.find('input').bind('keydown keypress', defer(function(){
-      var raphael_shape = current_list_shape.data('raphael');
-      if(!raphael_shape.attr('stroke'))
-        raphael_shape.attr('stroke', '#000');
-        if(!current_list_shape.data('history')['stroke-width']){
-          current_list_shape.data('history')['stroke-width'] = [];
-          current_list_shape.data('history')['stroke-width'][0] = current_list_shape.data('raphael').attr('stroke-width');
-        }
-      raphael_shape.attr('stroke-width', stroke_width_input.val());
-      current_list_shape.data('history')['stroke-width'][now] = current_list_shape.data('raphael').attr('stroke-width');
+    var raphael_shape = current_list_shape.data('raphael'), history = current_list_shape.data('history');
+    if(!raphael_shape.attr('stroke'))
+      raphael_shape.attr('stroke', '#000');
+    if(!history['stroke-width'])
+      history['stroke-width'] = [ raphael_shape.attr('stroke-width') ];
+    raphael_shape.attr('stroke-width', history['stroke-width'][now] = stroke_width_input.val());
   }));
-function add_stroke_width(){
-  var stroke_width_val = current_list_shape.data('raphael').attr('stroke-width') || 1;
-  stroke_width_input.val(stroke_width_val);
+function add_stroke_width(raphael_shape){
+  stroke_width_input.val(raphael_shape.attr('stroke-width') || 1);
   stroke_width_option.insertBefore(remove);
 }
 function rm_stroke_width(){
@@ -670,14 +654,14 @@ $('#rect_button').click(function(){
         .mousedown(call_raphael_shape_click),
       list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
         .data('history', history)
-        .data('add list options', function(raphael_shape){
+        .data('add list options', function(){
           $.each(['x', 'y', 'width', 'height'], function(i, attr){
-            attrs = attrs.add(add_attr_option(attr));
+            attrs = attrs.add(add_attr_option(rect, attr, history));
           });
-          add_stroke_width();
-          add_stroke_color();
-          add_fill(raphael_shape);
-          add_fill_color('Fill color');
+          add_stroke_width(rect);
+          add_stroke_color(rect);
+          add_fill(rect);
+          add_fill_color(rect, 'Fill color');
         })
         .data('remove list options', function(){
           attrs.remove();
@@ -724,15 +708,14 @@ $('#rect_button').click(function(){
         });
     }, function(){
       $.each(['x', 'y', 'width', 'height'], function(i, attr){
-        history[attr] = [];
-        history[attr][0] = rect.attr(attr);
+        history[attr] = [ rect.attr(attr) ];
       });
-      if(now != 0){
-        history['opacity'] = [];
-        history['opacity'][0] = 0;
-        history['opacity'][now] = 1;
-      }
     });
+
+    if(now != 0){
+      history.hidden = [ true ];
+      history.hidden[now] = false;
+    }
 
     return false;
   });
@@ -747,14 +730,14 @@ $('#ellipse_button').click(function(){
         .mousedown(call_raphael_shape_click),
       list_ellipse_jQ = $('<p>Ellipse '+ellipse_count+'</p>').data('raphael', ellipse)
         .data('history', history)
-        .data('add list options', function(raphael_shape){
+        .data('add list options', function(){
           $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
-            attrs = attrs.add(add_attr_option(attr));
+            attrs = attrs.add(add_attr_option(ellipse, attr, history));
           });
-          add_stroke_width();
-          add_stroke_color();
-          add_fill(raphael_shape);
-          add_fill_color('fill color');
+          add_stroke_width(ellipse);
+          add_stroke_color(ellipse);
+          add_fill(ellipse);
+          add_fill_color(ellipse, 'Fill color');
         })
         .data('remove list options', function(){
           attrs.remove();
@@ -797,15 +780,14 @@ $('#ellipse_button').click(function(){
         });
     }, function(){
       $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
-        history[attr] = [];
-        history[attr][0] = ellipse.attr(attr);
+        history[attr] = [ ellipse.attr(attr) ];
       });
-      if(now != 0){
-        history['opacity'] = [];
-        history['opacity'][0] = 0;
-        history['opacity'][now] = 1;
-      }
     });
+
+    if(now != 0){
+      history.hidden = [ true ];
+      history.hidden[now] = false;
+    }
 
     return false;
   });
@@ -817,17 +799,16 @@ $('#text_button').click(function(){
     text_count += 1;
     var text = user_canvas.text(e.offsetX || e.pageX - overlay.offset().left, e.offsetY || e.pageY - overlay.offset().top, 'text').attr('font-size',24), 
       history = {}, attrs,
-      text_option = $('<p id="text_option_p"><label for="text_option">Text: </label><input type="text" id="text_option" name="text_option"></p>'),
+      text_option = $('<p id="text_option_p"><label for="text_option">Text: </label><input type="text" id="text_option" name="text_option" value="text"></p>'),
       text_opt_input = text_option.find('input').bind('keydown keypress', defer(function(){
         $(text.node).children().text(text_opt_input.val());
       })),
       list_text_jQ = $('<p>Text ' + text_count + '</p>').data('raphael', text)
         .data('history', history)
         .data('add list options', function(){
-          attrs = add_attr_option('x').add(add_attr_option('y'));
-          text_opt_input.val($(text.node).children().text());
           text_option.insertBefore(remove);
-          add_fill_color('Color');
+          attrs = add_attr_option(text, 'x', history).add(add_attr_option(text, 'y', history));
+          add_fill_color(text, 'Color');
         })
         .data('remove list options', function(){
           attrs.remove();
@@ -848,14 +829,14 @@ $('#text_button').click(function(){
     $(text.node).data('shapes list', list_text_jQ);
 
     $.each(['x', 'y'], function(i, attr){
-      history[attr] = [];
-      history[attr][0] = text.attr(attr);
+      history[attr] = [ text.attr(attr) ];
     });
+
     if(now != 0){
-      history['opacity'] = [];
-      history['opacity'][0] = 0;
-      history['opacity'][now] = 1;
+      history.hidden = [ true ];
+      history.hidden[now] = false;
     }
+
   });
 });
 
@@ -968,11 +949,12 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
           history[attr] = [ line.attr(attr) ];
         });
       });
+
       if(now != 0){
-        history['opacity'] = [];
-        history['opacity'][0] = 0;
-        history['opacity'][now] = 1;
+        history.hidden = [ true ];
+        history.hidden[now] = false;
       }
+
     });
   };
 }());
