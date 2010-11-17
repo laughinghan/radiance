@@ -213,8 +213,8 @@ time_overlay.drag(time_move, function(x, y, e){ //start
 });
 
 Raphael.easing_formulas.time_easing = function(n){
-  now = n * duration / 1000;
-  current_time.val(now.toFixed(3)+'s');
+  now = n * duration;
+  current_time.val((now/1000).toFixed(3)+'s');
   return n;
 }
 
