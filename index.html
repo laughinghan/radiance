@@ -221,7 +221,20 @@ Raphael.easing_formulas.time_easing = function(n){
 //to optimize play button and interpolate, make so if ele hidden, it doesn't go through it for all attr,
 //just sets them all with an interpolate_anim_state when becomes unhidden
 //Play button
+var playing = false;
 $('#user_canvas_controls button').click(function(){
+  var play_button = $(this);
+  if(playing){
+    play_button.html('&#9654;Play');
+    playing = false;
+    shapes_list.children().each(function(){
+      $(this).data('raphael').stop();
+    });
+    timeknob.stop();
+    return;
+  }
+  play_button.html('Pause');
+  playing = true;
   now = 0;
   timeknob.attr('x', -3);
   current_time.val('0.000s');
@@ -260,6 +273,8 @@ $('#user_canvas_controls button').click(function(){
   });
   timeknob.animate({x: 477}, duration, 'time_easing', function(){
     now = 5000;
+    playing = false;
+    play_button.html('&#9654;Play');
     current_time.val((now/1000).toFixed(3)+'s');
   });
 });
