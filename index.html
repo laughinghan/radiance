@@ -412,8 +412,10 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
   remove = $('<button>Remove</button>').click(function(){
     (current_list_shape.data('remove list options') || $.noop)();
     list_shape_options.detach();
+
     current_list_shape.data('raphael').remove();
     current_list_shape.remove();
+
     current_list_shape = $();
   }).appendTo(list_shape_options),
   all_spaces_regex = /^ *$/;
@@ -521,6 +523,7 @@ var fill_color_option = $('<p><label for="fill_color_option"></label><input type
   function rm_fill_color(){
     fill_color_option.detach();
   }
+
 //stroke width
 var stroke_width_option = $('<p><label for="stroke_width_option">Thickness : </label><input type="text" name="stroke" id="stroke_width_option"></p>'),
   stroke_width_input = stroke_width_option.find('input').bind('keydown keypress', defer(function(){
@@ -908,6 +911,7 @@ $('#text_button').click(function(){
     text.moved = moved_xy;
     text.doneMoving = doneMoving_xy;
     $(text.node).data('shapes list', list_text_jQ);
+
     $.each(['x', 'y'], function(i, attr){
       history[attr] = [];
       history[attr][0] = text.attr(attr);
