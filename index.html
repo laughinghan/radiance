@@ -167,21 +167,21 @@ var zoomslider = Raphael('zoomslider', 200, 20),
   zoomknob = zoomslider.rect(50, 0, 6, 20).attr({fill: '#AAA', stroke: 'none'});
 
 var zoom = 100, zoom_startX;
-function zoom_move(dx, dy){
-  zoom = zoom_startX + dx + 50;
-  zoom = zoom < 50 ? 50 : (zoom > 250 ? 250 : zoom);
-  $('#zoom').val(zoom+'%');
-  zoomknob.attr('x', zoom - 54);
-} //zoom!
-zoomknob.drag(zoom_move, function(){ //start
-  zoom_startX = zoomknob.attr('x') + 3;
-}); //zoom!!
-zoom_overlay.drag(zoom_move, function(x, y, e){ //start
+zoom_overlay.drag(zoom_drag, function(x, y, e){ //start
   zoom_startX = e.offsetX || e.pageX - $(zoom_overlay.node).offset().left;
   zoom = zoom_startX + 50;
   $('#zoom').val(zoom+'%');
   zoomknob.attr('x', zoom_startX - 4);
-}); //zoom!!!
+}); //zoom!
+zoomknob.drag(zoom_drag, function(){ //start
+  zoom_startX = zoomknob.attr('x') + 4;
+}); //zoom!!
+function zoom_drag(dx, dy){
+  zoom = zoom_startX + dx + 50;
+  zoom = zoom < 50 ? 50 : (zoom > 250 ? 250 : zoom);
+  $('#zoom').val(zoom+'%');
+  zoomknob.attr('x', zoom - 54);
+} //zoom!!!
 
 
 
@@ -194,23 +194,23 @@ var timeslider = Raphael('timeslider', 480, 30),
   timeknob = timeslider.rect(-3, 5, 6, 20).attr({fill: '#000', stroke: 'none'});
 
 var now = 0, time_startX, duration = 5000;
-function time_move(dx, dy){
-  now = Math.round((time_startX+dx)*duration/480);
-  now = now < 0 ? 0 : (now > duration ? duration : now);
-  current_time.val((now/1000).toFixed(3)+'s');
-  timeknob.attr('x', now*480/duration - 4);
-  shapes_list.children().each(interpolate_anim_state);
-}
-timeknob.drag(time_move, function(){ //start
-  time_startX = timeknob.attr('x') + 3;
-});
-time_overlay.drag(time_move, function(x, y, e){ //start
+time_overlay.drag(time_drag, function(x, y, e){ //start
   time_startX = e.offsetX || e.pageX - $(time_overlay.node).offset().left;
   now = Math.round(time_startX*duration/480);
   current_time.val((now/1000).toFixed(3)+'s');
   timeknob.attr('x', time_startX - 4);
   shapes_list.children().each(interpolate_anim_state);
 });
+timeknob.drag(time_drag, function(){ //start
+  time_startX = timeknob.attr('x') + 4;
+});
+function time_drag(dx, dy){
+  now = Math.round((time_startX+dx)*duration/480);
+  now = now < 0 ? 0 : (now > duration ? duration : now);
+  current_time.val((now/1000).toFixed(3)+'s');
+  timeknob.attr('x', now*480/duration - 4);
+  shapes_list.children().each(interpolate_anim_state);
+}
 
 Raphael.easing_formulas.time_easing = function(n){
   now = n * duration;
