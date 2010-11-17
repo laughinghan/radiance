@@ -320,17 +320,30 @@ function interpolate_anim_state(){
 
     if(future === past || future > duration)
       raphael_this.attr(attr, history[attr][past]);
-    else if(attr in {fill:0,stroke:0}){
-      var past_rgb = Raphael.getRGB(history[attr][past]),
-        future_rgb = Raphael.getRGB(history[attr][future]),
-        delta = (now - past)/(future - past);
-      raphael_this.attr(attr, 'rgb(' +
-        (past_rgb.r+(future_rgb.r - past_rgb.r)*delta) + ',' +
-        (past_rgb.g+(future_rgb.g - past_rgb.g)*delta) + ',' +
-        (past_rgb.b+(future_rgb.b - past_rgb.b)*delta) + ')');
-    }else
-      raphael_this.attr(attr, history[attr][past] +
-        (history[attr][future] - history[attr][past])*(now - past)/(future - past)); //replace with proper easing
+    else{
+      var delta = (now - past)/(future - past);
+      if(attr === 'path'){
+        var past_path = history.path[past],
+          future_path = history.path[future],
+          path = $(this).data('path');
+        path.startX = interpolate(past_path[0][1], future_path[0][1]);
+        path.startY = interpolate(past_path[0][2], future_path[0][2]);
+        path.endX = interpolate(past_path[1][1], future_path[1][1]);
+        path.endY = interpolate(past_path[1][2], future_path[1][2]);
+        raphael_this.attr('path', path);
+      }else if(attr in {fill:0,stroke:0}){
+        var past_rgb = Raphael.getRGB(history[attr][past]),
+          future_rgb = Raphael.getRGB(history[attr][future]);
+        raphael_this.attr(attr, 'rgb(' +
+          interpolate(past_rgb.r, future_rgb.r) + ',' +
+          interpolate(past_rgb.g, future_rgb.g) + ',' +
+          interpolate(past_rgb.b, future_rgb.b) + ')');
+      }else
+        raphael_this.attr(attr, interpolate(history[attr][past], history[attr][future]));
+    }
+  }
+  function interpolate(past, future){
+    return past + (future - past)*delta; //eventually use real easing
   }
 }
 
