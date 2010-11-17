@@ -402,13 +402,13 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
         list_shape_options.prev().text(name);
     })),
   //hidden
-  hidden_option = $('<p><label for="hidden_option">Hidden: </label><input type="checkbox" id="hidden_option" name="hidden_option"></p>')
+  hidden = $('<p><label for="hidden_option">Hidden: </label><input type="checkbox" id="hidden_option" name="hidden_option"></p>')
     .appendTo(list_shape_options).find('input').change(function(){
       var history = current_list_shape.data('history');
       if(!history.hidden)
         history.hidden = [ true ];
       current_list_shape.data('raphael').toggleHide(history.hidden[now] = this.checked);
-    }),
+    })[0],
   //remove
   remove = $('<button>Remove</button>').click(function(){
     (current_list_shape.data('remove list options') || $.noop)();
@@ -427,6 +427,7 @@ function list_shape_click(){
   current_list_shape = $(this).addClass('current');
 
   rename.val(this.innerHTML === '&nbsp;' ? '' : this.innerHTML);
+  hidden.checked = current_list_shape.data('raphael').node.style.display === 'none';
   current_list_shape.data('add list options')();
 
   list_shape_options.insertAfter(this);
