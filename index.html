@@ -276,7 +276,7 @@ $('#user_canvas_controls button').click(function(){
       }(attr));
   });
   timeknob.animate({x: 477}, duration, 'time_easing', function(){
-    now = 5000;
+    now = duration;
     playing = false;
     play_button.html('&#9654;Play');
     current_time.val((now/1000).toFixed(3)+'s');
@@ -347,17 +347,25 @@ function interpolate_anim_state(){
   }
 }
 
+//set the current time when people type into #current_time text box live,
+//change to 3 decimal place + s format after they hit enter or leave the text box
 var current_time = $('#current_time').bind('keydown keypress', defer(function(){
   now = parseFloat(current_time.val()) * 1000;
   if(now > duration)
     now = duration;
+  if(now < 0)
+    now = 0;
   timeknob.attr('x', now*480/duration - 3);
   shapes_list.children().each(interpolate_anim_state);
 })).change(function(){
   current_time.val((now/1000).toFixed(3) + 's');
 });
+
+//change duration upon change of #duration text box. Not live.
 $('#duration').change(function(){
   duration = parseFloat($('#duration').val(), 3) * 1000;
+  if(duration < 0)
+    duration = 0;
   timeknob.attr('x', now*480/duration - 3);
   $('#duration').val((duration/1000).toFixed(3) + 's')
 });
