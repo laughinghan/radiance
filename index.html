@@ -1043,7 +1043,7 @@ $('button#embed').click(function(){
       raphael_js+'\n' +
       '</scr'+'ipt>\n' +
       '<script type="text/javascript">\n' +
-      $('script:eq(2)').html().replace(/^.*zoom.*$/mg, '//$&') +
+      $('script:eq(3)').html().replace(/^.*zoom.*$/mg, '//$&') +
       (function(){
         var str = '';
         shapes_list.children().each(function(i){
@@ -1059,7 +1059,7 @@ $('button#embed').click(function(){
           str += '    if(history[attr][i] === null)\n';
           str += '      delete history[attr][i];\n';
           str += 'shapes_list.children(":eq('+i+')").data("raphael", shape)';
-          str += '.data("history", history);';
+          str += '.data("history", history);\n';
         });
         return str;
       }()) +
