@@ -496,6 +496,7 @@ function rm_stroke_color(){
   stroke_color_option.detach();
 }
 
+//fill color
 var fill_color_option = $('<p><label for="fill_color_option"></label><input type="text" name="fill_color_option_text_color" id="fill_color_option_text_color">'+
     '<select><option></option><option>Red</option><option>Orange</option><option>Yellow</option><option>Green</option><option>Blue</option>'+
     '<option>Purple</option><option>Black</option><option>Gray</option><option>White</option></select></p>'),
@@ -730,6 +731,7 @@ $('#rect_button').click(function(){
   });
 });
 
+//ellipse tool
 var ellipse_count = 0;
 $('#ellipse_button').click(function(){
   overlay.mousedown(function(e){
@@ -802,6 +804,7 @@ $('#ellipse_button').click(function(){
   });
 });
 
+//text tool
 var text_count = 0;
 $('#text_button').click(function(){
   overlay.click(function(e){
@@ -849,6 +852,7 @@ $('#text_button').click(function(){
   });
 });
 
+//line tool
 var line_count = 0;
 $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('keydown keypress', defer" to ".change("
   //startpoint for lines (including curves - don't move into lines)
@@ -1007,7 +1011,7 @@ $('#move_button').click((function(){
 }()));
 
 
-
+//embed button
 $('button#embed').click(function(){
   $.get('raphael.js', function(raphael_js){
     $('<textarea></textarea>').val(
