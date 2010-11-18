@@ -234,13 +234,13 @@ $('#user_canvas_controls button').click(function(){
   current_time.val('0.000s');
   shapes_list.children().each(interpolate_anim_state);
   shapes_list.children().each(function(){ //recursive animation
-    var raphael_this = $(this).data('raphael'), history = $(this).data('history');
-    for(var attr in history)
+    var raphael_this = $(this).data('raphael'), chronology = $(this).data('chronology');
+    for(var attr in chronology)
       (function(attr){
         (function(){
           if(attr === 'hidden' || attr === 'fill-opacity'){
             var prev = 0;
-            for(var next in history[attr]) //iterate through each singularity
+            for(var next in chronology[attr]) //iterate through each singularity
               if(next > now) //until the first singularity after now
                 break;
               else{
@@ -248,22 +248,22 @@ $('#user_canvas_controls button').click(function(){
                 next = -1; //if the singularity wasn't after now, flag
               }
             if(attr === 'hidden')
-              raphael_this.toggleHide(history.hidden[prev]);
+              raphael_this.toggleHide(chronology.hidden[prev]);
             else
-              raphael_this.attr(attr, history[attr][prev]);
+              raphael_this.attr(attr, chronology[attr][prev]);
             if(next >= 0) //only recurse if there is another singularity after now
               setTimeout(arguments.callee, next - now);
             return;
           }
           var new_attr = {};
-          for(var next in history[attr]) //iterate through each singularity
+          for(var next in chronology[attr]) //iterate through each singularity
             if(next > now) //until the first singularity after now
               break;
             else
               next = -1; //if the singularity wasn't after now, flag
-          if(next < 0) //if no singularities after now in history, don't animate
+          if(next < 0) //if no singularities after now in chronology, don't animate
             return;
-          new_attr[attr] = history[attr][next];
+          new_attr[attr] = chronology[attr][next];
           raphael_this.animate(new_attr, next - now, arguments.callee);
         }());
       }(attr));
@@ -278,46 +278,46 @@ $('#user_canvas_controls button').click(function(){
 
 //interpolate current animation state
 function interpolate_anim_state(){
-  var raphael_this = $(this).data('raphael'), history = $(this).data('history');
+  var raphael_this = $(this).data('raphael'), chronology = $(this).data('chronology');
 
   if(raphael_this === undefined)
     return;
 
-  for(var attr in history){
+  for(var attr in chronology){
     //binary attributes
     if(attr === 'hidden' || attr === 'fill-opacity'){
       var prev = 0;
-      for(var next in history[attr]) //iterate through each singularity
+      for(var next in chronology[attr]) //iterate through each singularity
         if(next > now) //until the first singularity after now
           break;
         else
           prev = next; //let prev be the last singularity before now
       if(attr === 'hidden')
-        raphael_this.toggleHide(history.hidden[prev]);
+        raphael_this.toggleHide(chronology.hidden[prev]);
       else
-        raphael_this.attr(attr, history[attr][prev]);
+        raphael_this.attr(attr, chronology[attr][prev]);
       continue;
     }
 
     var past = 0, future = duration + 1;
 
     //seek singularity closest but <= now
-    for(var time in history[attr])
+    for(var time in chronology[attr])
       if(time <= now && time > past)
         past = +time;
 
     //seek singularity closest but >= now
-    for(var time in history[attr])
+    for(var time in chronology[attr])
       if(time >= now && time < future)
         future = +time;
 
     if(future === past || future > duration)
-      raphael_this.attr(attr, history[attr][past]);
+      raphael_this.attr(attr, chronology[attr][past]);
     else{
       var delta = (now - past)/(future - past);
       if(attr === 'path'){
-        var past_path = history.path[past],
-          future_path = history.path[future],
+        var past_path = chronology.path[past],
+          future_path = chronology.path[future],
           path = $(this).data('path');
         path.startX = interpolate(past_path[0][1], future_path[0][1]);
         path.startY = interpolate(past_path[0][2], future_path[0][2]);
@@ -325,14 +325,14 @@ function interpolate_anim_state(){
         path.endY = interpolate(past_path[1][2], future_path[1][2]);
         raphael_this.attr('path', path);
       }else if(attr in {fill:0,stroke:0}){
-        var past_rgb = Raphael.getRGB(history[attr][past]),
-          future_rgb = Raphael.getRGB(history[attr][future]);
+        var past_rgb = Raphael.getRGB(chronology[attr][past]),
+          future_rgb = Raphael.getRGB(chronology[attr][future]);
         raphael_this.attr(attr, 'rgb(' +
           interpolate(past_rgb.r, future_rgb.r) + ',' +
           interpolate(past_rgb.g, future_rgb.g) + ',' +
           interpolate(past_rgb.b, future_rgb.b) + ')');
       }else
-        raphael_this.attr(attr, interpolate(history[attr][past], history[attr][future]));
+        raphael_this.attr(attr, interpolate(chronology[attr][past], chronology[attr][future]));
     }
   }
   function interpolate(past, future){
@@ -405,10 +405,10 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
   //hidden
   hidden = $('<p><label for="hidden_option">Hidden: </label><input type="checkbox" id="hidden_option" name="hidden_option"></p>')
     .appendTo(list_shape_options).find('input').change(function(){
-      var history = current_list_shape.data('history');
-      if(!history.hidden)
-        history.hidden = [ true ];
-      current_list_shape.data('raphael').toggleHide(history.hidden[now] = this.checked);
+      var chronology = current_list_shape.data('chronology');
+      if(!chronology.hidden)
+        chronology.hidden = [ true ];
+      current_list_shape.data('raphael').toggleHide(chronology.hidden[now] = this.checked);
     })[0],
   //remove
   remove = $('<button>Remove</button>').click(function(){
@@ -438,11 +438,11 @@ function list_shape_click(){
 
 
 //additional options to be added on a per-shape basis:
-function add_attr_option(raphael_shape, attr, history){
+function add_attr_option(raphael_shape, attr, chronology){
   var attr_option = $('<p><label for="'+attr+'_option">'+attr+' : </label><input type="text" name="'+attr+'" id="'+attr+'_option"></p>'),
     attr_input = attr_option.find('input').bind('keydown keypress', defer(function(){
       var val = attr_input.val();
-      raphael_shape.attr(attr, history[attr][now] = num_dot_regex.test(val) ? val.slice(0, -1) : val);
+      raphael_shape.attr(attr, chronology[attr][now] = num_dot_regex.test(val) ? val.slice(0, -1) : val);
     })).val(raphael_shape.attr(attr));
   return attr_option.insertBefore(remove);
 }
@@ -451,10 +451,10 @@ var num_dot_regex = /^\d+\.$^/; //fix annoying css quirk where '123.' is an inva
 //fill
 var fill = $('<p><label for="fill">Fill: </label><input type="checkbox" id="fill" name="fill"></p>'),
   fill_checkbox = fill.find('input').change(function(){
-    var history = current_list_shape.data('history'), raphael_shape = current_list_shape.data('raphael');
-    if(!history['fill-opacity'])
-      history['fill-opacity'] = [ raphael_shape.attr('fill-opacity') || 0 ];
-    raphael_shape.attr('fill-opacity', history['fill-opacity'][now] = +this.checked);
+    var chronology = current_list_shape.data('chronology'), raphael_shape = current_list_shape.data('raphael');
+    if(!chronology['fill-opacity'])
+      chronology['fill-opacity'] = [ raphael_shape.attr('fill-opacity') || 0 ];
+    raphael_shape.attr('fill-opacity', chronology['fill-opacity'][now] = +this.checked);
   });
 function add_fill(raphael_shape){
   fill_checkbox[0].checked = raphael_shape.attr('fill-opacity') === 1;
@@ -469,12 +469,12 @@ var stroke_color_option = $('<p><label for="stroke_color_option">Color: </label>
     '<select><option></option><option>Red</option><option>Orange</option><option>Yellow</option><option>Green</option><option>Blue</option>'+
     '<option>Purple</option><option>Black</option><option>Gray</option><option>White</option></select></p>'),
   stroke_color_input = stroke_color_option.find('input').bind('keydown keypress', defer(function(){
-    var raphael_shape = current_list_shape.data('raphael'), history = current_list_shape.data('history'), stroke_color_val = stroke_color_input.val();
+    var raphael_shape = current_list_shape.data('raphael'), chronology = current_list_shape.data('chronology'), stroke_color_val = stroke_color_input.val();
     if(!raphael_shape.attr('stroke-opacity'))
       raphael_shape.attr('stroke-opacity', 1);
-    if(!history['stroke'])
-      history['stroke'] = [ raphael_shape.attr('stroke') ];
-    raphael_shape.attr('stroke', history['stroke'][now] = stroke_color_val);
+    if(!chronology['stroke'])
+      chronology['stroke'] = [ raphael_shape.attr('stroke') ];
+    raphael_shape.attr('stroke', chronology['stroke'][now] = stroke_color_val);
     stroke_color_select.val(stroke_color_val);
   })),
   stroke_color_select = stroke_color_option.find('select').change(function(){
@@ -493,12 +493,12 @@ var fill_color_option = $('<p><label for="fill_color_option"></label><input type
     '<select><option></option><option>Red</option><option>Orange</option><option>Yellow</option><option>Green</option><option>Blue</option>'+
     '<option>Purple</option><option>Black</option><option>Gray</option><option>White</option></select></p>'),
   fill_color_input = fill_color_option.find('input').bind('keydown keypress', defer(function(){
-    var raphael_shape = current_list_shape.data('raphael'), history = current_list_shape.data('history'), fill_color_val = fill_color_input.val();
+    var raphael_shape = current_list_shape.data('raphael'), chronology = current_list_shape.data('chronology'), fill_color_val = fill_color_input.val();
     if(!raphael_shape.attr('fill-opacity'))
       raphael_shape.attr('fill-opacity', 1);
-    if(!history.fill)
-      history.fill = [ raphael_shape.attr('fill') ];
-    raphael_shape.attr('fill', history.fill[now] = fill_color_val);
+    if(!chronology.fill)
+      chronology.fill = [ raphael_shape.attr('fill') ];
+    raphael_shape.attr('fill', chronology.fill[now] = fill_color_val);
     fill_color_select.val(fill_color_val);
   })),
   fill_color_select = fill_color_option.find('select').change(function(){
@@ -517,12 +517,12 @@ var fill_color_option = $('<p><label for="fill_color_option"></label><input type
 //stroke width
 var stroke_width_option = $('<p><label for="stroke_width_option">Thickness: </label><input type="text" name="stroke" id="stroke_width_option"></p>'),
   stroke_width_input = stroke_width_option.find('input').bind('keydown keypress', defer(function(){
-    var raphael_shape = current_list_shape.data('raphael'), history = current_list_shape.data('history');
+    var raphael_shape = current_list_shape.data('raphael'), chronology = current_list_shape.data('chronology');
     if(!raphael_shape.attr('stroke'))
       raphael_shape.attr('stroke', '#000');
-    if(!history['stroke-width'])
-      history['stroke-width'] = [ raphael_shape.attr('stroke-width')  || 1 ];
-    raphael_shape.attr('stroke-width', history['stroke-width'][now] = stroke_width_input.val());
+    if(!chronology['stroke-width'])
+      chronology['stroke-width'] = [ raphael_shape.attr('stroke-width')  || 1 ];
+    raphael_shape.attr('stroke-width', chronology['stroke-width'][now] = stroke_width_input.val());
   }));
 function add_stroke_width(raphael_shape){
   stroke_width_input.val(raphael_shape.attr('stroke-width') || 1);
@@ -647,12 +647,12 @@ function moved_cxcy(){
   this.attr_options().find('input')[1].value = this.attr('cy');
 }
 function doneMoving_xy(){
-  current_list_shape.data('history')['x'][now] = this.attr('x');
-  current_list_shape.data('history')['y'][now] = this.attr('y');
+  current_list_shape.data('chronology')['x'][now] = this.attr('x');
+  current_list_shape.data('chronology')['y'][now] = this.attr('y');
 }
 function doneMoving_cxcy(){
-  current_list_shape.data('history').cx[now] = this.attr('cx');
-  current_list_shape.data('history').cy[now] = this.attr('cy');
+  current_list_shape.data('chronology').cx[now] = this.attr('cx');
+  current_list_shape.data('chronology').cy[now] = this.attr('cy');
 }
 
 
@@ -661,14 +661,14 @@ var rect_count = 0;
 $('#rect_button').click(function(){
   overlay.mousedown(function(e){
     rect_count += 1;
-    var cornerX = e.offsetX || e.pageX - overlay.offset().left, cornerY = e.offsetY || e.pageY - overlay.offset().top, history = {}, attrs = $(),
+    var cornerX = e.offsetX || e.pageX - overlay.offset().left, cornerY = e.offsetY || e.pageY - overlay.offset().top, chronology = {}, attrs = $(),
       rect = user_canvas.rect(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
         .mousedown(call_raphael_shape_click),
       list_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
-        .data('history', history)
+        .data('chronology', chronology)
         .data('add list options', function(){
           $.each(['x', 'y', 'width', 'height'], function(i, attr){
-            attrs = attrs.add(add_attr_option(rect, attr, history));
+            attrs = attrs.add(add_attr_option(rect, attr, chronology));
           });
           add_stroke_width(rect);
           add_stroke_color(rect);
@@ -722,13 +722,13 @@ $('#rect_button').click(function(){
       select_new_shape(list_jQ);
 
       $.each(['x', 'y', 'width', 'height'], function(i, attr){
-        history[attr] = [ rect.attr(attr) ];
+        chronology[attr] = [ rect.attr(attr) ];
       });
     });
 
     if(now != 0){
-      history.hidden = [ true ];
-      history.hidden[now] = false;
+      chronology.hidden = [ true ];
+      chronology.hidden[now] = false;
     }
 
     return false;
@@ -740,14 +740,14 @@ var ellipse_count = 0;
 $('#ellipse_button').click(function(){
   overlay.mousedown(function(e){
     ellipse_count += 1;
-    var cornerX = e.offsetX || e.pageX - overlay.offset().left, cornerY = e.offsetY || e.pageY - overlay.offset().top, history = {}, attrs = $(),
+    var cornerX = e.offsetX || e.pageX - overlay.offset().left, cornerY = e.offsetY || e.pageY - overlay.offset().top, chronology = {}, attrs = $(),
       ellipse = user_canvas.ellipse(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
         .mousedown(call_raphael_shape_click),
       list_jQ = $('<p>Ellipse '+ellipse_count+'</p>').data('raphael', ellipse)
-        .data('history', history)
+        .data('chronology', chronology)
         .data('add list options', function(){
           $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
-            attrs = attrs.add(add_attr_option(ellipse, attr, history));
+            attrs = attrs.add(add_attr_option(ellipse, attr, chronology));
           });
           add_stroke_width(ellipse);
           add_stroke_color(ellipse);
@@ -797,13 +797,13 @@ $('#ellipse_button').click(function(){
       select_new_shape(list_jQ);
 
       $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
-        history[attr] = [ ellipse.attr(attr) ];
+        chronology[attr] = [ ellipse.attr(attr) ];
       });
     });
 
     if(now != 0){
-      history.hidden = [ true ];
-      history.hidden[now] = false;
+      chronology.hidden = [ true ];
+      chronology.hidden[now] = false;
     }
 
     return false;
@@ -816,16 +816,16 @@ $('#text_button').click(function(){
   overlay.click(function(e){
     text_count += 1;
     var text = user_canvas.text(e.offsetX || e.pageX - overlay.offset().left, e.offsetY || e.pageY - overlay.offset().top, 'text').attr('font-size',24), 
-      history = {}, attrs,
+      chronology = {}, attrs,
       text_option = $('<p id="text_option_p"><label for="text_option">Text: </label><input type="text" id="text_option" name="text_option" value="text"></p>'),
       text_opt_input = text_option.find('input').bind('keydown keypress', defer(function(){
         $(text.node).children().text(text_opt_input.val());
       })),
       list_jQ = $('<p>Text ' + text_count + '</p>').data('raphael', text)
-        .data('history', history)
+        .data('chronology', chronology)
         .data('add list options', function(){
           text_option.insertBefore(remove);
-          attrs = add_attr_option(text, 'x', history).add(add_attr_option(text, 'y', history));
+          attrs = add_attr_option(text, 'x', chronology).add(add_attr_option(text, 'y', chronology));
           add_fill_color(text, 'Color');
         })
         .data('remove list options', function(){
@@ -849,12 +849,12 @@ $('#text_button').click(function(){
     select_new_shape(list_jQ);
 
     $.each(['x', 'y'], function(i, attr){
-      history[attr] = [ text.attr(attr) ];
+      chronology[attr] = [ text.attr(attr) ];
     });
 
     if(now != 0){
-      history.hidden = [ true ];
-      history.hidden[now] = false;
+      chronology.hidden = [ true ];
+      chronology.hidden[now] = false;
     }
 
   });
@@ -868,26 +868,26 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
     startX_input = startX.find('input').bind('keydown keypress', defer(function(){
       var path = current_list_shape.data('path');
       path.startX = startX_input.val() || 0;
-      current_list_shape.data('history').path[now] = current_list_shape.data('raphael').attr('path', path).attr('path');
+      current_list_shape.data('chronology').path[now] = current_list_shape.data('raphael').attr('path', path).attr('path');
     })),
     startY = $('<p><label for="startY_field">start <i>y</i></label> : <input type="text" id="startY_field" name="startY_field"></p>'),
     startY_input = startY.find('input').bind('keydown keypress', defer(function(){
       var path = current_list_shape.data('path');
       path.startY = startY_input.val() || 0;
-      current_list_shape.data('history').path[now] = current_list_shape.data('raphael').attr('path', path).attr('path');
+      current_list_shape.data('chronology').path[now] = current_list_shape.data('raphael').attr('path', path).attr('path');
     })),
   //endpoint for lines (including curves - don't move into lines)
     endX = $('<p><label for="endX_field">end <i>x</i></label> : <input type="text" id="endX_field" name="endX_field"></p>'),
     endX_input = endX.find('input').bind('keydown keypress', defer(function(){
       var path = current_list_shape.data('path');
       path.endX = endX_input.val() || 0;
-      current_list_shape.data('history').path[now] = current_list_shape.data('raphael').attr('path', path).attr('path');
+      current_list_shape.data('chronology').path[now] = current_list_shape.data('raphael').attr('path', path).attr('path');
     })),
     endY = $('<p><label for="endY_field">end <i>y</i></label> : <input type="text" id="endY_field" name="endY_field"></p>'),
     endY_input = endY.find('input').bind('keydown keypress', defer(function(){
       var path = current_list_shape.data('path');
       path.endY = endY_input.val() || 0;
-      current_list_shape.data('history').path[now] = current_list_shape.data('raphael').attr('path', path).attr('path');
+      current_list_shape.data('chronology').path[now] = current_list_shape.data('raphael').attr('path', path).attr('path');
     }));
   function add_linepoints(raphael_shape, path){
     startX_input.val(path.startX);
@@ -919,7 +919,7 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
     path.startY = path_attr[0][2];
     path.endX = path_attr[1][1];
     path.endY = path_attr[1][2];
-    current_list_shape.data('history').path[now] = this.attr('path');
+    current_list_shape.data('chronology').path[now] = this.attr('path');
   }
 
   function Path(startX, startY, endX, endY){
@@ -933,10 +933,10 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
   return function(){
     overlay.mousedown(function(e){
       line_count += 1;
-      var path = new Path(e.offsetX || e.pageX - overlay.offset().left, e.offsetY || e.pageY - overlay.offset().top), history = {},
+      var path = new Path(e.offsetX || e.pageX - overlay.offset().left, e.offsetY || e.pageY - overlay.offset().top), chronology = {},
         line = user_canvas.path(path).mousedown(call_raphael_shape_click),
         list_jQ = $('<p>Line '+line_count+'</p>').data('raphael', line)
-          .data('history', history)
+          .data('chronology', chronology)
           .data('path', path)
           .data('add list options', function(){
             add_linepoints(line, path);
@@ -969,13 +969,13 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
         select_new_shape(list_jQ);
 
         $.each(['path'], function(i, attr){
-          history[attr] = [ line.attr(attr) ];
+          chronology[attr] = [ line.attr(attr) ];
         });
       });
 
       if(now != 0){
-        history.hidden = [ true ];
-        history.hidden[now] = false;
+        chronology.hidden = [ true ];
+        chronology.hidden[now] = false;
       }
 
     });
@@ -1039,19 +1039,19 @@ $('button#embed').click(function(){
       (function(){
         var str = '';
         shapes_list.children().each(function(i){
-          var raphael_this = $(this).data('raphael'), history = $(this).data('history');
+          var raphael_this = $(this).data('raphael'), chronology = $(this).data('chronology');
           if(!raphael_this)
             return;
           str += 'var shape = user_canvas.' + raphael_this.type + '(';
-          for(var attr in history)
-            str += history[attr][0];
-          str += '), history = '+JSON.stringify(history)+';\n';
-          str += 'for(var attr in history)\n';
-          str += '  for(var i in history[attr])\n';
-          str += '    if(history[attr][i] === null)\n';
-          str += '      delete history[attr][i];\n';
+          for(var attr in chronology)
+            str += chronology[attr][0];
+          str += '), chronology = '+JSON.stringify(chronology)+';\n';
+          str += 'for(var attr in chronology)\n';
+          str += '  for(var i in chronology[attr])\n';
+          str += '    if(chronology[attr][i] === null)\n';
+          str += '      delete chronology[attr][i];\n';
           str += 'shapes_list.children(":eq('+i+')").data("raphael", shape)';
-          str += '.data("history", history);\n';
+          str += '.data("chronology", chronology);\n';
         });
         return str;
       }()) +
