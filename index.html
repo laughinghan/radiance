@@ -433,7 +433,6 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
 function list_shape_click(){
   (current_list_shape.removeClass('current').data('remove list options') || $.noop)();
   current_list_shape = $(this).addClass('current');
-
   rename.val(this.innerHTML === '&nbsp;' ? '' : this.innerHTML);
   hidden.checked = current_list_shape.data('raphael').node.style.display === 'none';
   current_list_shape.data('add list options')();
@@ -618,6 +617,15 @@ $('#toolbar button').click(function(){
   raphael_shape_click = $.noop;
 });
 
+function select_new_shape(list_jQ){
+    (current_list_shape.removeClass('current').data('remove list options') || $.noop)();
+    current_list_shape = $(list_jQ).addClass('current');
+    rename.val(list_jQ.innerHTML === '&nbsp;' ? '' : list_jQ.innerHTML);
+    hidden.checked = current_list_shape.data('raphael').node.style.display === 'none';
+    current_list_shape.data('add list options')();
+
+    list_shape_options.insertAfter(list_jQ);
+}
 
 /****
 So at this point, checklist for creating user shapes:
@@ -664,7 +672,7 @@ $('#rect_button').click(function(){
     var cornerX = e.offsetX || e.pageX - overlay.offset().left, cornerY = e.offsetY || e.pageY - overlay.offset().top, history = {}, attrs = $(),
       rect = user_canvas.rect(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
         .mousedown(call_raphael_shape_click),
-      list_rect_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
+      list_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
         .data('history', history)
         .data('add list options', function(){
           $.each(['x', 'y', 'width', 'height'], function(i, attr){
@@ -693,7 +701,7 @@ $('#rect_button').click(function(){
     rect.attr_options = function(){return attrs;};
     rect.moved = moved_xy;
     rect.doneMoving = doneMoving_xy;
-    $(rect.node).data('shapes list', list_rect_jQ);
+    $(rect.node).data('shapes list', list_jQ);
 
     spotlight(rect);
 
@@ -719,6 +727,8 @@ $('#rect_button').click(function(){
           y: cornerY
         });
     }, function(){
+      select_new_shape(list_jQ);
+
       $.each(['x', 'y', 'width', 'height'], function(i, attr){
         history[attr] = [ rect.attr(attr) ];
       });
@@ -741,7 +751,7 @@ $('#ellipse_button').click(function(){
     var cornerX = e.offsetX || e.pageX - overlay.offset().left, cornerY = e.offsetY || e.pageY - overlay.offset().top, history = {}, attrs = $(),
       ellipse = user_canvas.ellipse(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
         .mousedown(call_raphael_shape_click),
-      list_ellipse_jQ = $('<p>Ellipse '+ellipse_count+'</p>').data('raphael', ellipse)
+      list_jQ = $('<p>Ellipse '+ellipse_count+'</p>').data('raphael', ellipse)
         .data('history', history)
         .data('add list options', function(){
           $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
@@ -770,7 +780,7 @@ $('#ellipse_button').click(function(){
     ellipse.attr_options = function(){return attrs;};
     ellipse.moved = moved_cxcy;
     ellipse.doneMoving = doneMoving_cxcy;
-    $(ellipse.node).data('shapes list', list_ellipse_jQ);
+    $(ellipse.node).data('shapes list', list_jQ);
 
     spotlight(ellipse);
 
@@ -792,6 +802,8 @@ $('#ellipse_button').click(function(){
           ry: dy,
         });
     }, function(){
+      select_new_shape(list_jQ);
+
       $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
         history[attr] = [ ellipse.attr(attr) ];
       });
@@ -817,7 +829,7 @@ $('#text_button').click(function(){
       text_opt_input = text_option.find('input').bind('keydown keypress', defer(function(){
         $(text.node).children().text(text_opt_input.val());
       })),
-      list_text_jQ = $('<p>Text ' + text_count + '</p>').data('raphael', text)
+      list_jQ = $('<p>Text ' + text_count + '</p>').data('raphael', text)
         .data('history', history)
         .data('add list options', function(){
           text_option.insertBefore(remove);
@@ -840,7 +852,9 @@ $('#text_button').click(function(){
     text.attr_options = function(){return attrs;};
     text.moved = moved_xy;
     text.doneMoving = doneMoving_xy;
-    $(text.node).data('shapes list', list_text_jQ);
+    $(text.node).data('shapes list', list_jQ);
+
+    select_new_shape(list_jQ);
 
     $.each(['x', 'y'], function(i, attr){
       history[attr] = [ text.attr(attr) ];
@@ -929,7 +943,7 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
       line_count += 1;
       var path = new Path(e.offsetX || e.pageX - overlay.offset().left, e.offsetY || e.pageY - overlay.offset().top), history = {},
         line = user_canvas.path(path).mousedown(call_raphael_shape_click),
-        list_line_jQ = $('<p>Line '+line_count+'</p>').data('raphael', line)
+        list_jQ = $('<p>Line '+line_count+'</p>').data('raphael', line)
           .data('history', history)
           .data('path', path)
           .data('add list options', function(){
@@ -951,7 +965,7 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
           .appendTo(shapes_list);
       line.moved = moved_linepoints;
       line.doneMoving = doneMoving_linepoints;
-      $(line.node).data('shapes list', list_line_jQ);
+      $(line.node).data('shapes list', list_jQ);
 
       spotlight(line);
 
@@ -960,6 +974,8 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
           path.endY = path.startY + dy;
           line.attr({ path: path });
       }, function(){
+        select_new_shape(list_jQ);
+
         $.each(['path'], function(i, attr){
           history[attr] = [ line.attr(attr) ];
         });
