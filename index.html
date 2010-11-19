@@ -210,6 +210,11 @@ function time_drag(dx, dy){
 Raphael.easing_formulas.time_easing = function(n){
   now = n * duration;
   current_time.val((now/1000).toFixed(3)+'s');
+
+  //and hacky way of updating fields for play
+  current_list_shape.data('remove list options')();
+  current_list_shape.data('add list options')();
+
   return n;
 }
 
@@ -335,10 +340,16 @@ function interpolate_anim_state(){
           interpolate(past_rgb.b, future_rgb.b) + ')');
       }else
         raphael_this.attr(attr, interpolate(chronology[attr][past], chronology[attr][future]));
-    }
+      }
   }
   function interpolate(past, future){
     return +past + +((future - past)*delta); //eventually use real easing
+  }
+
+  //hacky hacky way of making interpolate change fields
+  if (raphael_this === current_list_shape.data('raphael')){
+    current_list_shape.data('remove list options')();
+    current_list_shape.data('add list options')();
   }
 }
 
