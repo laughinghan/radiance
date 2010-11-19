@@ -336,7 +336,7 @@ function interpolate_anim_state(){
     }
   }
   function interpolate(past, future){
-    return past + (future - past)*delta; //eventually use real easing
+    return +past + +((future - past)*delta); //eventually use real easing
   }
 }
 
