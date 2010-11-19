@@ -207,14 +207,18 @@ function time_drag(dx, dy){
   shapes_list.children().each(interpolate_anim_state);
 }
 
+var past_n_now = 0;
 Raphael.easing_formulas.time_easing = function(n){
   now = n * duration;
-  current_time.val((now/1000).toFixed(3)+'s');
+  if (n - past_n_now > .014){
+    past_n_now = n;
+    current_time.val((now/1000).toFixed(3)+'s');
 
-  //and hacky way of updating fields for play
-  current_list_shape.data('remove list options')();
-  current_list_shape.data('add list options')();
+    //and hacky way of updating fields for play
+    (current_list_shape.data('remove list options') || $.noop)();
+    (current_list_shape.data('add list options') || $.noop)();
 
+  }
   return n;
 }
 
@@ -275,11 +279,13 @@ $('#user_canvas_controls button').click(function(){
         }());
       }(attr));
   });
+  past_n_now = 0
   timeknob.animate({x: 477}, duration, 'time_easing', function(){
     now = duration;
     playing = false;
     play_button.html('&#9654;Play');
     current_time.val((now/1000).toFixed(3)+'s');
+    interpolate_anim_state();
   });
 });
 
@@ -446,8 +452,17 @@ function list_shape_click(){
   list_shape_options.insertAfter(this);
 }
 
-
-
+//limits decimal places for values for anim/interpolate
+function prettify_val(value){
+  if (value){
+    if(+value == value.toFixed(3))
+      return value;
+    else{
+      var suffix = (value+'').replace(/[0-9]*\.[0-9]*/, '');
+      return value.toFixed(3)+suffix;
+    }
+  }
+}
 
 
 //additional options to be added on a per-shape basis:
@@ -455,8 +470,8 @@ function add_attr_option(raphael_shape, attr, chronology){
   var attr_option = $('<p><label for="'+attr+'_option">'+attr+' : </label><input type="text" name="'+attr+'" id="'+attr+'_option"></p>'),
     attr_input = attr_option.find('input').bind('keydown keypress', defer(function(){
       var val = attr_input.val();
-      raphael_shape.attr(attr, chronology[attr][now] = num_dot_regex.test(val) ? val.slice(0, -1) : val);
-    })).val(raphael_shape.attr(attr));
+      chronology[attr][now] = raphael_shape.attr(attr, num_dot_regex.test(val) ? val.slice(0, -1) : val).attr(attr);
+    })).val(prettify_val(raphael_shape.attr(attr)));
   return attr_option.insertBefore(remove);
 }
 var num_dot_regex = /^\d+\.$^/; //fix annoying css quirk where '123.' is an invalid number and is interpreted as 0
@@ -535,10 +550,10 @@ var stroke_width_option = $('<p><label for="stroke_width_option">Thickness: </la
       raphael_shape.attr('stroke', '#000');
     if(!chronology['stroke-width'])
       chronology['stroke-width'] = [ raphael_shape.attr('stroke-width')  || 1 ];
-    raphael_shape.attr('stroke-width', chronology['stroke-width'][now] = stroke_width_input.val());
+    chronology['stroke-width'][now] = raphael_shape.attr('stroke-width', stroke_width_input.val()).attr('stroke-width');
   }));
 function add_stroke_width(raphael_shape){
-  stroke_width_input.val(raphael_shape.attr('stroke-width') || 1);
+  stroke_width_input.val(prettify_val(raphael_shape.attr('stroke-width')) || 1);
   stroke_width_option.insertBefore(remove);
 }
 function rm_stroke_width(){
