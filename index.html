@@ -452,6 +452,7 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
 function list_shape_click(){
   (current_list_shape.removeClass('current').data('remove list options') || $.noop)();
   current_list_shape = $(this).addClass('current');
+
   rename.val(this.innerHTML === '&nbsp;' ? '' : this.innerHTML);
   hidden.checked = current_list_shape.data('raphael').node.style.display === 'none';
   current_list_shape.data('add list options')();
@@ -645,15 +646,6 @@ $('#toolbar button').click(function(){
   raphael_shape_click = $.noop;
 });
 
-function select_new_shape(list_jQ){
-    (current_list_shape.removeClass('current').data('remove list options') || $.noop)();
-    current_list_shape = $(list_jQ).addClass('current');
-    rename.val(list_jQ.innerHTML === '&nbsp;' ? '' : list_jQ.innerHTML);
-    hidden.checked = current_list_shape.data('raphael').node.style.display === 'none';
-    current_list_shape.data('add list options')();
-
-    list_shape_options.insertAfter(list_jQ);
-}
 
 /****
 So at this point, checklist for creating user shapes:
@@ -755,7 +747,7 @@ $('#rect_button').click(function(){
           y: cornerY
         });
     }, function(){
-      select_new_shape(list_jQ);
+      list_shape_click.call(list_jQ[0]);
 
       $.each(['x', 'y', 'width', 'height'], function(i, attr){
         chronology[attr] = [ rect.attr(attr) ];
@@ -830,7 +822,7 @@ $('#ellipse_button').click(function(){
           ry: dy,
         });
     }, function(){
-      select_new_shape(list_jQ);
+      list_shape_click.call(list_jQ[0]);
 
       $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
         chronology[attr] = [ ellipse.attr(attr) ];
@@ -882,7 +874,7 @@ $('#text_button').click(function(){
     text.doneMoving = doneMoving_xy;
     $(text.node).data('shapes list', list_jQ);
 
-    select_new_shape(list_jQ);
+    list_shape_click.call(list_jQ[0]);
 
     $.each(['x', 'y'], function(i, attr){
       chronology[attr] = [ text.attr(attr) ];
@@ -1002,7 +994,7 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
           path.endY = path.startY + dy;
           line.attr({ path: path });
       }, function(){
-        select_new_shape(list_jQ);
+        list_shape_click.call(list_jQ[0]);
 
         $.each(['path'], function(i, attr){
           chronology[attr] = [ line.attr(attr) ];
