@@ -251,9 +251,11 @@ var playing = false,
   }
   play_button.html('Pause');
   playing = true;
-  now = 0;
-  timeknob.attr('x', -3);
-  current_time.val('0.000s');
+  if(now === duration){
+    now = 0;
+    timeknob.attr('x', -3);
+    current_time.val('0.000s');
+  }
   shapes_list.children().each(interpolate_anim_state);
   shapes_list.children().each(function(){ //recursive animation
     var raphael_this = $(this).data('raphael'), chronology = $(this).data('chronology');
@@ -291,7 +293,7 @@ var playing = false,
       }(attr));
   });
   past_n_now = 0
-  timeknob.animate({x: 477}, duration, 'time_easing', function(){
+  timeknob.animate({x: 477}, duration - now, 'time_easing', function(){
     now = duration;
     playing = false;
     play_button.html('&#9654;Play');
