@@ -197,6 +197,9 @@ var timeslider = Raphael('timeslider', slider_length, 30),
 
 var now = 0, time_startX, duration = 5000;
 time_overlay.drag(time_drag, function(x, y, e){ //start
+  if(playing) //then pause
+    play_button.click();
+
   time_startX = e.offsetX || e.pageX - $(time_overlay.node).offset().left;
   now = Math.round(time_startX*duration/slider_length);
   current_time.val((now/1000).toFixed(3)+'s');
@@ -205,6 +208,8 @@ time_overlay.drag(time_drag, function(x, y, e){ //start
 });
 timeknob.drag(time_drag, function(){ //start
   time_startX = timeknob.attr('x') + 4;
+  if(playing) //then pause
+    play_button.click();
 });
 function time_drag(dx, dy){
   now = Math.round((time_startX+dx)*duration/slider_length);
@@ -232,9 +237,8 @@ Raphael.easing_formulas.time_easing = function(n){
 //to optimize play button and interpolate, make so if ele hidden, it doesn't go through it for all attr,
 //just sets them all with an interpolate_anim_state when becomes unhidden
 //Play button
-var playing = false;
-$('#user_canvas_controls button').click(function(){
-  var play_button = $(this);
+var playing = false,
+  play_button = $('#user_canvas_controls button').click(function(){
   if(playing){
     play_button.html('&#9654;Play');
     playing = false;
