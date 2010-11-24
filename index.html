@@ -4,7 +4,7 @@
 
 <title>Radiance - Web Animation</title>
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>
 <script src="raphael.js"></script>
 <script src="json.js"></script>
 <style type="text/css">
@@ -190,6 +190,9 @@ var timeslider = Raphael('timeslider', slider_length, 30),
 
 var now = 0, time_startX, duration = 5000;
 time_overlay.drag(time_drag, function(x, y, e){ //start
+  if(playing) //then pause
+    play_button.click();
+
   time_startX = e.offsetX || e.pageX - $(time_overlay.node).offset().left;
   now = Math.round(time_startX*duration/slider_length);
   current_time.val((now/1000).toFixed(3)+'s');
@@ -198,6 +201,8 @@ time_overlay.drag(time_drag, function(x, y, e){ //start
 });
 timeknob.drag(time_drag, function(){ //start
   time_startX = timeknob.attr('x') + 4;
+  if(playing) //then pause
+    play_button.click();
 });
 function time_drag(dx, dy){
   now = Math.round((time_startX+dx)*duration/slider_length);
@@ -225,9 +230,8 @@ Raphael.easing_formulas.time_easing = function(n){
 //to optimize play button and interpolate, make so if ele hidden, it doesn't go through it for all attr,
 //just sets them all with an interpolate_anim_state when becomes unhidden
 //Play button
-var playing = false;
-$('#user_canvas_controls button').click(function(){
-  var play_button = $(this);
+var playing = false,
+  play_button = $('#user_canvas_controls button').click(function(){
   if(playing){
     play_button.html('&#9654;Play');
     playing = false;
@@ -240,9 +244,11 @@ $('#user_canvas_controls button').click(function(){
   }
   play_button.html('Pause');
   playing = true;
-  now = 0;
-  timeknob.attr('x', -3);
-  current_time.val('0.000s');
+  if(now === duration){
+    now = 0;
+    timeknob.attr('x', -3);
+    current_time.val('0.000s');
+  }
   shapes_list.children().each(interpolate_anim_state);
   shapes_list.children().each(function(){ //recursive animation
     var raphael_this = $(this).data('raphael'), chronology = $(this).data('chronology');
@@ -280,7 +286,7 @@ $('#user_canvas_controls button').click(function(){
       }(attr));
   });
   past_n_now = 0
-  timeknob.animate({x: 477}, duration, 'time_easing', function(){
+  timeknob.animate({x: 477}, duration - now, 'time_easing', function(){
     now = duration;
     playing = false;
     play_button.html('&#9654;Play');
@@ -445,6 +451,7 @@ var current_list_shape = $(), list_shape_options = $('<p id="list_shape_options"
 function list_shape_click(){
   (current_list_shape.removeClass('current').data('remove list options') || $.noop)();
   current_list_shape = $(this).addClass('current');
+
   rename.val(this.innerHTML === '&nbsp;' ? '' : this.innerHTML);
   hidden.checked = current_list_shape.data('raphael').node.style.display === 'none';
   current_list_shape.data('add list options')();
@@ -637,15 +644,6 @@ $('#toolbar button').click(function(){
   raphael_shape_click = $.noop;
 });
 
-function select_new_shape(list_jQ){
-    (current_list_shape.removeClass('current').data('remove list options') || $.noop)();
-    current_list_shape = $(list_jQ).addClass('current');
-    rename.val(list_jQ.innerHTML === '&nbsp;' ? '' : list_jQ.innerHTML);
-    hidden.checked = current_list_shape.data('raphael').node.style.display === 'none';
-    current_list_shape.data('add list options')();
-
-    list_shape_options.insertAfter(list_jQ);
-}
 
 /****
 So at this point, checklist for creating user shapes:
@@ -747,7 +745,7 @@ $('#rect_button').click(function(){
           y: cornerY
         });
     }, function(){
-      select_new_shape(list_jQ);
+      list_shape_click.call(list_jQ[0]);
 
       $.each(['x', 'y', 'width', 'height'], function(i, attr){
         chronology[attr] = [ rect.attr(attr) ];
@@ -822,7 +820,7 @@ $('#ellipse_button').click(function(){
           ry: dy,
         });
     }, function(){
-      select_new_shape(list_jQ);
+      list_shape_click.call(list_jQ[0]);
 
       $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
         chronology[attr] = [ ellipse.attr(attr) ];
@@ -874,7 +872,7 @@ $('#text_button').click(function(){
     text.doneMoving = doneMoving_xy;
     $(text.node).data('shapes list', list_jQ);
 
-    select_new_shape(list_jQ);
+    list_shape_click.call(list_jQ[0]);
 
     $.each(['x', 'y'], function(i, attr){
       chronology[attr] = [ text.attr(attr) ];
@@ -994,7 +992,7 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
           path.endY = path.startY + dy;
           line.attr({ path: path });
       }, function(){
-        select_new_shape(list_jQ);
+        list_shape_click.call(list_jQ[0]);
 
         $.each(['path'], function(i, attr){
           chronology[attr] = [ line.attr(attr) ];
