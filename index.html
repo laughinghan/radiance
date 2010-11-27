@@ -858,7 +858,7 @@ $('#text_button').click(function(){
       chronology = {}, attrs,
       text_option = $('<p id="text_option_p"><label for="text_option">Text: </label><input type="text" id="text_option" name="text_option" value="text"></p>'),
       text_opt_input = text_option.find('input').bind('keydown keypress', defer(function(){
-        $(text.node).children().text(text_opt_input.val());
+        text.attr('text', text_opt_input.val());
       })),
       list_jQ = $('<p>Text ' + text_count + '</p>').data('raphael', text)
         .data('chronology', chronology)
@@ -886,6 +886,7 @@ $('#text_button').click(function(){
     $(text.node).data('shapes list', list_jQ);
 
     list_shape_click.call(list_jQ[0]);
+    text_opt_input.focus();
 
     $.each(['x', 'y'], function(i, attr){
       chronology[attr] = [ text.attr(attr) ];
