@@ -470,11 +470,15 @@ function list_shape_click(){
 //limits decimal places for values for anim/interpolate
 function prettify_val(value){
   if (value){
-    if(+value == value.toFixed(3))
-      return value;
+    if(+value == parseFloat(value.toString()).toFixed(3))
+        return value;
     else{
-      var suffix = (value+'').replace(/[0-9]*\.[0-9]*/, '');
-      return value.toFixed(3)+suffix;
+      var suffix = (value+'').replace(/[0-9]*\.*[0-9]*/, ''), number = parseFloat(value).toFixed(3)
+      ;
+      if (number === 'NaN')
+        return 1;
+      else
+        return number + ' ' + suffix;
     }
   }
 }
