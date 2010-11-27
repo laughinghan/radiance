@@ -411,17 +411,19 @@ Raphael.el.toggleHide = function(hide){
 
 
 
+//clicking anywhere but on a shape should unselect shape
+$(document).click(function(){
+  (current_list_shape.removeClass('current').data('remove list options') || $.noop)();
+  current_list_shape = $();
+  list_shape_options.detach();
+  list_shape_unselect();
+});
 
 //list of raphael shapes and sets
-var shapes_list_click = $.noop, //canonical 'current' click handler on shapes_list
-    //(set by e.g. Move button, then reset by click handler for all toolbars)
+var list_shape_select = $.noop, list_shape_unselect = $.noop,
   shapes_list = $('#shapes_list').click(function(e){
     if(e.target !== this)
-      return shapes_list_click.apply(this, arguments);
-    (current_list_shape.removeClass('current').data('remove list options') || $.noop)();
-    current_list_shape = $();
-    list_shape_options.detach();
-    shapes_list_click.apply(this, arguments);
+      return false;
   });
 
 //shape in list, options thereof
@@ -465,6 +467,8 @@ function list_shape_click(){
   current_list_shape.data('add list options')();
 
   list_shape_options.insertAfter(this);
+
+  list_shape_select();
 }
 
 //limits decimal places for values for anim/interpolate
@@ -652,9 +656,8 @@ $('#toolbar button').click(function(){
   current_button_description = $(this).parent().next().show();
 
   //make sure overlay not hidden, reset event handlers
-  overlay.unbind().show();
-  shapes_list_click = $.noop;
-  raphael_shape_click = $.noop;
+  overlay.unbind().click(false).show();
+  list_shape_select = list_shape_unselect = raphael_shape_click = $.noop;
 });
 
 
@@ -1027,19 +1030,16 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
 var x_attr, y_attr;
 $('#move_button').click((function(){
   function move_click(){
-    shapes_list_click = shapes_list_click_when_moving;
     raphael_shape_click = raphael_shape_click_when_moving;
-    overlay.mousedown(drag_when_moving);
-    if(!current_list_shape.length) //test if there is a list shape selected
-      overlay.hide();
-    else
+    list_shape_select = overlay_show;
+    list_shape_unselect = overlay_hide;
+    overlay.mousedown(drag_when_moving).hide();
+  }
+  function overlay_show(){
     overlay.show();
   }
-  function shapes_list_click_when_moving(e){
-    if(e.target === this)
-      overlay.hide();
-    else
-      overlay.show();
+  function overlay_hide(){
+    overlay.hide();
   }
   function raphael_shape_click_when_moving(e){
     $(this.node).data('shapes list').click();
