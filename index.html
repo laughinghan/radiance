@@ -212,9 +212,9 @@ function time_drag(dx, dy){
   shapes_list.children().each(interpolate_anim_state);
 }
 
-var past_n_now = 0;
+var past_n_now = 0, anim_start;
 Raphael.easing_formulas.time_easing = function(n){
-  now = n * duration;
+  now = anim_start + n * (duration - anim_start);
   if (n - past_n_now > .014){
     past_n_now = n;
     current_time.val((now/1000).toFixed(3)+'s');
@@ -249,6 +249,7 @@ var playing = false,
     timeknob.attr('x', -3);
     current_time.val('0.000s');
   }
+  anim_start = now;
   shapes_list.children().each(interpolate_anim_state);
   shapes_list.children().each(function(){ //recursive animation
     var raphael_this = $(this).data('raphael'), chronology = $(this).data('chronology');
@@ -462,11 +463,15 @@ function list_shape_click(){
 //limits decimal places for values for anim/interpolate
 function prettify_val(value){
   if (value){
-    if(+value == value.toFixed(3))
-      return value;
+    if(+value === +(+value).toFixed(3))
+        return +value;
     else{
-      var suffix = (value+'').replace(/[0-9]*\.[0-9]*/, '');
-      return value.toFixed(3)+suffix;
+      var suffix = (value+'').replace(/[0-9]*\.*[0-9]*/, ''), number = parseFloat(value).toFixed(3)
+      ;
+      if (number === 'NaN')
+        return 1;
+      else
+        return number + ' ' + suffix;
     }
   }
 }
