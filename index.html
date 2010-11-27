@@ -881,6 +881,7 @@ $('#text_button').click(function(){
     $(text.node).data('shapes list', list_jQ);
 
     list_shape_click.call(list_jQ[0]);
+    text_opt_input.focus();
 
     $.each(['x', 'y'], function(i, attr){
       chronology[attr] = [ text.attr(attr) ];
