@@ -1047,16 +1047,24 @@ $('#move_button').click((function(){
   }
   function drag_when_moving(e){
     var current_raphael_shape = current_list_shape.data('raphael'),
-      prev_dx = 0, prev_dy = 0;
+      prev_dx = 0, prev_dy = 0, click = overlay_click;
     spotlight(current_raphael_shape);
+    setTimeout(function(){
+      click = $.noop;
+    }, 500);
     drag(e, function(dx, dy){
       current_raphael_shape.translate(dx - prev_dx, dy - prev_dy).moved();
       prev_dx = dx;
       prev_dy = dy;
+      click = $.noop;
     }, function(){
       current_raphael_shape.doneMoving();
+      click();
     });
     return false;
+  }
+  function overlay_click(){
+    $(document).click();
   }
   return move_click;
 }()));
