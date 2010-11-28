@@ -160,7 +160,7 @@ var zoomslider = Raphael('zoomslider', 200, 20),
 
 var zoom = 100, zoom_startX;
 zoom_overlay.drag(zoom_drag, function(x, y, e){ //start
-  zoom_startX = e.offsetX || e.pageX - $(zoom_overlay.node).offset().left;
+  zoom_startX = e.pageX - $(zoom_overlay.node).offset().left;
   zoom = zoom_startX + 50;
   $('#zoom').val(zoom+'%');
   zoomknob.attr('x', zoom_startX - 4);
@@ -190,7 +190,7 @@ time_overlay.drag(time_drag, function(x, y, e){ //start
   if(playing) //then pause
     play_button.click();
 
-  time_startX = e.offsetX || e.pageX - $(time_overlay.node).offset().left;
+  time_startX = e.pageX - $(time_overlay.node).offset().left;
   now = Math.round(time_startX*duration/slider_length);
   current_time.val((now/1000).toFixed(3)+'s');
   timeknob.attr('x', time_startX - 4);
@@ -693,7 +693,7 @@ var rect_count = 0;
 $('#rect_button').click(function(){
   user_canvas_div.mousedown(function(e){
     rect_count += 1;
-    var cornerX = e.offsetX || e.pageX - user_canvas_div.offset().left, cornerY = e.offsetY || e.pageY - user_canvas_div.offset().top, chronology = {}, attrs = $(),
+    var cornerX = e.pageX - user_canvas_div.offset().left, cornerY = e.pageY - user_canvas_div.offset().top, chronology = {}, attrs = $(),
       rect = user_canvas.rect(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
         .mousedown(call_raphael_shape_click),
       list_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
@@ -779,7 +779,7 @@ var ellipse_count = 0;
 $('#ellipse_button').click(function(){
   user_canvas_div.mousedown(function(e){
     ellipse_count += 1;
-    var cornerX = e.offsetX || e.pageX - user_canvas_div.offset().left, cornerY = e.offsetY || e.pageY - user_canvas_div.offset().top, chronology = {}, attrs = $(),
+    var cornerX = e.pageX - user_canvas_div.offset().left, cornerY = e.pageY - user_canvas_div.offset().top, chronology = {}, attrs = $(),
       ellipse = user_canvas.ellipse(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
         .mousedown(call_raphael_shape_click),
       list_jQ = $('<p>Ellipse '+ellipse_count+'</p>').data('raphael', ellipse)
@@ -860,7 +860,7 @@ var text_count = 0;
 $('#text_button').click(function(){
   user_canvas_div.click(function(e){
     text_count += 1;
-    var text = user_canvas.text(e.offsetX || e.pageX - user_canvas_div.offset().left, e.offsetY || e.pageY - user_canvas_div.offset().top, 'text').attr('font-size',24), 
+    var text = user_canvas.text(e.pageX - user_canvas_div.offset().left, e.pageY - user_canvas_div.offset().top, 'text').attr('font-size',24),
       chronology = {}, attrs,
       text_option = $('<p id="text_option_p"><label for="text_option">Text: </label><input type="text" id="text_option" name="text_option" value="text"></p>'),
       text_opt_input = text_option.find('input').bind('keydown keypress', defer(function(){
@@ -979,7 +979,7 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
   return function(){
     user_canvas_div.mousedown(function(e){
       line_count += 1;
-      var path = new Path(e.offsetX || e.pageX - user_canvas_div.offset().left, e.offsetY || e.pageY - user_canvas_div.offset().top), chronology = {},
+      var path = new Path(e.pageX - user_canvas_div.offset().left, e.pageY - user_canvas_div.offset().top), chronology = {},
         line = user_canvas.path(path).mousedown(call_raphael_shape_click),
         list_jQ = $('<p>Line '+line_count+'</p>').data('raphael', line)
           .data('chronology', chronology)
