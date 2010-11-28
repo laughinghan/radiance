@@ -645,7 +645,7 @@ $('#toolbar button').click(function(){
 
   //reset event handlers
   user_canvas_div.unbind().click(false);
-  raphael_shape_click = $.noop;
+  raphael_shape_click = function(){$(this.node).data('shapes list').click()};
 
   return false;
 });
@@ -751,7 +751,7 @@ $('#rect_button').click(function(){
           y: cornerY
         });
     }, function(){
-      if(rect.attr('width') == 0 || rect.attr('height') == 0){
+      if(+(rect.attr('width')) === 0 || +(rect.attr('height')) === 0){
         rect.remove();
         list_jQ.remove();
         rect_count -= 1;
@@ -833,6 +833,12 @@ $('#ellipse_button').click(function(){
           ry: dy,
         });
     }, function(){
+      if(+(ellipse.attr('rx')) === 0 || +(ellipse.attr('ry')) === 0){
+        ellipse.remove();
+        list_jQ.remove();
+        ellipse_count -= 1;
+        return;
+      }
       list_shape_click.call(list_jQ[0]);
 
       $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
@@ -1006,6 +1012,12 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
           path.endY = path.startY + dy;
           line.attr({ path: path });
       }, function(){
+        if(path.startX === path.endX || path.startY === path.endY){
+          line.remove();
+          list_jQ.remove();
+          line_count -= 1;
+          return;
+        }
         list_shape_click.call(list_jQ[0]);
 
         $.each(['path'], function(i, attr){
