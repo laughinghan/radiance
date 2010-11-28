@@ -871,6 +871,7 @@ $('#text_button').click(function(){
       list_jQ = $('<p>Text ' + text_count + '</p>').data('raphael', text)
         .data('chronology', chronology)
         .data('add list options', function(){
+          text_opt_input.val(text.attr('text'));
           text_option.insertBefore(remove);
           $.each(['x', 'y', 'rotation', 'font-size'], function(i, attr){
             attrs = attrs.add(add_attr_option(text, attr, chronology));
