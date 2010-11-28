@@ -652,6 +652,7 @@ function call_raphael_shape_click(){
 //show/hide toolbar button options
 var current_button_description = $();
 $('#toolbar button').click(function(){
+  //there'll be a better way to know current tool when it's a span with a background color and whatever instead of a <button>
   if(current_button_description[0] === $(this).parent().next()[0])
     return;
 
@@ -1049,11 +1050,13 @@ $('#move_button').click((function(){
   function raphael_shape_click_when_moving(e){
     $(this.node).data('shapes list').click();
     drag_when_moving(e);
+    click = $.noop;
   }
   function drag_when_moving(e){
     var current_raphael_shape = current_list_shape.data('raphael'),
-      prev_dx = 0, prev_dy = 0, click = overlay_click;
+      prev_dx = 0, prev_dy = 0;
     spotlight(current_raphael_shape);
+    click = overlay_click;
     setTimeout(function(){
       click = $.noop;
     }, 500);
@@ -1068,6 +1071,7 @@ $('#move_button').click((function(){
     });
     return false;
   }
+  var click;
   function overlay_click(){
     $(document).click();
   }
