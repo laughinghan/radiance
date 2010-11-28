@@ -862,7 +862,7 @@ $('#text_button').click(function(){
       if(text_button_flag === true)
         e.stopPropagation();
     }),
-      chronology = {}, attrs,
+      chronology = {}, attrs = $(),
       text_option = $('<p id="text_option_p"><label for="text_option">Text: </label><input type="text" id="text_option" name="text_option" value="text"></p>'),
       text_opt_input = text_option.find('input').bind('keydown keypress', defer(function(){
         text.attr('text', text_opt_input.val());
@@ -872,9 +872,9 @@ $('#text_button').click(function(){
         .data('chronology', chronology)
         .data('add list options', function(){
           text_option.insertBefore(remove);
-          attrs = add_attr_option(text, 'x', chronology)
-            .add(add_attr_option(text, 'y', chronology))
-            .add(add_attr_option(text, 'rotation', chronology));
+          $.each(['x', 'y', 'rotation', 'font-size'], function(i, attr){
+            attrs = attrs.add(add_attr_option(text, attr, chronology));
+          });
           add_fill_color(text, 'Color');
         })
         .data('remove list options', function(){
