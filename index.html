@@ -1039,7 +1039,9 @@ $('#move_button').click((function(){
     raphael_shape_click = raphael_shape_click_when_moving;
     list_shape_select = overlay_show;
     list_shape_unselect = overlay_hide;
-    overlay.mousedown(drag_when_moving).hide();
+    overlay.mousedown(drag_when_moving);
+    if(!current_list_shape.length)
+      overlay.hide();
   }
   function overlay_show(){
     overlay.show();
