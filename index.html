@@ -59,14 +59,6 @@ input {
 .spotlight .spotlight, .spotlight .spotlight * {
   opacity: .8;
 }
-#user_canvas_overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  z-index: 1;
-}
 #shapes_list {
   float: left;
   border: solid 1px black;
@@ -146,9 +138,7 @@ input {
   <span id="zoomslider"></span>
 </p>
 
-<div id="user_canvas">
-  <div id="user_canvas_overlay"></div>
-</div>
+<div id="user_canvas"></div>
 
 <div id="shapes_list"></div>
 
@@ -416,12 +406,10 @@ $(document).click(function(){
   (current_list_shape.removeClass('current').data('remove list options') || $.noop)();
   current_list_shape = $();
   list_shape_options.detach();
-  list_shape_unselect();
 });
 
 //list of raphael shapes and sets
-var list_shape_select = $.noop, list_shape_unselect = $.noop,
-  shapes_list = $('#shapes_list').click(function(e){
+var shapes_list = $('#shapes_list').click(function(e){
     if(e.target !== this)
       return false;
   });
@@ -467,8 +455,6 @@ function list_shape_click(){
   current_list_shape.data('add list options')();
 
   list_shape_options.insertAfter(this);
-
-  list_shape_select();
 }
 
 //limits decimal places for values for anim/interpolate
@@ -588,14 +574,14 @@ function rm_stroke_width(){
 
 
 //the Raphael canvas on which all the shapes are drawn
-var user_canvas = Raphael('user_canvas', 640, 480);
+var user_canvas = Raphael('user_canvas', 640, 480), user_canvas_div = $('#user_canvas');
 user_canvas.text(200,150,'hello world').attr('font-size',40);
 
 
 
 //highlight a Raphael shape in the user_canvas
 var spotlight = (function(){
-  var spotlit_shape, user_canvas_div = $('#user_canvas');
+  var spotlit_shape;
   function spotlight(shape){
     user_canvas_div.addClass('spotlight');
     (spotlit_shape = shape.node).setAttribute('class','spotlight');
@@ -609,8 +595,6 @@ var spotlight = (function(){
 }());
 
 
-//catches all the mouse events over the user_canvas
-var overlay = $('#user_canvas_overlay');
 
 //drag-and-drop subroutine
 //USAGE: drag([event Object], [mousemove handler function(dx, dy){...}]);
@@ -659,9 +643,9 @@ $('#toolbar button').click(function(){
   current_button_description.hide();
   current_button_description = $(this).parent().next().show();
 
-  //make sure overlay not hidden, reset event handlers
-  overlay.unbind().click(false).show();
-  list_shape_select = list_shape_unselect = raphael_shape_click = $.noop;
+  //reset event handlers
+  user_canvas_div.unbind().click(false);
+  raphael_shape_click = $.noop;
 
   return false;
 });
@@ -707,9 +691,9 @@ function doneMoving_cxcy(){
 //rectangle tool
 var rect_count = 0;
 $('#rect_button').click(function(){
-  overlay.mousedown(function(e){
+  user_canvas_div.mousedown(function(e){
     rect_count += 1;
-    var cornerX = e.offsetX || e.pageX - overlay.offset().left, cornerY = e.offsetY || e.pageY - overlay.offset().top, chronology = {}, attrs = $(),
+    var cornerX = e.offsetX || e.pageX - user_canvas_div.offset().left, cornerY = e.offsetY || e.pageY - user_canvas_div.offset().top, chronology = {}, attrs = $(),
       rect = user_canvas.rect(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
         .mousedown(call_raphael_shape_click),
       list_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
@@ -793,9 +777,9 @@ $('#rect_button').click(function(){
 //ellipse tool
 var ellipse_count = 0;
 $('#ellipse_button').click(function(){
-  overlay.mousedown(function(e){
+  user_canvas_div.mousedown(function(e){
     ellipse_count += 1;
-    var cornerX = e.offsetX || e.pageX - overlay.offset().left, cornerY = e.offsetY || e.pageY - overlay.offset().top, chronology = {}, attrs = $(),
+    var cornerX = e.offsetX || e.pageX - user_canvas_div.offset().left, cornerY = e.offsetY || e.pageY - user_canvas_div.offset().top, chronology = {}, attrs = $(),
       ellipse = user_canvas.ellipse(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
         .mousedown(call_raphael_shape_click),
       list_jQ = $('<p>Ellipse '+ellipse_count+'</p>').data('raphael', ellipse)
@@ -868,9 +852,9 @@ $('#ellipse_button').click(function(){
 //text tool
 var text_count = 0;
 $('#text_button').click(function(){
-  overlay.click(function(e){
+  user_canvas_div.click(function(e){
     text_count += 1;
-    var text = user_canvas.text(e.offsetX || e.pageX - overlay.offset().left, e.offsetY || e.pageY - overlay.offset().top, 'text').attr('font-size',24), 
+    var text = user_canvas.text(e.offsetX || e.pageX - user_canvas_div.offset().left, e.offsetY || e.pageY - user_canvas_div.offset().top, 'text').attr('font-size',24), 
       chronology = {}, attrs,
       text_option = $('<p id="text_option_p"><label for="text_option">Text: </label><input type="text" id="text_option" name="text_option" value="text"></p>'),
       text_opt_input = text_option.find('input').bind('keydown keypress', defer(function(){
@@ -987,9 +971,9 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
   };
 
   return function(){
-    overlay.mousedown(function(e){
+    user_canvas_div.mousedown(function(e){
       line_count += 1;
-      var path = new Path(e.offsetX || e.pageX - overlay.offset().left, e.offsetY || e.pageY - overlay.offset().top), chronology = {},
+      var path = new Path(e.offsetX || e.pageX - user_canvas_div.offset().left, e.offsetY || e.pageY - user_canvas_div.offset().top), chronology = {},
         line = user_canvas.path(path).mousedown(call_raphael_shape_click),
         list_jQ = $('<p>Line '+line_count+'</p>').data('raphael', line)
           .data('chronology', chronology)
@@ -1034,6 +1018,7 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
         chronology.hidden[now] = false;
       }
 
+      return false;
     });
   };
 }());
@@ -1044,28 +1029,22 @@ var x_attr, y_attr;
 $('#move_button').click((function(){
   function move_click(){
     raphael_shape_click = raphael_shape_click_when_moving;
-    list_shape_select = overlay_show;
-    list_shape_unselect = overlay_hide;
-    overlay.mousedown(drag_when_moving);
-    if(!current_list_shape.length)
-      overlay.hide();
-  }
-  function overlay_show(){
-    overlay.show();
-  }
-  function overlay_hide(){
-    overlay.hide();
+    user_canvas_div.mousedown(drag_when_moving);
   }
   function raphael_shape_click_when_moving(e){
+    if(current_list_shape.length)
+      return;
     $(this.node).data('shapes list').click();
     drag_when_moving(e);
     click = $.noop;
   }
   function drag_when_moving(e){
+    if(!current_list_shape.length)
+      return;
     var current_raphael_shape = current_list_shape.data('raphael'),
       prev_dx = 0, prev_dy = 0;
     spotlight(current_raphael_shape);
-    click = overlay_click;
+    click = canvas_click;
     setTimeout(function(){
       click = $.noop;
     }, 500);
@@ -1081,7 +1060,7 @@ $('#move_button').click((function(){
     return false;
   }
   var click;
-  function overlay_click(){
+  function canvas_click(){
     $(document).click();
   }
   return move_click;
