@@ -253,7 +253,7 @@ var playing = false,
     for(var attr in chronology)
       (function(attr){
         (function(){
-          if(attr === 'hidden' || attr === 'fill-opacity'){
+          if(attr === 'hidden' || attr === 'fill-opacity' || attr === 'text'){
             var prev = 0;
             for(var next in chronology[attr]) //iterate through each singularity
               if(next > now) //until the first singularity after now
