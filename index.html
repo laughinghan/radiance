@@ -302,7 +302,7 @@ function interpolate_anim_state(){
 
   for(var attr in chronology){
     //binary attributes
-    if(attr === 'hidden' || attr === 'fill-opacity'){
+    if(attr === 'hidden' || attr === 'fill-opacity' || attr === 'text'){
       var prev = 0;
       for(var next in chronology[attr]) //iterate through each singularity
         if(next > now) //until the first singularity after now
@@ -866,6 +866,7 @@ $('#text_button').click(function(){
       text_option = $('<p id="text_option_p"><label for="text_option">Text: </label><input type="text" id="text_option" name="text_option" value="text"></p>'),
       text_opt_input = text_option.find('input').bind('keydown keypress', defer(function(){
         text.attr('text', text_opt_input.val());
+        current_list_shape.data('chronology')['text'][now] = text.attr('text');
       })),
       list_jQ = $('<p>Text ' + text_count + '</p>').data('raphael', text)
         .data('chronology', chronology)
@@ -897,7 +898,7 @@ $('#text_button').click(function(){
     list_shape_click.call(list_jQ[0]);
     text_opt_input.focus();
 
-    $.each(['x', 'y', 'rotation'], function(i, attr){
+    $.each(['x', 'y', 'rotation', 'font-size', 'text'], function(i, attr){
       chronology[attr] = [ text.attr(attr) ];
     });
 
