@@ -416,7 +416,7 @@ $(document).click(function(){
 var list_shape_select = $.noop, list_shape_unselect = $.noop,
   shapes_list = $('#shapes_list').click(function(e){
     if(e.target !== this)
-      return false;
+      e.stopPropagation();
   });
 
 //shape in list, options thereof
