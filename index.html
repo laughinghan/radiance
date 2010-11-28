@@ -411,7 +411,7 @@ $(document).click(function(){
 //list of raphael shapes and sets
 var shapes_list = $('#shapes_list').click(function(e){
     if(e.target !== this)
-      return false;
+      e.stopPropagation();
   });
 
 //shape in list, options thereof
