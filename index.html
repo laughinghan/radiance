@@ -1047,16 +1047,16 @@ $('#move_button').click((function(){
     if(current_list_shape.length)
       return;
     $(this.node).data('shapes list').click();
-    drag_when_moving(e);
-    click = $.noop;
+    same_raphael_shape = true;
   }
+  var same_raphael_shape;
   function drag_when_moving(e){
     if(!current_list_shape.length)
       return;
     var current_raphael_shape = current_list_shape.data('raphael'),
-      prev_dx = 0, prev_dy = 0;
+      prev_dx = 0, prev_dy = 0, click = same_raphael_shape ? $.noop : canvas_click;
+    same_raphael_shape = false;
     spotlight(current_raphael_shape);
-    click = canvas_click;
     setTimeout(function(){
       click = $.noop;
     }, 500);
@@ -1071,7 +1071,6 @@ $('#move_button').click((function(){
     });
     return false;
   }
-  var click;
   function canvas_click(){
     $(document).click();
   }
