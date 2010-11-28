@@ -59,14 +59,6 @@ input {
 .spotlight .spotlight, .spotlight .spotlight * {
   opacity: .8;
 }
-#user_canvas_overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  z-index: 1;
-}
 #shapes_list {
   float: left;
   border: solid 1px black;
@@ -139,9 +131,7 @@ input {
   <span id="zoomslider"></span>
 </p>
 
-<div id="user_canvas">
-  <div id="user_canvas_overlay"></div>
-</div>
+<div id="user_canvas"></div>
 
 <div id="shapes_list"></div>
 
@@ -163,7 +153,7 @@ var zoomslider = Raphael('zoomslider', 200, 20),
 
 var zoom = 100, zoom_startX;
 zoom_overlay.drag(zoom_drag, function(x, y, e){ //start
-  zoom_startX = e.offsetX || e.pageX - $(zoom_overlay.node).offset().left;
+  zoom_startX = e.pageX - $(zoom_overlay.node).offset().left;
   zoom = zoom_startX + 50;
   $('#zoom').val(zoom+'%');
   zoomknob.attr('x', zoom_startX - 4);
@@ -193,7 +183,7 @@ time_overlay.drag(time_drag, function(x, y, e){ //start
   if(playing) //then pause
     play_button.click();
 
-  time_startX = e.offsetX || e.pageX - $(time_overlay.node).offset().left;
+  time_startX = e.pageX - $(time_overlay.node).offset().left;
   now = Math.round(time_startX*duration/slider_length);
   current_time.val((now/1000).toFixed(3)+'s');
   timeknob.attr('x', time_startX - 4);
@@ -409,12 +399,10 @@ $(document).click(function(){
   (current_list_shape.removeClass('current').data('remove list options') || $.noop)();
   current_list_shape = $();
   list_shape_options.detach();
-  list_shape_unselect();
 });
 
 //list of raphael shapes and sets
-var list_shape_select = $.noop, list_shape_unselect = $.noop,
-  shapes_list = $('#shapes_list').click(function(e){
+var shapes_list = $('#shapes_list').click(function(e){
     if(e.target !== this)
       e.stopPropagation();
   });
@@ -460,8 +448,6 @@ function list_shape_click(){
   current_list_shape.data('add list options')();
 
   list_shape_options.insertAfter(this);
-
-  list_shape_select();
 }
 
 //limits decimal places for values for anim/interpolate
@@ -581,13 +567,14 @@ function rm_stroke_width(){
 
 
 //the Raphael canvas on which all the shapes are drawn
-var user_canvas = Raphael('user_canvas', 640, 480);
+var user_canvas = Raphael('user_canvas', 640, 480), user_canvas_div = $('#user_canvas');
+user_canvas.text(200,150,'hello world').attr('font-size',40);
 
 
 
 //highlight a Raphael shape in the user_canvas
 var spotlight = (function(){
-  var spotlit_shape, user_canvas_div = $('#user_canvas');
+  var spotlit_shape;
   function spotlight(shape){
     user_canvas_div.addClass('spotlight');
     (spotlit_shape = shape.node).setAttribute('class','spotlight');
@@ -601,8 +588,6 @@ var spotlight = (function(){
 }());
 
 
-//catches all the mouse events over the user_canvas
-var overlay = $('#user_canvas_overlay');
 
 //drag-and-drop subroutine
 //USAGE: drag([event Object], [mousemove handler function(dx, dy){...}]);
@@ -630,13 +615,13 @@ var drag = (function(){
 
 
 
-//canonical 'current' click handler on all shapes in the user canvas
+//canonical 'current' mousedown handler on all shapes in the user canvas
 //(set by e.g. Move button, then reset by click handler for all toolbars)
-var raphael_shape_click = $.noop;
+var raphael_shape_mousedn = $.noop;
 //calls the canonical 'current' click handler,
 //attached to all shapes on creation (e.g. rect)
-function call_raphael_shape_click(){
-  raphael_shape_click.apply(this, arguments);
+function call_raphael_shape_mousedn(){
+  raphael_shape_mousedn.apply(this, arguments);
 }
 
 
@@ -644,19 +629,25 @@ function call_raphael_shape_click(){
 //show/hide toolbar button options
 var current_button_description = $();
 $('#toolbar button').click(function(){
+  //there'll be a better way to know current tool when it's a span with a background color and whatever instead of a <button>
+  if(current_button_description[0] === $(this).parent().next()[0])
+    return;
+
   current_button_description.hide();
   current_button_description = $(this).parent().next().show();
 
-  //make sure overlay not hidden, reset event handlers
-  overlay.unbind().click(false).show();
-  list_shape_select = list_shape_unselect = raphael_shape_click = $.noop;
+  //reset event handlers
+  user_canvas_div.unbind().click(false);
+  raphael_shape_mousedn = function(){$(this.node).data('shapes list').click()};
+
+  return false;
 });
 
 
 /****
 So at this point, checklist for creating user shapes:
 user_canvas.<Raphael API call>.attr(<more Raphael API>)
-  .mousedown(call_raphael_shape_click); //bound to every user_canvas shape
+  .mousedown(call_raphael_shape_mousedn); //bound to every user_canvas shape
 //next, item in shapes list
 $('<some html>').data('raphael', <previously_created_Raphael_shape_in_user_canvas>)
   .data('add list options', function(){
@@ -693,11 +684,11 @@ function doneMoving_cxcy(){
 //rectangle tool
 var rect_count = 0;
 $('#rect_button').click(function(){
-  overlay.mousedown(function(e){
+  user_canvas_div.mousedown(function(e){
     rect_count += 1;
-    var cornerX = e.offsetX || e.pageX - overlay.offset().left, cornerY = e.offsetY || e.pageY - overlay.offset().top, chronology = {}, attrs = $(),
+    var cornerX = e.pageX - user_canvas_div.offset().left, cornerY = e.pageY - user_canvas_div.offset().top, chronology = {}, attrs = $(),
       rect = user_canvas.rect(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
-        .mousedown(call_raphael_shape_click),
+        .mousedown(call_raphael_shape_mousedn),
       list_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
         .data('chronology', chronology)
         .data('add list options', function(){
@@ -753,6 +744,13 @@ $('#rect_button').click(function(){
           y: cornerY
         });
     }, function(){
+      if(+(rect.attr('width')) === 0 || +(rect.attr('height')) === 0){
+        rect.remove();
+        list_jQ.remove();
+        rect_count -= 1;
+        return;
+      }
+
       list_shape_click.call(list_jQ[0]);
 
       $.each(['x', 'y', 'width', 'height'], function(i, attr){
@@ -772,11 +770,11 @@ $('#rect_button').click(function(){
 //ellipse tool
 var ellipse_count = 0;
 $('#ellipse_button').click(function(){
-  overlay.mousedown(function(e){
+  user_canvas_div.mousedown(function(e){
     ellipse_count += 1;
-    var cornerX = e.offsetX || e.pageX - overlay.offset().left, cornerY = e.offsetY || e.pageY - overlay.offset().top, chronology = {}, attrs = $(),
+    var cornerX = e.pageX - user_canvas_div.offset().left, cornerY = e.pageY - user_canvas_div.offset().top, chronology = {}, attrs = $(),
       ellipse = user_canvas.ellipse(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
-        .mousedown(call_raphael_shape_click),
+        .mousedown(call_raphael_shape_mousedn),
       list_jQ = $('<p>Ellipse '+ellipse_count+'</p>').data('raphael', ellipse)
         .data('chronology', chronology)
         .data('add list options', function(){
@@ -828,6 +826,12 @@ $('#ellipse_button').click(function(){
           ry: dy,
         });
     }, function(){
+      if(+(ellipse.attr('rx')) === 0 || +(ellipse.attr('ry')) === 0){
+        ellipse.remove();
+        list_jQ.remove();
+        ellipse_count -= 1;
+        return;
+      }
       list_shape_click.call(list_jQ[0]);
 
       $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
@@ -847,9 +851,9 @@ $('#ellipse_button').click(function(){
 //text tool
 var text_count = 0;
 $('#text_button').click(function(){
-  overlay.click(function(e){
+  user_canvas_div.click(function(e){
     text_count += 1;
-    var text = user_canvas.text(e.offsetX || e.pageX - overlay.offset().left, e.offsetY || e.pageY - overlay.offset().top, 'text').attr('font-size',24), 
+    var text = user_canvas.text(e.pageX - user_canvas_div.offset().left, e.pageY - user_canvas_div.offset().top, 'text').attr('font-size',24),
       chronology = {}, attrs,
       text_option = $('<p id="text_option_p"><label for="text_option">Text: </label><input type="text" id="text_option" name="text_option" value="text"></p>'),
       text_opt_input = text_option.find('input').bind('keydown keypress', defer(function(){
@@ -969,10 +973,10 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
   };
 
   return function(){
-    overlay.mousedown(function(e){
+    user_canvas_div.mousedown(function(e){
       line_count += 1;
-      var path = new Path(e.offsetX || e.pageX - overlay.offset().left, e.offsetY || e.pageY - overlay.offset().top), chronology = {},
-        line = user_canvas.path(path).mousedown(call_raphael_shape_click),
+      var path = new Path(e.pageX - user_canvas_div.offset().left, e.pageY - user_canvas_div.offset().top), chronology = {},
+        line = user_canvas.path(path).mousedown(call_raphael_shape_mousedn),
         list_jQ = $('<p>Line '+line_count+'</p>').data('raphael', line)
           .data('chronology', chronology)
           .data('path', path)
@@ -1004,6 +1008,12 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
           path.endY = path.startY + dy;
           line.attr({ path: path });
       }, function(){
+        if(path.startX === path.endX || path.startY === path.endY){
+          line.remove();
+          list_jQ.remove();
+          line_count -= 1;
+          return;
+        }
         list_shape_click.call(list_jQ[0]);
 
         $.each(['path'], function(i, attr){
@@ -1016,6 +1026,7 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
         chronology.hidden[now] = false;
       }
 
+      return false;
     });
   };
 }());
@@ -1025,33 +1036,39 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
 var x_attr, y_attr;
 $('#move_button').click((function(){
   function move_click(){
-    raphael_shape_click = raphael_shape_click_when_moving;
-    list_shape_select = overlay_show;
-    list_shape_unselect = overlay_hide;
-    overlay.mousedown(drag_when_moving).hide();
+    raphael_shape_mousedn = raphael_shape_mousedn_when_moving;
+    user_canvas_div.mousedown(drag_when_moving);
   }
-  function overlay_show(){
-    overlay.show();
-  }
-  function overlay_hide(){
-    overlay.hide();
-  }
-  function raphael_shape_click_when_moving(e){
+  function raphael_shape_mousedn_when_moving(e){
+    if(current_list_shape.length)
+      return;
     $(this.node).data('shapes list').click();
-    drag_when_moving(e);
+    same_raphael_shape = true;
   }
+  var same_raphael_shape;
   function drag_when_moving(e){
+    if(!current_list_shape.length)
+      return;
     var current_raphael_shape = current_list_shape.data('raphael'),
-      prev_dx = 0, prev_dy = 0;
+      prev_dx = 0, prev_dy = 0, click = same_raphael_shape ? $.noop : canvas_click;
+    same_raphael_shape = false;
     spotlight(current_raphael_shape);
+    setTimeout(function(){
+      click = $.noop;
+    }, 500);
     drag(e, function(dx, dy){
       current_raphael_shape.translate(dx - prev_dx, dy - prev_dy).moved();
       prev_dx = dx;
       prev_dy = dy;
+      click = $.noop;
     }, function(){
       current_raphael_shape.doneMoving();
+      click();
     });
     return false;
+  }
+  function canvas_click(){
+    $(document).click();
   }
   return move_click;
 }()));
@@ -1069,7 +1086,7 @@ $('button#embed').click(function(){
       '<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></scr'+'ipt>\n' +
       '<script type="text/javascript">\n' +
       raphael_js+'\n' +
-      '</scr'+'ipt>\n' +
+      '<\/script>\n' +
       '<script type="text/javascript">\n' +
       $('script:eq(3)').html().replace(/^.*zoom.*$/mg, '//$&') +
       (function(){
@@ -1091,7 +1108,7 @@ $('button#embed').click(function(){
         });
         return str;
       }()) +
-      '</scr'+'ipt>'
+      '<\/script>'
     ).appendTo('body');
   });
 });
