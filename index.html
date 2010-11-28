@@ -153,19 +153,19 @@ var zoomslider = Raphael('zoomslider', 200, 20),
 
 var zoom = 100, zoom_startX;
 zoom_overlay.drag(zoom_drag, function(x, y, e){ //start
-  zoom_startX = e.pageX - $(zoom_overlay.node).offset().left;
+  zoom_startX = e.pageX - $('#zoomslider').offset().left - 1;
   zoom = zoom_startX + 50;
   $('#zoom').val(zoom+'%');
-  zoomknob.attr('x', zoom_startX - 4);
+  zoomknob.attr('x', zoom_startX - 3);
 }); //zoom!
 zoomknob.drag(zoom_drag, function(){ //start
-  zoom_startX = zoomknob.attr('x') + 4;
+  zoom_startX = zoomknob.attr('x') + 3;
 }); //zoom!!
 function zoom_drag(dx, dy){
   zoom = zoom_startX + dx + 50;
   zoom = zoom < 50 ? 50 : (zoom > 250 ? 250 : zoom);
   $('#zoom').val(zoom+'%');
-  zoomknob.attr('x', zoom - 54);
+  zoomknob.attr('x', zoom - 53);
 } //zoom!!!
 
 
@@ -183,14 +183,14 @@ time_overlay.drag(time_drag, function(x, y, e){ //start
   if(playing) //then pause
     play_button.click();
 
-  time_startX = e.pageX - $(time_overlay.node).offset().left;
+  time_startX = e.pageX - $('#timeslider').offset().left - 1;
   now = Math.round(time_startX*duration/slider_length);
   current_time.val((now/1000).toFixed(3)+'s');
-  timeknob.attr('x', time_startX - 4);
+  timeknob.attr('x', time_startX - 3);
   shapes_list.children().each(interpolate_anim_state);
 });
 timeknob.drag(time_drag, function(){ //start
-  time_startX = timeknob.attr('x') + 4;
+  time_startX = timeknob.attr('x') + 3;
   if(playing) //then pause
     play_button.click();
 });
@@ -198,7 +198,7 @@ function time_drag(dx, dy){
   now = Math.round((time_startX+dx)*duration/slider_length);
   now = now < 0 ? 0 : (now > duration ? duration : now);
   current_time.val((now/1000).toFixed(3)+'s');
-  timeknob.attr('x', now*slider_length/duration - 4);
+  timeknob.attr('x', now*slider_length/duration - 3);
   shapes_list.children().each(interpolate_anim_state);
 }
 
