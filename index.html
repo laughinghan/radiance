@@ -1010,7 +1010,7 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
           path.endY = path.startY + dy;
           line.attr({ path: path });
       }, function(){
-        if(path.startX === path.endX || path.startY === path.endY){
+        if(path.startX === path.endX && path.startY === path.endY){
           line.remove();
           list_jQ.remove();
           line_count -= 1;
