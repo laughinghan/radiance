@@ -622,13 +622,13 @@ var drag = (function(){
 
 
 
-//canonical 'current' click handler on all shapes in the user canvas
+//canonical 'current' mousedown handler on all shapes in the user canvas
 //(set by e.g. Move button, then reset by click handler for all toolbars)
-var raphael_shape_click = $.noop;
+var raphael_shape_mousedn = $.noop;
 //calls the canonical 'current' click handler,
 //attached to all shapes on creation (e.g. rect)
-function call_raphael_shape_click(){
-  raphael_shape_click.apply(this, arguments);
+function call_raphael_shape_mousedn(){
+  raphael_shape_mousedn.apply(this, arguments);
 }
 
 
@@ -645,7 +645,7 @@ $('#toolbar button').click(function(){
 
   //reset event handlers
   user_canvas_div.unbind().click(false);
-  raphael_shape_click = function(){$(this.node).data('shapes list').click()};
+  raphael_shape_mousedn = function(){$(this.node).data('shapes list').click()};
 
   return false;
 });
@@ -654,7 +654,7 @@ $('#toolbar button').click(function(){
 /****
 So at this point, checklist for creating user shapes:
 user_canvas.<Raphael API call>.attr(<more Raphael API>)
-  .mousedown(call_raphael_shape_click); //bound to every user_canvas shape
+  .mousedown(call_raphael_shape_mousedn); //bound to every user_canvas shape
 //next, item in shapes list
 $('<some html>').data('raphael', <previously_created_Raphael_shape_in_user_canvas>)
   .data('add list options', function(){
@@ -695,7 +695,7 @@ $('#rect_button').click(function(){
     rect_count += 1;
     var cornerX = e.pageX - user_canvas_div.offset().left, cornerY = e.pageY - user_canvas_div.offset().top, chronology = {}, attrs = $(),
       rect = user_canvas.rect(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
-        .mousedown(call_raphael_shape_click),
+        .mousedown(call_raphael_shape_mousedn),
       list_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
         .data('chronology', chronology)
         .data('add list options', function(){
@@ -781,7 +781,7 @@ $('#ellipse_button').click(function(){
     ellipse_count += 1;
     var cornerX = e.pageX - user_canvas_div.offset().left, cornerY = e.pageY - user_canvas_div.offset().top, chronology = {}, attrs = $(),
       ellipse = user_canvas.ellipse(cornerX, cornerY, 0, 0).attr('fill', 'transparent')
-        .mousedown(call_raphael_shape_click),
+        .mousedown(call_raphael_shape_mousedn),
       list_jQ = $('<p>Ellipse '+ellipse_count+'</p>').data('raphael', ellipse)
         .data('chronology', chronology)
         .data('add list options', function(){
@@ -980,7 +980,7 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
     user_canvas_div.mousedown(function(e){
       line_count += 1;
       var path = new Path(e.pageX - user_canvas_div.offset().left, e.pageY - user_canvas_div.offset().top), chronology = {},
-        line = user_canvas.path(path).mousedown(call_raphael_shape_click),
+        line = user_canvas.path(path).mousedown(call_raphael_shape_mousedn),
         list_jQ = $('<p>Line '+line_count+'</p>').data('raphael', line)
           .data('chronology', chronology)
           .data('path', path)
@@ -1040,10 +1040,10 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
 var x_attr, y_attr;
 $('#move_button').click((function(){
   function move_click(){
-    raphael_shape_click = raphael_shape_click_when_moving;
+    raphael_shape_mousedn = raphael_shape_mousedn_when_moving;
     user_canvas_div.mousedown(drag_when_moving);
   }
-  function raphael_shape_click_when_moving(e){
+  function raphael_shape_mousedn_when_moving(e){
     if(current_list_shape.length)
       return;
     $(this.node).data('shapes list').click();
