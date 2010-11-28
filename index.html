@@ -767,6 +767,13 @@ $('#rect_button').click(function(){
           y: cornerY
         });
     }, function(){
+      if(rect.attr('width') == 0 || rect.attr('height') == 0){
+        rect.remove();
+        list_jQ.remove();
+        rect_count -= 1;
+        return;
+      }
+
       list_shape_click.call(list_jQ[0]);
 
       $.each(['x', 'y', 'width', 'height'], function(i, attr){
@@ -1093,7 +1100,7 @@ $('button#embed').click(function(){
       '<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></scr'+'ipt>\n' +
       '<script type="text/javascript">\n' +
       raphael_js+'\n' +
-      '</scr'+'ipt>\n' +
+      '<\/script>\n' +
       '<script type="text/javascript">\n' +
       $('script:eq(3)').html().replace(/^.*zoom.*$/mg, '//$&') +
       (function(){
@@ -1115,7 +1122,7 @@ $('button#embed').click(function(){
         });
         return str;
       }()) +
-      '</scr'+'ipt>'
+      '<\/script>'
     ).appendTo('body');
   });
 });
