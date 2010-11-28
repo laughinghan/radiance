@@ -569,8 +569,6 @@ var fill_color_option = $('<p><label for="fill_color_option"></label><input type
 
 
 
-
-
 //the Raphael canvas on which all the shapes are drawn
 var user_canvas = Raphael('user_canvas', 640, 480), user_canvas_div = $('#user_canvas');
 user_canvas.text(200,150,'hello world').attr('font-size',40);
@@ -698,7 +696,7 @@ $('#rect_button').click(function(){
       list_jQ = $('<p>Rectangle '+rect_count+'</p>').data('raphael', rect)
         .data('chronology', chronology)
         .data('add list options', function(){
-          $.each(['x', 'y', 'width', 'height'], function(i, attr){
+          $.each(['x', 'y', 'width', 'height', 'rotation'], function(i, attr){
             attrs = attrs.add(add_attr_option(rect, attr, chronology));
           });
           add_stroke_width(rect);
@@ -759,7 +757,7 @@ $('#rect_button').click(function(){
 
       list_shape_click.call(list_jQ[0]);
 
-      $.each(['x', 'y', 'width', 'height'], function(i, attr){
+      $.each(['x', 'y', 'width', 'height', 'rotation'], function(i, attr){
         chronology[attr] = [ rect.attr(attr) ];
       });
     });
@@ -784,7 +782,7 @@ $('#ellipse_button').click(function(){
       list_jQ = $('<p>Ellipse '+ellipse_count+'</p>').data('raphael', ellipse)
         .data('chronology', chronology)
         .data('add list options', function(){
-          $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
+          $.each(['cx', 'cy', 'rx', 'ry', 'rotation'], function(i, attr){
             attrs = attrs.add(add_attr_option(ellipse, attr, chronology));
           });
           add_stroke_width(ellipse);
@@ -840,7 +838,7 @@ $('#ellipse_button').click(function(){
       }
       list_shape_click.call(list_jQ[0]);
 
-      $.each(['cx', 'cy', 'rx', 'ry'], function(i, attr){
+      $.each(['cx', 'cy', 'rx', 'ry', 'rotation'], function(i, attr){
         chronology[attr] = [ ellipse.attr(attr) ];
       });
     });
@@ -873,7 +871,9 @@ $('#text_button').click(function(){
         .data('chronology', chronology)
         .data('add list options', function(){
           text_option.insertBefore(remove);
-          attrs = add_attr_option(text, 'x', chronology).add(add_attr_option(text, 'y', chronology));
+          attrs = add_attr_option(text, 'x', chronology)
+            .add(add_attr_option(text, 'y', chronology))
+            .add(add_attr_option(text, 'rotation', chronology));
           add_fill_color(text, 'Color');
         })
         .data('remove list options', function(){
@@ -897,7 +897,7 @@ $('#text_button').click(function(){
     list_shape_click.call(list_jQ[0]);
     text_opt_input.focus();
 
-    $.each(['x', 'y'], function(i, attr){
+    $.each(['x', 'y', 'rotation'], function(i, attr){
       chronology[attr] = [ text.attr(attr) ];
     });
 
@@ -982,17 +982,20 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
   return function(){
     user_canvas_div.mousedown(function(e){
       line_count += 1;
-      var path = new Path(e.pageX - user_canvas_div.offset().left, e.pageY - user_canvas_div.offset().top), chronology = {},
+      var path = new Path(e.pageX - user_canvas_div.offset().left, e.pageY - user_canvas_div.offset().top), chronology = {}, attrs,
         line = user_canvas.path(path).mousedown(call_raphael_shape_mousedown),
         list_jQ = $('<p>Line '+line_count+'</p>').data('raphael', line)
           .data('chronology', chronology)
           .data('path', path)
           .data('add list options', function(){
             add_linepoints(line, path);
+            attrs = (add_attr_option(line, 'rotation', chronology));
             add_stroke_width(line);
             add_stroke_color(line);
           })
           .data('remove list options', function(){
+            attrs.remove();
+            attrs = $();
             rm_linepoints();
             rm_stroke_width();
             rm_stroke_color();
@@ -1004,6 +1007,7 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
             spotlight.off();
           })
           .appendTo(shapes_list);
+      line.attr_options = function(){return attrs;};
       line.moved = moved_linepoints;
       line.doneMoving = doneMoving_linepoints;
       $(line.node).data('shapes list', list_jQ);
@@ -1023,7 +1027,7 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
         }
         list_shape_click.call(list_jQ[0]);
 
-        $.each(['path'], function(i, attr){
+        $.each(['path', 'rotation'], function(i, attr){
           chronology[attr] = [ line.attr(attr) ];
         });
       });
