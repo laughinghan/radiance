@@ -652,12 +652,17 @@ function call_raphael_shape_click(){
 //show/hide toolbar button options
 var current_button_description = $();
 $('#toolbar button').click(function(){
+  if(current_button_description[0] === $(this).parent().next()[0])
+    return;
+
   current_button_description.hide();
   current_button_description = $(this).parent().next().show();
 
   //make sure overlay not hidden, reset event handlers
   overlay.unbind().click(false).show();
   list_shape_select = list_shape_unselect = raphael_shape_click = $.noop;
+
+  return false;
 });
 
 
