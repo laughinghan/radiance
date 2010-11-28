@@ -485,20 +485,22 @@ function add_attr_option(raphael_shape, attr, chronology){
 }
 var num_dot_regex = /^\d+\.$^/; //fix annoying css quirk where '123.' is an invalid number and is interpreted as 0
 
-//fill
-var fill = $('<p><label for="fill">Fill: </label><input type="checkbox" id="fill" name="fill"></p>'),
-  fill_checkbox = fill.find('input').change(function(){
-    var chronology = current_list_shape.data('chronology'), raphael_shape = current_list_shape.data('raphael');
-    if(!chronology['fill-opacity'])
-      chronology['fill-opacity'] = [ raphael_shape.attr('fill-opacity') ];
-    raphael_shape.attr('fill-opacity', chronology['fill-opacity'][now] = +this.checked);
-  });
-function add_fill(raphael_shape){
-  fill_checkbox[0].checked = raphael_shape.attr('fill-opacity') === 1;
-  fill.insertBefore(remove);
+//stroke width
+var stroke_width_option = $('<p><label for="stroke_width_option">Thickness: </label><input type="text" name="stroke" id="stroke_width_option"></p>'),
+  stroke_width_input = stroke_width_option.find('input').bind('keydown keypress', defer(function(){
+    var raphael_shape = current_list_shape.data('raphael'), chronology = current_list_shape.data('chronology');
+    if(!raphael_shape.attr('stroke'))
+      raphael_shape.attr('stroke', '#000');
+    if(!chronology['stroke-width'])
+      chronology['stroke-width'] = [ raphael_shape.attr('stroke-width')  || 1 ];
+    chronology['stroke-width'][now] = raphael_shape.attr('stroke-width', stroke_width_input.val()).attr('stroke-width');
+  }));
+function add_stroke_width(raphael_shape){
+  stroke_width_input.val(prettify_val(raphael_shape.attr('stroke-width')) || 1);
+  stroke_width_option.insertBefore(remove);
 }
-function rm_fill(){
-  fill.detach();
+function rm_stroke_width(){
+  stroke_width_option.detach();
 }
 
 //stroke color
@@ -525,6 +527,22 @@ function rm_stroke_color(){
   stroke_color_option.detach();
 }
 
+//fill
+var fill = $('<p><label for="fill">Fill: </label><input type="checkbox" id="fill" name="fill"></p>'),
+  fill_checkbox = fill.find('input').change(function(){
+    var chronology = current_list_shape.data('chronology'), raphael_shape = current_list_shape.data('raphael');
+    if(!chronology['fill-opacity'])
+      chronology['fill-opacity'] = [ raphael_shape.attr('fill-opacity') ];
+    raphael_shape.attr('fill-opacity', chronology['fill-opacity'][now] = +this.checked);
+  });
+function add_fill(raphael_shape){
+  fill_checkbox[0].checked = raphael_shape.attr('fill-opacity') === 1;
+  fill.insertBefore(remove);
+}
+function rm_fill(){
+  fill.detach();
+}
+
 //fill color
 var fill_color_option = $('<p><label for="fill_color_option"></label><input type="text" name="fill_color_option_text_color" id="fill_color_option_text_color">'+
     '<select><option></option><option>Red</option><option>Orange</option><option>Yellow</option><option>Green</option><option>Blue</option>'+
@@ -548,24 +566,6 @@ var fill_color_option = $('<p><label for="fill_color_option"></label><input type
   function rm_fill_color(){
     fill_color_option.detach();
   }
-
-//stroke width
-var stroke_width_option = $('<p><label for="stroke_width_option">Thickness: </label><input type="text" name="stroke" id="stroke_width_option"></p>'),
-  stroke_width_input = stroke_width_option.find('input').bind('keydown keypress', defer(function(){
-    var raphael_shape = current_list_shape.data('raphael'), chronology = current_list_shape.data('chronology');
-    if(!raphael_shape.attr('stroke'))
-      raphael_shape.attr('stroke', '#000');
-    if(!chronology['stroke-width'])
-      chronology['stroke-width'] = [ raphael_shape.attr('stroke-width')  || 1 ];
-    chronology['stroke-width'][now] = raphael_shape.attr('stroke-width', stroke_width_input.val()).attr('stroke-width');
-  }));
-function add_stroke_width(raphael_shape){
-  stroke_width_input.val(prettify_val(raphael_shape.attr('stroke-width')) || 1);
-  stroke_width_option.insertBefore(remove);
-}
-function rm_stroke_width(){
-  stroke_width_option.detach();
-}
 
 
 
