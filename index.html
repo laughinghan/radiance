@@ -679,7 +679,14 @@ $('<some html>').data('raphael', <previously_created_Raphael_shape_in_user_canva
   }).data('remove list options', function(){
     //when another list item is clicked, remove options
   }).click(list_shape_click) //bound to every list item
+  .hover(function(){
+    spotlight(rect);
+  }, function(){
+    spotlight.off();
+  })
   .appendTo(shapes_list);
+<previously_created_Raphael_shape_in_user_canvas>.moved = function(){ //currently being dragged by move tool. Update list options };
+<previously_created_Raphael_shape_in_user_canvas>.doneMoving = function(){ //finished being dragged by move tool. Record in chronology };
 $(<previously_created_Raphael_shape_in_user_canvas>.node)
   .data('shapes list', <previously_created_shapes_list_item_jQ>);
 //and most likely spotlight the shape in user_canvas
@@ -1064,7 +1071,6 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
   };
 }());
 
-
 //move tool
 var x_attr, y_attr;
 $('#move_button').click((function(){
@@ -1105,7 +1111,6 @@ $('#move_button').click((function(){
   }
   return move_click;
 }()));
-
 
 /* TODO: Get embed to work with new Chronology
 //embed button
