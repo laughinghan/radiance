@@ -754,7 +754,7 @@ $('#rect_button').click(function(){
       });
     });
 
-    if(now != 0){
+    if(now !== 0){
       chronology.hidden = [ true ];
       chronology.hidden[now] = false;
     }
@@ -835,7 +835,7 @@ $('#ellipse_button').click(function(){
       });
     });
 
-    if(now != 0){
+    if(now !== 0){
       chronology.hidden = [ true ];
       chronology.hidden[now] = false;
     }
@@ -895,7 +895,7 @@ $('#text_button').click(function(){
       chronology[attr] = [ text.attr(attr) ];
     });
 
-    if(now != 0){
+    if(now !== 0){
       chronology.hidden = [ true ];
       chronology.hidden[now] = false;
     }
@@ -1026,7 +1026,7 @@ $('#line_button').click(function(){//to get rid of jumpiness, change ".bind('key
         });
       });
 
-      if(now != 0){
+      if(now !== 0){
         chronology.hidden = [ true ];
         chronology.hidden[now] = false;
       }
