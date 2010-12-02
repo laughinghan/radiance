@@ -245,9 +245,9 @@ var playing = false,
     now = 0;
     timeknob.attr('x', -3);
     current_time.val('0.000s');
+    shapes_list.children().each(interpolate_anim_state);
   }
   anim_start = now;
-  shapes_list.children().each(interpolate_anim_state);
   shapes_list.children().each(function(){ //recursive animation
     var raphael_this = $(this).data('raphael'), chronology = $(this).data('chronology');
     for(var attr in chronology)
