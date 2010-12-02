@@ -285,7 +285,7 @@ var playing = false,
 function interpolate_anim_state(){
   var raphael_this = $(this).data('raphael'), chronology = $(this).data('chronology');
 
-  if(raphael_this === undefined)
+  if(!raphael_this)
     return;
 
   for(var attr in chronology){
