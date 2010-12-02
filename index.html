@@ -327,8 +327,8 @@ function interpolate_anim_state(){
     }else
       raphael_this.attr(attr, interpolate(prev.value, next.value));
   }
-  function interpolate(past, future){
-    return +past + +((future - past)*delta); //eventually use real easing
+  function interpolate(prev, next){
+    return prev + delta*(next - prev); //eventually use real easing
   }
 
   //hacky hacky way of making interpolate change fields
