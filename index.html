@@ -341,7 +341,7 @@ function interpolate_anim_state(){
 //set the current time when people type into #current_time text box live,
 //change to 3 decimal place + s format after they hit enter or leave the text box
 var current_time = $('#current_time').bind('keydown keypress', defer(function(){
-  now = parseFloat(current_time.val()) * 1000;
+  now = parseFloat(current_time.val()) * 1000 || 0;
   if(now > duration)
     now = duration;
   if(now < 0)
