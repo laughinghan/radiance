@@ -294,7 +294,8 @@ function play(){
           (function(){
             var new_attr = {}, next = chronology[attr].seekNext(now);
             new_attr[attr] = next.value;
-            raphael_this.animate(new_attr, next.time - now, arguments.callee);
+            if(next.time > now || next.next)
+              raphael_this.animate(new_attr, next.time - now, arguments.callee);
           }());
       }(attr));
   });
