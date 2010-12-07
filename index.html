@@ -90,6 +90,10 @@ input {
   position: relative;
   top: 10px;
 }
+#play_pause{
+  display: inline-block;
+  width: 75px;
+}
 </style>
 
 </head>
@@ -143,7 +147,11 @@ input {
 <div id="shapes_list"></div>
 
 <div id="user_canvas_controls">
-  <button>&#9654;Play</button>
+  <span id="play_pause">
+    <button id="play_from_start">&#8618;</button>
+    <button id="play_from_now">&#9654;</button>
+    <button id="pause" class="hidden">Pause&nbsp;&nbsp;||</button>
+  </span>
   <span id="timeslider"></span>
   <input type="text" id = "current_time" value="0.000s">/<input type="text" id = "duration" value="5.000s">
 </div>
@@ -188,7 +196,7 @@ var timeslider = Raphael('timeslider', slider_length, 30),
 var now = 0, time_startX, duration = 5000;
 time_overlay.drag(time_drag, function(x, y, e){ //start
   if(playing) //then pause
-    play_button.click();
+    pause_button.click();
 
   time_startX = e.pageX - $('#timeslider').offset().left - 1;
   now = Math.round(time_startX*duration/slider_length);
@@ -199,7 +207,7 @@ time_overlay.drag(time_drag, function(x, y, e){ //start
 timeknob.drag(time_drag, function(){ //start
   time_startX = timeknob.attr('x') + 3;
   if(playing) //then pause
-    play_button.click();
+    pause_button.click();
 });
 function time_drag(dx, dy){
   now = Math.round((time_startX+dx)*duration/slider_length);
@@ -227,10 +235,30 @@ Raphael.easing_formulas.time_easing = function(n){
 //to optimize play button and interpolate, make so if ele hidden, it doesn't go through it for all attr,
 //just sets them all with an interpolate_anim_state when becomes unhidden
 //Play button
+
+
+
 var playing = false,
-  play_button = $('#user_canvas_controls button').click(function(){
-  if(playing){
-    play_button.html('&#9654;Play');
+  play_now_button = $('#user_canvas_controls #play_from_now').click(function(){
+    if(now === duration){
+      now = 0;
+      timeknob.attr('x', -3);
+      current_time.val('0.000s');
+      shapes_list.children().each(interpolate_anim_state);
+    }
+    play();
+  }),
+  play_start_button =$('#user_canvas_controls #play_from_start').click(function(){
+    now = 0;
+    timeknob.attr('x', -3);
+    current_time.val('0.000s');
+    shapes_list.children().each(interpolate_anim_state);
+    play();
+  }),
+  pause_button = $('#user_canvas_controls #pause').click(function(){
+    $('#play_from_start').removeClass('hidden');
+    $('#play_from_now').removeClass('hidden');
+    $('#pause').addClass('hidden');
     playing = false;
     shapes_list.children().each(function(){
       var raphael_this = $(this).data('raphael');
@@ -238,15 +266,14 @@ var playing = false,
     });
     timeknob.stop();
     return;
-  }
-  play_button.html('Pause');
+  })
+
+
+function play(){
+  $('#play_from_start').addClass('hidden');
+  $('#play_from_now').addClass('hidden');
+  $('#pause').removeClass('hidden');
   playing = true;
-  if(now === duration){
-    now = 0;
-    timeknob.attr('x', -3);
-    current_time.val('0.000s');
-    shapes_list.children().each(interpolate_anim_state);
-  }
   anim_start = now;
   shapes_list.children().each(function(){ //recursive animation
     var raphael_this = $(this).data('raphael'), chronology = $(this).data('chronology');
@@ -275,11 +302,14 @@ var playing = false,
   timeknob.animate({x: 477}, duration - now, 'time_easing', function(){
     now = duration;
     playing = false;
-    play_button.html('&#9654;Play');
+    $('#play_from_start').removeClass('hidden');
+    $('#play_from_now').removeClass('hidden');
+    $('#pause').addClass('hidden');
     current_time.val((now/1000).toFixed(3)+'s');
     interpolate_anim_state();
   });
-});
+}
+
 
 //interpolate current animation state
 function interpolate_anim_state(){
