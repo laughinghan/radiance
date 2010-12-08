@@ -282,13 +282,13 @@ function play(){
         //discrete-valued attributes
         if(attr === 'hidden' || attr === 'fill-opacity' || attr === 'text')
           (function(){
-            var prev = chronology[attr].seekPrev(now);
+            var prev = chronology[attr].seekPrev(now), next = prev.next;
             if(attr === 'hidden')
               raphael_this.toggleHide(prev.value);
             else
               raphael_this.attr(attr, prev.value);
-            if(prev.next) //only recurse if there is another singularity after now
-              setTimeout(arguments.callee, prev.next.time - now);
+            if(next) //only recurse if there is another singularity after now
+              setTimeout(arguments.callee, next.time - now);
           }());
         else
           (function(){
