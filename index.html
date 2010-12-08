@@ -284,9 +284,9 @@ function play(){
           (function(){
             var prev = chronology[attr].seekPrev(now);
             if(attr === 'hidden')
-              raphael_this.toggleHide(chronology.hidden[prev]);
+              raphael_this.toggleHide(prev.value);
             else
-              raphael_this.attr(attr, chronology[attr][prev]);
+              raphael_this.attr(attr, prev.value);
             if(prev.next) //only recurse if there is another singularity after now
               setTimeout(arguments.callee, prev.next.time - now);
           }());
