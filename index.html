@@ -293,9 +293,13 @@ function play(){
         else
           (function(){
             var new_attr = {}, next = chronology[attr].seekNext(now);
+            if(next.time <= now)
+              if(next.next)
+                next = next.next;
+              else
+                return; //end animation loop when past or at last singularity
             new_attr[attr] = next.value;
-            if(next.time > now || next.next)
-              raphael_this.animate(new_attr, next.time - now, arguments.callee);
+            raphael_this.animate(new_attr, next.time - now, arguments.callee);
           }());
       }(attr));
   });
