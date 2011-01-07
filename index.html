@@ -928,10 +928,11 @@ $('#text_button').click(function(){
   text_button_flag = true;
   user_canvas_div.click(function(e){
     text_count += 1;
-    var text = user_canvas.text(e.pageX - user_canvas_div.offset().left, e.pageY - user_canvas_div.offset().top, 'text').attr('font-size',24).mousedown(call_raphael_shape_mousedown).click(function(e){
-      if(text_button_flag === true)
-        e.stopPropagation();
-    }),
+    var text = user_canvas.text(e.pageX - user_canvas_div.offset().left, e.pageY - user_canvas_div.offset().top, 'text').attr('font-size',24)
+      .mousedown(call_raphael_shape_mousedown).click(function(e){
+        if(text_button_flag)
+          e.stopPropagation();
+      }),
       chronology = {}, attrs = $(),
       text_option = $('<p id="text_option_p"><label for="text_option">Text: </label><input type="text" id="text_option" name="text_option" value="text"></p>'),
       text_opt_input = text_option.find('input').bind('keydown keypress', defer(function(){
