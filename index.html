@@ -31,9 +31,15 @@ input {
   height: 560px;
   width: 100px;
 }
-#toolbar p {
-  margin: 0;
-  font-size: .8em;
+#toolbar h3 {
+  background-color: #adf;
+  margin: 0 0 .1em;
+  padding: 0 .2em;
+  cursor: pointer;
+}
+#toolbar h3.selected {
+  background-color: teal;
+  color: white;
 }
 #rect_button span {
   display: inline-block;
@@ -110,19 +116,19 @@ input {
 </p>
 
 <div id="toolbar">
-  <p><button id="rect_button"><span></span> Rect</button>
+  <h3 id="rect_button"><span></span> Rect</h3>
   <p class="hidden">Thickness
     <br>Corner Radius
     <br>Fill
-  <p><button id="ellipse_button">Ellipse</button>
+  <h3 id="ellipse_button">Ellipse</h3>
   <p class="hidden">Thickness
     <br>Fill
-  <p><button id="text_button">Text</button>
+  <h3 id="text_button">Text</h3>
   <p class="hidden">Size
     <br>Font
-  <p><button id="line_button">Line</button>
+  <h3 id="line_button">Line</h3>
   <p class="hidden">Thickness
-  <p><button id="move_button">Move</button>
+  <h3 id="move_button">Move</h3>
   <p class="hidden">Choose a shape from the list
 </div>
 
@@ -684,15 +690,17 @@ function call_raphael_shape_mousedown(){
 
 
 //show/hide toolbar button options
-var current_button_description = $();
-$('#toolbar button').click(function(){
+var current_button = $(), current_button_description = $();
+$('h3').click(function(){
   //there'll be a better way to know current tool when it's a span with a background color and whatever instead of a <button>
-  if(current_button_description[0] === $(this).parent().next()[0])
+  if($(this).hasClass('selected'))
     return;
 
   text_button_flag = false;
-  current_button_description.hide();
-  current_button_description = $(this).parent().next().show();
+
+  current_button.removeClass('selected');
+  current_button_description.slideUp('fast');
+  current_button_description = (current_button = $(this).addClass('selected')).next().slideDown('fast');
 
   //reset event handlers
   user_canvas_div.unbind().click(false);
