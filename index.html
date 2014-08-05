@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>Radiance - Web Animation</title>
+<title>Radiance - HTML5 Animation Editor</title>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>
 <script src="raphael.js"></script>
@@ -40,6 +40,9 @@ input {
 #toolbar h3.selected {
   background-color: teal;
   color: white;
+}
+#toolbar p {
+  margin: .5em;
 }
 #rect_button span {
   display: inline-block;
@@ -100,13 +103,16 @@ input {
   display: inline-block;
   width: 75px;
 }
+.description {
+  clear: both
+}
 </style>
 
 </head>
 <body>
 
 <h1>Radiance <small>v0.0&alpha;</small></h1>
-<h2>JavaScript Web Animation</h2>
+<h2>HTML5 Animation Editor</h2>
 
 <p id="nav">
   <a href="/">Radiance</a> |
@@ -117,19 +123,31 @@ input {
 
 <div id="toolbar">
   <h3 id="rect_button"><span></span> Rect</h3>
-  <p class="hidden">Thickness
-    <br>Corner Radius
-    <br>Fill
+  <p class="hidden">
+    Drag to create a rectangle whose one corner is where you start dragging,
+    and opposite corner is where you end dragging.
+  </p>
   <h3 id="ellipse_button">Ellipse</h3>
-  <p class="hidden">Thickness
-    <br>Fill
+  <p class="hidden">
+    Drag to create an ellipse whose center is where you start dragging, and is
+    circumscribed in a rectangle with the same center and whose corner is where
+    you end dragging.
+  </p>
   <h3 id="text_button">Text</h3>
-  <p class="hidden">Size
-    <br>Font
+  <p class="hidden">
+    Click to create a text element centered where you clicked.
+  </p>
   <h3 id="line_button">Line</h3>
-  <p class="hidden">Thickness
+  <p class="hidden">
+    Drag to create a straight line starting and ending where you start and end
+    dragging.
+  </p>
   <h3 id="move_button">Move</h3>
-  <p class="hidden">Choose a shape from the list
+  <p class="hidden">
+    Drag anywhere to move the currently selected element around in the canvas.
+    To change which element is moved, select a different element in the list on
+    the right.
+  </p>
 </div>
 
 <p id="menubar">
@@ -161,6 +179,9 @@ input {
   <span id="timeslider"></span>
   <input type="text" id = "current_time" value="0.000s">/<input type="text" id = "duration" value="5.000s">
 </div>
+
+<p class="description">There are many online vector graphics editors, and a few HTML5 animation editors that have to be downloaded and installed (<a href="http://tumult.com/hype/">Tumult Hype</a>, <a href="https://creative.adobe.com/products/animate">Adobe Edge Animate</a>), but this is the first online editor for HTML5 animations!</p>
+<p class="description">Draw some stuff, then drag the slider to the end and select some elements in the list on the right and change some of the properties, then press Play to watch the change in those properties be smoothly animated!</p>
 
 <!--button id="embed">Embed this in your Web page</button-->
 
